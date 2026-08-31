@@ -12,6 +12,8 @@ const {test, expect} = require('@playwright/test')
 const h = require('./helpers')
 
 const SERIAL = process.env.STF_DEVICE_SERIAL
+const PERSISTENCE_APK = process.env.STF_PERSISTENCE_APK
+const PERSISTENCE_PACKAGE = process.env.STF_PERSISTENCE_PACKAGE
 
 test.describe('STF against a real device', function() {
   // No retries. In serial mode a retry reruns the whole group, and by then this
@@ -271,6 +273,42 @@ test.describe('STF against a real device', function() {
 
       await expect(page.locator(h.SEL.shellResults))
         .toHaveText(/\d+/, {timeout: 60000})
+    })
+
+  test('[check:device_persistence] an installed APK survives device release',
+    async function() {
+      test.skip(!PERSISTENCE_APK || !PERSISTENCE_PACKAGE,
+        'STF_PERSISTENCE_APK and STF_PERSISTENCE_PACKAGE are not set')
+
+      const fileInput = page.locator('.stf-upload input[type="file"]')
+      await fileInput.setInputFiles(PERSISTENCE_APK)
+      await expect(page.locator('.upload-status')).toContainText(/installed/i, {
+        timeout: 180000
+      })
+      await expect(page.locator('.upload-status')).toContainText(
+        PERSISTENCE_PACKAGE, {timeout: 30000}
+      )
+
+      await page.click(h.SEL.stopUsing)
+      await page.waitForURL(/#!\/devices/, {timeout: 60000})
+      await h.waitForDeviceTile(page)
+
+      const tile = page.locator(h.SEL.deviceTiles).filter({
+        has: page.locator('a[href="#!/control/' + SERIAL + '"]')
+      })
+      await expect(tile.locator(h.SEL.availableMarker)).toHaveCount(1, {
+        timeout: 90000
+      })
+      await tile.locator(h.SEL.deviceName).first().click()
+      await page.waitForURL(/#!\/control\//, {timeout: 60000})
+      await expect(page.locator(h.SEL.stopUsing)).toBeVisible({timeout: 90000})
+
+      const input = page.locator(h.SEL.shellInput)
+      await input.fill('pm path ' + PERSISTENCE_PACKAGE)
+      await input.press('Enter')
+      await expect(page.locator(h.SEL.shellResults)).toContainText(/base\.apk/, {
+        timeout: 60000
+      })
     })
 
   test('[check:playwright_ui] releasing the device returns to the device list',

@@ -24,6 +24,22 @@ The helper waits for its internal services and serves the UI at
 <http://127.0.0.1:7100/>. This checkout uses `/auth/guest/`; enter a nickname
 to create a local session. Set `STF_LOG_DIR` to choose the log directory.
 
+Local runs preserve device state between Usage sessions. In particular, APKs
+installed during a session remain installed after releasing the device. This
+is the local command's default (`--no-cleanup`). Use `--cleanup` explicitly
+when a disposable device reset is required; that mode removes packages added
+after the provider starts when the device is released.
+
+To run the persistent APK regression against a real emulator, set the serial,
+APK path, and package name before running the device Playwright suite:
+
+```bash
+STF_DEVICE_SERIAL=emulator-5554 \
+STF_PERSISTENCE_APK=/path/to/test.apk \
+STF_PERSISTENCE_PACKAGE=com.example.test \
+npm --prefix test/playwright run test:device
+```
+
 ## Install and start the companion
 
 With an online emulator or device selected as `SERIAL`:
