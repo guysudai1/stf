@@ -21,7 +21,7 @@ adb devices || true
 echo "starting stf local on $PUBLIC_IP (extra args: $*)"
 nohup node lib/cli/index.js local \
   --public-ip "$PUBLIC_IP" \
-  --auth-type mock \
+  --auth-type guest \
   --no-cleanup \
   "$@" > "$LOG" 2>&1 &
 
@@ -60,11 +60,11 @@ wait_for_port 7110 websocket
 wait_for_port 7102 storage
 wait_for_port 7100 entry
 
-echo "waiting for the login page to answer"
+echo "waiting for the nickname entry page to answer"
 waited=0
-until curl -fsS -o /dev/null "http://${PUBLIC_IP}:7100/auth/mock/"; do
+until curl -fsS -o /dev/null "http://${PUBLIC_IP}:7100/auth/guest/"; do
   if [ "$waited" -ge "$READY_TIMEOUT" ]; then
-    echo "::error::login page never answered"
+    echo "::error::nickname entry page never answered"
     tail -n 120 "$LOG" || true
     exit 1
   fi

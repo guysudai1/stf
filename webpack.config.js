@@ -17,6 +17,7 @@ module.exports = {
         app: pathutil.resource('app/app.js')
         , authldap: pathutil.resource('auth/ldap/scripts/entry.js')
         , authmock: pathutil.resource('auth/mock/scripts/entry.js')
+        , authguest: pathutil.resource('auth/guest/scripts/entry.js')
       }
     , output: {
         path: pathutil.resource('build')

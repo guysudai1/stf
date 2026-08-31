@@ -11,22 +11,21 @@ const h = require('./helpers')
 test.describe('STF web UI', function() {
   test.describe.configure({mode: 'serial'})
 
-  test('[check:playwright_ui] mock auth signs in and lands on the device list',
+  test('[check:playwright_ui] nickname entry lands on the device list',
     async function({page}) {
       const errors = await h.collectConsoleErrors(page)
 
-      await page.goto('/auth/mock/')
-      await expect(page.locator(h.SEL.loginForm)).toBeVisible()
-      await expect(page.locator(h.SEL.loginName)).toBeVisible()
-      await expect(page.locator(h.SEL.loginEmail)).toBeVisible()
+      await page.goto('/auth/guest/')
+      await expect(page.locator(h.SEL.nicknameForm)).toBeVisible()
+      await expect(page.locator(h.SEL.nicknameInput)).toBeVisible()
+      await expect(page.locator(h.SEL.nicknameSubmit)).toBeVisible()
 
-      await page.fill(h.SEL.loginName, h.USER_NAME)
-      await page.fill(h.SEL.loginEmail, h.USER_EMAIL)
-      await page.click(h.SEL.loginSubmit)
+      await page.fill(h.SEL.nicknameInput, h.USER_NAME)
+      await page.click(h.SEL.nicknameSubmit)
 
       await page.waitForURL(/#!\/devices/, {timeout: 90000})
       await expect(page.locator(h.SEL.deviceList)).toBeVisible()
-      await expect(page.locator(h.SEL.loginError)).toHaveCount(0)
+      await expect(page.locator(h.SEL.nicknameError)).toHaveCount(0)
 
       // Angular templates that fail to resolve show up here and nowhere else.
       const fatal = errors.filter(function(text) {
@@ -36,9 +35,9 @@ test.describe('STF web UI', function() {
       expect(fatal, 'fatal angular errors on the device list').toEqual([])
     })
 
-  test('[check:playwright_ui] the menu reports a version and the signed in user',
+  test('[check:playwright_ui] the menu reports a version and the guest user',
     async function({page}) {
-      await h.login(page)
+      await h.enterNickname(page)
 
       await expect(page.locator(h.SEL.version)).toHaveText(/^v\d+\.\d+\.\d+/)
       await expect(
@@ -48,7 +47,7 @@ test.describe('STF web UI', function() {
 
   test('[check:playwright_ui] the device list search box filters tiles',
     async function({page}) {
-      await h.login(page)
+      await h.enterNickname(page)
 
       const search = page.locator(h.SEL.deviceSearch)
       await expect(search).toBeVisible()
@@ -67,7 +66,7 @@ test.describe('STF web UI', function() {
 
   test('[check:playwright_ui] the settings page renders',
     async function({page}) {
-      await h.login(page)
+      await h.enterNickname(page)
 
       await page.goto('/#!/settings')
       await expect(page.locator('[ng-controller="SettingsCtrl"]'))

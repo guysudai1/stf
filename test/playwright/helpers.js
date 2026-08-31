@@ -2,7 +2,7 @@
 // Shared helpers for the Playwright suite.
 //
 // Selectors here come from the STF sources, not from guesses:
-//   login form      res/auth/mock/scripts/signin/signin.pug
+//   nickname form   res/auth/guest/scripts/nickname/nickname.pug
 //   device tiles    res/app/device-list/icons/device-list-icons-directive.js
 //   control page    res/app/control-panes/device-control/device-control.pug
 //   screen widget   res/app/components/stf/screen/screen-directive.js
@@ -11,17 +11,13 @@
 const {spawn} = require('child_process')
 const fs = require('fs')
 
-// dbapi.checkUserBeforeLogin rejects a known email that arrives with a
-// different name, so this pair has to stay stable across runs.
-const USER_NAME = process.env.STF_USERNAME || 'ci_user'
-const USER_EMAIL = process.env.STF_EMAIL || 'ci_user@ci.local'
+const USER_NAME = process.env.STF_NICKNAME || 'ci_user'
 
 const SEL = {
-  loginForm: 'form[name="signin"]',
-  loginName: 'input[name="username"]',
-  loginEmail: 'input[name="email"]',
-  loginSubmit: 'input[value="Log In"]',
-  loginError: '.alert.alert-danger',
+  nicknameForm: 'form[name="nicknameForm"]',
+  nicknameInput: 'input[name="nickname"]',
+  nicknameSubmit: 'input[value="Continue"]',
+  nicknameError: '.alert.alert-danger',
 
   deviceList: '.stf-device-list',
   deviceTiles: 'ul.devices-icon-view > li:not(.filter-out)',
@@ -44,12 +40,11 @@ const SEL = {
   version: '.stf-menu .version-text'
 }
 
-async function login(page) {
-  await page.goto('/auth/mock/')
-  await page.waitForSelector(SEL.loginSubmit)
-  await page.fill(SEL.loginName, USER_NAME)
-  await page.fill(SEL.loginEmail, USER_EMAIL)
-  await page.click(SEL.loginSubmit)
+async function enterNickname(page) {
+  await page.goto('/auth/guest/')
+  await page.waitForSelector(SEL.nicknameSubmit)
+  await page.fill(SEL.nicknameInput, USER_NAME)
+  await page.click(SEL.nicknameSubmit)
   await page.waitForURL(/#!\/devices/, {timeout: 90000})
   await page.waitForSelector(SEL.deviceList)
 }
@@ -465,8 +460,7 @@ async function swipeDeviceScreen(page, from, to) {
 module.exports = {
   SEL,
   USER_NAME,
-  USER_EMAIL,
-  login,
+  enterNickname,
   waitForDeviceTile,
   collectConsoleErrors,
   captureInputEvents,

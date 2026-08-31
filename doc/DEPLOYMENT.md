@@ -212,7 +212,7 @@ ExecStart=/usr/bin/docker run --rm \
   -p %i:3000 \
   devicefarmer/stf:latest \
   stf app --port 3000 \
-    --auth-url https://stf.example.org/auth/mock/ \
+    --auth-url https://stf.example.org/auth/guest/ \
     --websocket-url wss://stf.example.org/
 ExecStop=-/usr/bin/docker stop -t 10 %p-%i
 ```
@@ -221,11 +221,17 @@ You may have to change the `--auth-url` depending on which authentication method
 
 ### `stf-auth@.service`
 
-You have multiple options here. STF currently provides authentication units for [OAuth 2.0](http://oauth.net/2/) and [LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol), plus a mock implementation that simply asks for a name and an email address.
+You have multiple options here. STF provides a nickname-only guest entry for local or trusted deployments, along with authentication units for [OAuth 2.0](http://oauth.net/2/), [LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol), and legacy mock authentication.
 
-#### Option A: Mock auth
+#### Option A: Guest entry
 
-With the mock auth provider the user simply enters their name and email and the system trusts those values. This is what the development version uses by default. Obviously not very secure, but very easy to set up if you can trust your users.
+With guest entry, users choose a nickname and enter without an external identity provider. This is convenient for local or trusted deployments; it does not provide authentication or authorization by itself.
+
+Use `stf auth-guest --port 3000 --app-url https://stf.example.org/` and set the app unit's `--auth-url` to `https://stf.example.org/auth/guest/`.
+
+#### Option B: Mock auth
+
+With the mock auth provider the user simply enters their name and email and the system trusts those values. This remains available for compatibility, but the development version now uses nickname-only guest entry by default. Obviously not very secure, but very easy to set up if you can trust your users.
 
 This is a template unit, meaning that you'll need to start it with an instance identifier. In this example configuration the identifier is used to specify the exposed port number (i.e. `stf-auth@3200.service` runs on port 3200). You can have multiple instances running on the same host by using different ports.
 

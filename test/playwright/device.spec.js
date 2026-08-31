@@ -35,7 +35,7 @@ test.describe('STF against a real device', function() {
       }
     })
     page = await context.newPage()
-    await h.login(page)
+        await h.enterNickname(page)
   })
 
   test.afterAll(async function() {

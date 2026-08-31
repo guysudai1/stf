@@ -1,0 +1,33 @@
+//
+  Copyright © 2026 contains code contributed by Orange SA, authors: Denis Barbaron - Licensed under the Apache license 2.0
+//
+
+.nickname(ng-controller='NicknameCtrl')
+  .nickname-wrapper
+    a(href='./')
+      img(width='160', height='160', src='/static/logo/exports/STF-512.png', title='STF')
+
+    form(name='nicknameForm', novalidate, ng-submit='submit()')
+      .alert.alert-danger(ng-show='error')
+        span(ng-show="error === 'invalid'", translate) Please enter a valid nickname
+        span(ng-show="error === 'server'", translate) Server error. Check log output.
+
+      .form-group
+        .input-group
+          span.input-group-addon
+            i.fa.fa-user
+          input.form-control(
+            ng-model='nickname'
+            name='nickname'
+            required
+            maxlength='64'
+            type='text'
+            placeholder='Nickname'
+            autocorrect='off'
+            autocapitalize='off'
+            spellcheck='false'
+            autocomplete='nickname')
+        .alert.alert-warning(ng-show='nicknameForm.nickname.$dirty && nicknameForm.nickname.$invalid')
+          span(translate) Please enter a nickname
+
+      input.btn.btn-lg.btn-primary.btn-block(type='submit', value='Continue')

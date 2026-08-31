@@ -36,13 +36,6 @@
           i.fa.fa-envelope-o
           span(translate) Contact Support 
 
-      li.stf-nav-web-native-button(ng-if='!$root.basicMode')
-       button.btn.btn-sm.btn-default-outline(
-        type='button'
-        ng-click='logout()')
-          i.fa.fa-sign-out
-          span(translate) Logout
-
       li
         span.version-text v{{ $root.state.config.stfVersion }}
 
@@ -50,4 +43,3 @@
         a(ng-href='/#!/help', accesskey='6')
           i.fa.fa-question-circle.fa-fw
           | {{ "Help" | translate }}
-

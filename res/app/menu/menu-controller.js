@@ -13,7 +13,6 @@ module.exports = function MenuCtrl(
 , CommonService
 , LogcatService
 , socket
-, $cookies
 , $window) {
 
   $window.angular.version = {}
@@ -40,19 +39,6 @@ module.exports = function MenuCtrl(
   $http.get('/auth/contact').then(function(response) {
     $scope.contactEmail = response.data.contact.email
   })
-
-  $scope.logout = function() {
-    const cookies = $cookies.getAll()
-    for (const key in cookies) {
-      if (cookies.hasOwnProperty(key)) {
-        $cookies.remove(key, {path: '/'})
-      }
-    }
-    $window.location = '/'
-    setTimeout(function() {
-      socket.disconnect()
-    }, 100)
-  }
 
   $scope.alertMessage = {
     activation: 'False'

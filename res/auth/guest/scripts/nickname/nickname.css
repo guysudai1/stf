@@ -1,0 +1,29 @@
+body {
+    background: #eeeeee;
+}
+
+.nickname {
+    padding: 15px;
+    background: #eeeeee;
+}
+
+.nickname .nickname-wrapper {
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.nickname .nickname-wrapper img {
+    margin: 40px auto;
+}
+
+.nickname .nickname-wrapper input.form-control {
+    height: 48px;
+    font-size: 15px;
+    box-shadow: none;
+}
+
+.nickname .nickname-wrapper input[type='submit'] {
+    padding: 10px 0 12px;
+    margin: 20px 0 30px;
+}
