@@ -9,6 +9,7 @@ module.exports = angular.module('stf.settings.general', [
   require('./local').name,
   require('./email-address-separator').name,
   require('./date-format').name,
+  require('./device-timeout').name,
   require('stf/app-state').name,
   require('./alert-message').name
 ])

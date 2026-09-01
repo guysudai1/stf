@@ -1,0 +1,40 @@
+//
+  Copyright © 2026 contains code contributed by Orange SA, authors: Denis Barbaron - Licensed under the Apache license 2.0
+//
+
+.widget-container.fluid-height(ng-controller='DeviceTimeoutCtrl')
+  .heading
+    i.fa.fa-clock-o
+    span(translate) Device timeout
+  .widget-content.padded
+    form.form-horizontal(name='deviceTimeoutForm' novalidate ng-submit='saveDeviceTimeout()')
+      .form-group.general-item(ng-class="{'has-error': deviceTimeoutError}")
+        label.general-label(
+          for='device-timeout-input'
+          translate
+          uib-tooltip="{{'Timeout for newly acquired devices' | translate}}"
+          tooltip-placement='auto top-right'
+          tooltip-popup-delay='500') Timeout (seconds)
+        input#device-timeout-input.form-control.input-sm(
+          data-testid='device-timeout-input'
+          type='number'
+          min='1'
+          max='86400'
+          step='1'
+          inputmode='numeric'
+          ng-model='deviceTimeoutSeconds'
+          aria-describedby='device-timeout-help device-timeout-error')
+        p#device-timeout-error.help-block(ng-if='deviceTimeoutError' translate)
+          Enter a whole number from 1 to 86400 seconds.
+      p#device-timeout-help.help-block(translate)
+        Leave blank or reset to use the provider timeout. This applies to newly acquired devices.
+      .form-group.general-item
+        button.btn.btn-sm.btn-primary(
+          type='submit'
+          ng-disabled='!canSaveDeviceTimeout()'
+          translate) Save
+        button.btn.btn-sm.btn-default(
+          type='button'
+          data-testid='device-timeout-reset'
+          ng-click='resetDeviceTimeout()'
+          translate) Reset

@@ -12,6 +12,9 @@
     div(ng-include='"settings/general/date-format/date-format.pug"')
   .col-md-3
     div(ng-include='"settings/general/email-address-separator/email-address-separator.pug"')
+ .row.stf-general
+  .col-md-3
+    div(ng-include='"settings/general/device-timeout/device-timeout.pug"')
  .row.stf-general(ng-if='isAdmin()')
   .col-md-12
     div(ng-include='"settings/general/alert-message/alert-message.pug"')
