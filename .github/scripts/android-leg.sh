@@ -185,7 +185,7 @@ note "running the Playwright suite against $SERIAL"
 (
   cd test/playwright
   STF_DEVICE_SERIAL="$SERIAL" \
-  STF_URL="http://${STF_PUBLIC_IP:-127.0.0.1}:7100" \
+  STF_URL="http://${STF_PUBLIC_IP:-127.0.0.1}:${STF_PORT:-80}" \
   npx playwright test
 ) || echo "::warning::playwright reported failures"
 

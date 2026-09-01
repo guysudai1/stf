@@ -10,6 +10,7 @@ set -euo pipefail
 
 LOG_DIR="${STF_LOG_DIR:-stf-logs}"
 PUBLIC_IP="${STF_PUBLIC_IP:-127.0.0.1}"
+STF_PORT="${STF_PORT:-80}"
 READY_TIMEOUT="${STF_READY_TIMEOUT:-180}"
 
 mkdir -p "$LOG_DIR"
@@ -22,7 +23,7 @@ echo "starting stf local on $PUBLIC_IP (extra args: $*)"
 nohup node lib/cli/index.js local \
   --public-ip "$PUBLIC_IP" \
   --auth-type guest \
-  --no-cleanup \
+  --port "$STF_PORT" \
   "$@" > "$LOG" 2>&1 &
 
 STF_PID=$!
@@ -51,18 +52,18 @@ wait_for_port() {
   echo "  $label ready on $port after ${waited}s"
 }
 
-# Ports from lib/cli/local/index.js: 7100 entry proxy, 7102 storage,
+# Ports from lib/cli/local/index.js: STF_PORT entry proxy, 7102 storage,
 # 7105 app, 7106 api, 7110 websocket, 7120 auth.
 wait_for_port 7120 auth
 wait_for_port 7105 app
 wait_for_port 7106 api
 wait_for_port 7110 websocket
 wait_for_port 7102 storage
-wait_for_port 7100 entry
+wait_for_port "$STF_PORT" entry
 
 echo "waiting for the nickname entry page to answer"
 waited=0
-until curl -fsS -o /dev/null "http://${PUBLIC_IP}:7100/auth/guest/"; do
+until curl -fsS -o /dev/null "http://${PUBLIC_IP}:${STF_PORT}/auth/guest/"; do
   if [ "$waited" -ge "$READY_TIMEOUT" ]; then
     echo "::error::nickname entry page never answered"
     tail -n 120 "$LOG" || true
@@ -72,4 +73,4 @@ until curl -fsS -o /dev/null "http://${PUBLIC_IP}:7100/auth/guest/"; do
   waited=$((waited + 2))
 done
 
-echo "stf local is up: http://${PUBLIC_IP}:7100/"
+echo "stf local is up: http://${PUBLIC_IP}:${STF_PORT}/"

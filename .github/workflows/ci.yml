@@ -356,6 +356,7 @@ jobs:
         id: start
         env:
           STF_LOG_DIR: stf-logs
+          STF_PORT: 7100
         run: bash .github/scripts/start-stf.sh
 
       - name: Create fake devices and read them back through STF's db layer
@@ -554,6 +555,7 @@ jobs:
         env:
           STF_LOG_DIR: stf-logs
           STF_PUBLIC_IP: 127.0.0.1
+          STF_PORT: 7100
           CHECKS_FILE: checks.json
           BOOT_TIMEOUT: ${{ matrix.boot }}
         with:

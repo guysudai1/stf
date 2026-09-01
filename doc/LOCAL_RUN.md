@@ -21,8 +21,10 @@ docker run -d --name stf-rethinkdb \
 ```
 
 The helper waits for its internal services and serves the UI at
-<http://127.0.0.1:7100/>. This checkout uses `/auth/guest/`; enter a nickname
+<http://127.0.0.1/> by default. This checkout uses `/auth/guest/`; enter a nickname
 to create a local session. Set `STF_LOG_DIR` to choose the log directory.
+Binding port 80 may require the usual host permission for privileged ports; use
+`--port 7100` (or `STF_LOCAL_PORT=7100`) for an unprivileged development run.
 
 Local runs preserve device state between Usage sessions. Device cleanup is not
 part of the provider or device lifecycle, so APKs and other device changes
@@ -73,7 +75,7 @@ reject the older `am startservice` command as a background-service start.
 ## Verify
 
 ```bash
-curl --fail http://127.0.0.1:7100/auth/guest/
+curl --fail http://127.0.0.1/auth/guest/
 "$ADB" -s "$SERIAL" shell getprop sys.boot_completed
 "$ADB" -s "$SERIAL" shell dumpsys activity services jp.co.cyberagent.stf
 tail -f "$STF_LOG_DIR/stf-local.log"
