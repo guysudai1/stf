@@ -102,6 +102,8 @@ test.describe('STF web UI', function() {
 
       await timeoutInput.fill('30')
       await expect(timeoutInput).toHaveValue('30')
+      await page.locator('[ng-controller="DeviceTimeoutCtrl"] button[type="submit"]').click()
+      await page.waitForTimeout(500)
 
       await page.goto('/#!/devices')
       await expect(page.locator(h.SEL.deviceList)).toBeVisible({timeout: 30000})
