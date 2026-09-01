@@ -19,8 +19,7 @@ function parseArgs(value) {
 
 function parseIncomingLine(line, allowedSender) {
   var value = String(line || '').trim()
-  var match = value.match(/^@([^\s:>]+)\s+(.+)$/) ||
-    value.match(/^([^\s:>]+)[:>]\s+(.+)$/)
+  var match = value.match(/^([^\s:>]+)[:>]\s+(.+)$/)
   if (!match || !allowedSender || match[1].toLowerCase() !== allowedSender.toLowerCase()) {
     return null
   }
@@ -32,7 +31,7 @@ function parseIncomingLine(line, allowedSender) {
   if (mission) {
     return {type: 'mission', title: mission[1].trim(), prompt: mission[2].trim()}
   }
-  return null
+  return {type: 'message', message: message}
 }
 
 function shellQuote(value) {

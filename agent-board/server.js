@@ -118,6 +118,9 @@ function createAgentBoard(options) {
   simplex.on('mission', function(input) {
     store.create({title: input.title, prompt: input.prompt,
       adapter: process.env.SIMPLEX_CHAT_MISSION_ADAPTER || 'codex'})
+      .then(function(mission) {
+        return simplex.send('ACK: queued mission "' + mission.title + '" [' + mission.id + ']')
+      })
       .catch(function(err) { simplex.send('Mission rejected: ' + err.message).catch(function() {}) })
   })
   simplex.on('status', function() {
@@ -127,6 +130,10 @@ function createAgentBoard(options) {
       }).join('; ')
       return simplex.send(summary || 'No missions on the board')
     }).catch(function() {})
+  })
+  simplex.on('message', function() {
+    simplex.send('ACK: received. Use /mission Title :: detailed prompt or /status')
+      .catch(function() {})
   })
 
   var server = http.createServer(function(req, res) {
