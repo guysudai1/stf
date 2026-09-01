@@ -55,7 +55,7 @@
       ...raw,
       id: String(value(raw, ['id', 'missionId', '_id'], `mission-${index}`)),
       title: String(value(raw, ['title', 'name'], 'Untitled mission')),
-      description: String(value(raw, ['description', 'brief', 'details'], '')),
+    description: String(value(raw, ['description', 'prompt', 'brief', 'details'], '')),
       priority: String(value(raw, ['priority', 'urgency'], 'medium')).toLowerCase(),
       status: normalizeStatus(originalStatus),
       statusLabel: String(originalStatus).replace(/_/g, ' '),
@@ -101,18 +101,37 @@
     if (!silent) $('#board-section').setAttribute('aria-busy', 'true')
     const results = await Promise.allSettled([
       request('/api/missions'),
-      request('/api/agents')
+      request('/api/agents'),
+      request('/api/integrations')
     ])
     let failed = 0
     if (results[0].status === 'fulfilled') state.missions = collection(results[0].value, ['missions', 'items']).map(normalizeMission)
     else failed += 1
     if (results[1].status === 'fulfilled') state.agents = collection(results[1].value, ['agents', 'items']).map(normalizeAgent)
     else failed += 1
+    if (results[2].status === 'fulfilled') updateSimplexStatus(results[2].value.simplex)
+    else failed += 1
     state.lastUpdated = new Date()
     render()
     if (!silent) $('#board-section').setAttribute('aria-busy', 'false')
     if (failed === 2) throw new Error('Missions and agents could not be loaded')
     if (failed === 1 && !silent) showToast('Some board data could not be refreshed', true)
+  }
+
+  function updateSimplexStatus(simplex) {
+    const status = $('#simplex-status')
+    if (!status || !simplex) return
+    status.classList.remove('is-live', 'is-polling', 'is-error')
+    const label = $('.connection-label', status)
+    if (simplex.status === 'connected') {
+      status.classList.add('is-live')
+      label.textContent = `SimpleX · ${simplex.contact || 'connected'}`
+    } else if (simplex.status === 'disabled') {
+      label.textContent = 'SimpleX disabled'
+    } else {
+      status.classList.add('is-error')
+      label.textContent = `SimpleX · ${simplex.status}`
+    }
   }
 
   function filteredMissions() {
@@ -299,7 +318,7 @@
     try {
       await request('/api/missions', {
         method: 'POST',
-        body: JSON.stringify({ title: data.get('title').trim(), description: data.get('description').trim(), priority: data.get('priority'), status: 'queued' })
+        body: JSON.stringify({ title: data.get('title').trim(), prompt: data.get('description').trim() || data.get('title').trim(), priority: data.get('priority'), status: 'queued' })
       })
       form.reset()
       $('#mission-dialog').close()

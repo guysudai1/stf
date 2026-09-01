@@ -117,7 +117,8 @@ JsonMissionStore.prototype.get = function(id) {
 JsonMissionStore.prototype.create = function(input) {
   var that = this
   input = input || {}
-  if (typeof input.prompt !== 'string' && typeof input.command !== 'string') {
+  if (typeof input.prompt !== 'string' && typeof input.description !== 'string' &&
+      typeof input.command !== 'string') {
     return Promise.reject(new TypeError('Mission requires a prompt or command'))
   }
   if (input.adapter !== undefined && typeof input.adapter !== 'string') {
@@ -129,7 +130,7 @@ JsonMissionStore.prototype.create = function(input) {
     var mission = {
       id: input.id || that.idFactory(),
       title: input.title || input.name || input.prompt || input.command,
-      prompt: input.prompt,
+      prompt: input.prompt || input.description,
       command: input.command,
       args: Array.isArray(input.args) ? input.args.slice() : undefined,
       adapter: input.adapter || (input.command ? 'command' : 'demo'),

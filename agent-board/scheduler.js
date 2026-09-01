@@ -58,6 +58,11 @@ MissionScheduler.prototype.stop = function() {
     clearInterval(this._timer)
     this._timer = null
   }
+  this._active.forEach(function(task) {
+    if (task.controller) {
+      task.controller.abort()
+    }
+  })
   return Promise.all(Array.from(this._active.values())).then(function() {
     return that
   })
@@ -71,11 +76,86 @@ MissionScheduler.prototype._onStoreChange = function(change) {
 
 MissionScheduler.prototype._nextMission = function() {
   return this.store.list({status: 'queued'}).then(function(missions) {
+    var priority = {low: 0, medium: 1, high: 2}
     missions.sort(function(left, right) {
-      return right.priority - left.priority || left.createdAt.localeCompare(right.createdAt)
+      var leftPriority = typeof left.priority === 'number' ? left.priority : priority[left.priority] || 0
+      var rightPriority = typeof right.priority === 'number' ? right.priority : priority[right.priority] || 0
+      return rightPriority - leftPriority || left.createdAt.localeCompare(right.createdAt)
     })
     return missions[0]
   })
+}
+
+MissionScheduler.prototype._startMission = function(mission, workerId) {
+  var task = this._run(mission, workerId)
+  this._active.set(mission.id, task)
+  return task
+}
+
+MissionScheduler.prototype._nextWorkerId = function() {
+  var used = {}
+  this._active.forEach(function(task) { used[task.workerId] = true })
+  for (var index = 1; index <= this.workerCount; index += 1) {
+    var candidate = this.workerPrefix + '-' + index
+    if (!used[candidate]) {
+      return candidate
+    }
+  }
+  return this.workerPrefix + '-' + (++this._workerSequence)
+}
+
+MissionScheduler.prototype.claim = function(id) {
+  var that = this
+  if (this._active.size >= this.workerCount) {
+    return Promise.reject(new Error('All workers are busy'))
+  }
+  return this.store.get(id).then(function(mission) {
+    if (!mission) {
+      return null
+    }
+    if (mission.status !== 'queued') {
+      throw new Error('Mission is not queued')
+    }
+    var workerId = that._nextWorkerId()
+    return that.store.claim(id, workerId).then(function(claimed) {
+      return claimed ? that._startMission(claimed, workerId) && claimed : null
+    })
+  })
+}
+
+MissionScheduler.prototype.agents = function() {
+  var activeByWorker = {}
+  this._active.forEach(function(task) {
+    if (task.workerId) {
+      activeByWorker[task.workerId] = task
+    }
+  })
+  var agents = []
+  for (var index = 1; index <= this.workerCount; index += 1) {
+    var id = this.workerPrefix + '-' + index
+    var task = activeByWorker[id]
+    agents.push({
+      id: id,
+      name: 'Agent ' + index,
+      status: task ? 'working' : 'idle',
+      missionId: task && task.missionId,
+      missionTitle: task && task.missionTitle,
+      startedAt: task && task.startedAt
+    })
+  }
+  return agents
+}
+
+MissionScheduler.prototype.stopAgent = function(id) {
+  var that = this
+  var active = Array.from(this._active.values()).find(function(task) {
+    return task.workerId === id
+  })
+  if (!active) {
+    return Promise.resolve(null)
+  }
+  return this.cancel(active.missionId)
+    .then(function(mission) { return mission || that.store.get(active.missionId) })
 }
 
 MissionScheduler.prototype._pump = function() {
@@ -94,13 +174,12 @@ MissionScheduler.prototype._pump = function() {
         that._pumping = false
         return null
       }
-      var workerId = that.workerPrefix + '-' + (++that._workerSequence)
+      var workerId = that._nextWorkerId()
       return that.store.claim(mission.id, workerId).then(function(claimed) {
         if (!claimed) {
           return loop()
         }
-        var task = that._run(claimed, workerId)
-        that._active.set(claimed.id, task)
+        that._startMission(claimed, workerId)
         return loop()
       })
     })
@@ -159,13 +238,23 @@ MissionScheduler.prototype._run = function(mission, workerId) {
     that._pump()
   })
   task.controller = controller
+  task.workerId = workerId
+  task.missionId = mission.id
+  task.missionTitle = mission.title
+  task.startedAt = mission.startedAt
   return task
 }
 
 MissionScheduler.prototype.cancel = function(id) {
   var active = this._active.get(id)
   if (active && active.controller) {
-    active.controller.abort()
+    return this.store.transition(id, 'cancelled', {
+      error: 'Cancelled by user',
+      finishedAt: new Date().toISOString()
+    }, {expectedStatus: 'running'}).then(function(mission) {
+      active.controller.abort()
+      return mission
+    })
   }
   return this.store.cancel(id).then(function(mission) {
     return mission

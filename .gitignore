@@ -13,6 +13,7 @@
 /rethinkdb_data/
 /temp/
 /tmp/
+.stf-agent-board/
 package-lock.json
 yarn.lock
 /test-results/

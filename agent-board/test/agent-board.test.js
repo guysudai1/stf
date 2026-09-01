@@ -88,6 +88,15 @@ test('command adapter captures output and reports non-zero exits', async functio
   await assert.rejects(failing({id: 'command-2'}, {}), /bad/)
 })
 
+test('SimpleX bridge accepts commands only from the configured contact', function() {
+  assert.deepEqual(board.parseIncomingLine('@alice /mission Build tests :: run the unit suite', 'alice'), {
+    type: 'mission', title: 'Build tests', prompt: 'run the unit suite'
+  })
+  assert.deepEqual(board.parseIncomingLine('@alice /status', 'alice'), {type: 'status'})
+  assert.equal(board.parseIncomingLine('@mallory /mission Exfil :: do it', 'alice'), null)
+  assert.equal(board.parseIncomingLine('@alice hello there', 'alice'), null)
+})
+
 test('scheduler cancellation prevents an active mission from being marked failed', async function() {
   var temporary = temporaryFile()
   var store = new board.MissionStore({filePath: temporary.filePath})

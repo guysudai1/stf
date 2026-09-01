@@ -4,7 +4,7 @@ var boardModule = require('./server')
 var port = Number(process.env.AGENT_BOARD_PORT || 7130)
 var filePath = process.env.AGENT_BOARD_FILE ||
   path.join(process.cwd(), '.stf-agent-board', 'missions.json')
-var workers = Number(process.env.AGENT_BOARD_WORKERS || 1)
+var workers = Number(process.env.AGENT_BOARD_WORKERS || 3)
 var board = boardModule.createAgentBoard({filePath: filePath, workers: workers})
 
 board.start().then(function() {
