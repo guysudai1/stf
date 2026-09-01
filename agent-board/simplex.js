@@ -19,7 +19,8 @@ function parseArgs(value) {
 
 function parseIncomingLine(line, allowedSender) {
   var value = String(line || '').trim()
-  var match = value.match(/^([^\s:>]+)[:>]\s+(.+)$/)
+  var match = value.match(/^<([^\s>]+)>\s+(.+)$/) ||
+    value.match(/^([^\s:>]+)[:>]\s+(.+)$/)
   if (!match || !allowedSender || match[1].toLowerCase() !== allowedSender.toLowerCase()) {
     return null
   }
