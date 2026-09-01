@@ -172,7 +172,7 @@ You should now have a working installation for local development.
 
 STF comprises of several independent processes that must normally be launched separately. In our own setup each one these processes is its own [systemd](http://www.freedesktop.org/wiki/Software/systemd/) unit. See [DEPLOYMENT.md](doc/DEPLOYMENT.md) and [Setup Examples](https://github.com/devicefarmer/setup-examples) if you're interested.
 
-For development purposes, however, there's a helper command to quickly launch all required processes with a nickname-only guest entry page. No external authentication is required. Note that you **must** have RethinkDB running first.
+For development purposes, however, there's a helper command to quickly launch all required processes with a nickname-only guest entry page. No external authentication is required. Note that you **must** have RethinkDB running first. See [LOCAL_RUN.md](doc/LOCAL_RUN.md) for the verified STFService/emulator workflow, readiness checks, persistent device state, and troubleshooting notes.
 
 If you don't have RethinkDB set up yet, to start it up, go to the folder where you'd like RethinkDB to create a `rethinkdb_data` folder in (perhaps the folder where this repo is) and run the following command:
 
@@ -217,7 +217,7 @@ Later, if you want to change the values of these built-in objects, for example t
 stf local
 ```
 
-After the [webpack](http://webpack.github.io/) build process has finished (which can take a small while) you should have your private STF running on [http://localhost](http://localhost). If you had devices connected before running the command, those devices should now be available for use. If not, you should see what went wrong from your console. Feel free to plug in or unplug any devices at any time.
+After the [webpack](http://webpack.github.io/) build process has finished (which can take a small while) you should have your private STF running on [http://localhost](http://localhost). The active guest nickname is shown in the header and can be cleared with `Logout`. Local device state is preserved when a Usage session is released. If you had devices connected before running the command, those devices should now be available for use. If not, you should see what went wrong from your console. Feel free to plug in or unplug any devices at any time.
 
 Note that if you see your device ready to use but without a name or a proper image, we're probably missing the data for that model in [our device database](https://github.com/devicefarmer/stf-device-db). Everything should work fine either way.
 
