@@ -89,7 +89,7 @@ test('command adapter captures output and reports non-zero exits', async functio
 })
 
 test('SimpleX bridge accepts commands only from the configured contact', function() {
-  assert.deepEqual(board.parseIncomingLine('@alice /mission Build tests :: run the unit suite', 'alice'), {
+  assert.deepEqual(board.parseIncomingLine('alice: /mission Build tests :: run the unit suite', 'alice'), {
     type: 'mission', title: 'Build tests', prompt: 'run the unit suite'
   })
   assert.deepEqual(board.parseIncomingLine('@alice /status', 'alice'), {type: 'status'})

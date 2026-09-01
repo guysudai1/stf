@@ -40,6 +40,9 @@ Use `SIMPLEX_CHAT_COMMAND` to select the CLI binary and
 misconfigured. No invitation, contact acceptance, or security-code verification
 is automated by this integration.
 
+The bridge allocates a pseudo-terminal through `script`, because the SimpleX
+terminal client expects a terminal even when it is controlled by the board.
+
 For unattended Codex workers, set `AGENT_CODEX_ARGS_JSON='["--full-auto"]'`
 explicitly; otherwise the Codex CLI keeps its normal approval behavior.
 

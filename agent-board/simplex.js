@@ -18,7 +18,9 @@ function parseArgs(value) {
 }
 
 function parseIncomingLine(line, allowedSender) {
-  var match = String(line || '').trim().match(/^@([^\s:>]+)\s+(.+)$/)
+  var value = String(line || '').trim()
+  var match = value.match(/^@([^\s:>]+)\s+(.+)$/) ||
+    value.match(/^([^\s:>]+)[:>]\s+(.+)$/)
   if (!match || !allowedSender || match[1].toLowerCase() !== allowedSender.toLowerCase()) {
     return null
   }
@@ -33,6 +35,14 @@ function parseIncomingLine(line, allowedSender) {
   return null
 }
 
+function shellQuote(value) {
+  return "'" + String(value).replace(/'/g, "'\\''") + "'"
+}
+
+function stripAnsi(value) {
+  return String(value).replace(/[\u001b\u009b]\[[0-?]*[ -/]*[@-~]/g, '')
+}
+
 function SimplexBridge(options) {
   EventEmitter.call(this)
   options = options || {}
@@ -45,6 +55,9 @@ function SimplexBridge(options) {
   this.enabled = options.enabled !== undefined ? options.enabled :
     process.env.SIMPLEX_CHAT_ENABLED === '1'
   this.child = null
+  this.usePty = options.usePty !== false
+  this.ptyRows = Number(options.ptyRows || process.env.SIMPLEX_CHAT_PTY_ROWS || 40)
+  this.ptyCols = Number(options.ptyCols || process.env.SIMPLEX_CHAT_PTY_COLS || 120)
   this.statusValue = this.enabled ? 'starting' : 'disabled'
   this.error = null
   this._buffer = ''
@@ -64,7 +77,15 @@ SimplexBridge.prototype.start = function() {
     return Promise.resolve(this)
   }
   try {
-    this.child = childProcess.spawn(this.command, this.args, {stdio: ['pipe', 'pipe', 'pipe']})
+    var spawnCommand = this.command
+    var spawnArgs = this.args
+    if (this.usePty) {
+      var commandLine = [this.command].concat(this.args).map(shellQuote).join(' ')
+      spawnCommand = 'script'
+      var resize = 'stty rows ' + this.ptyRows + ' cols ' + this.ptyCols + '; exec '
+      spawnArgs = ['-qfec', resize + commandLine, '/dev/null']
+    }
+    this.child = childProcess.spawn(spawnCommand, spawnArgs, {stdio: ['pipe', 'pipe', 'pipe']})
   }
   catch (err) {
     this._recordError(err)
@@ -93,7 +114,7 @@ SimplexBridge.prototype._recordError = function(err) {
 
 SimplexBridge.prototype._onOutput = function(chunk) {
   var that = this
-  this._buffer += chunk.toString()
+  this._buffer += stripAnsi(chunk.toString())
   var lines = this._buffer.split(/\r?\n/)
   this._buffer = lines.pop()
   lines.forEach(function(line) {
