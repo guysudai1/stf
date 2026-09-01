@@ -24,11 +24,9 @@ The helper waits for its internal services and serves the UI at
 <http://127.0.0.1:7100/>. This checkout uses `/auth/guest/`; enter a nickname
 to create a local session. Set `STF_LOG_DIR` to choose the log directory.
 
-Local runs preserve device state between Usage sessions. In particular, APKs
-installed during a session remain installed after releasing the device. This
-is the local command's default (`--no-cleanup`). Use `--cleanup` explicitly
-when a disposable device reset is required; that mode removes packages added
-after the provider starts when the device is released.
+Local runs preserve device state between Usage sessions. Device cleanup is not
+part of the provider or device lifecycle, so APKs and other device changes
+remain installed after releasing and reclaiming a device.
 
 To run the persistent APK regression against a real emulator, set the serial,
 APK path, and package name before running the device Playwright suite:
