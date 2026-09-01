@@ -36,6 +36,13 @@ module.exports = function MenuCtrl(
     CommonService.url('mailto:' + $scope.contactEmail)
   }
 
+  $scope.logout = function() {
+    return $http.post('/auth/api/v1/logout')
+      .then(function() {
+        $window.location.replace('/auth/guest/')
+      })
+  }
+
   $http.get('/auth/contact').then(function(response) {
     $scope.contactEmail = response.data.contact.email
   })

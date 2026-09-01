@@ -36,6 +36,15 @@
           i.fa.fa-envelope-o
           span(translate) Contact Support 
 
+      li.stf-current-user(ng-if='!$root.basicMode')
+        i.fa.fa-user.fa-fw
+        span(ng-bind='$root.state.user.name')
+
+      li.stf-logout(ng-if='!$root.basicMode')
+        a(href='', ng-click='logout(); $event.preventDefault()')
+          i.fa.fa-sign-out.fa-fw
+          span(translate) Logout
+
       li
         span.version-text v{{ $root.state.config.stfVersion }}
 

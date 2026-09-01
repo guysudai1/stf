@@ -37,7 +37,9 @@ const SEL = {
   // The empty state is a second pre.shell-results, so exclude it or the
   // locator resolves to two elements and strict mode rejects it.
   shellResults: '.stf-shell pre.shell-results:not(.shell-results-empty)',
-  version: '.stf-menu .version-text'
+  version: '.stf-menu .version-text',
+  currentUser: '.stf-current-user',
+  logout: '.stf-logout a'
 }
 
 async function enterNickname(page) {

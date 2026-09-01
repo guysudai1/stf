@@ -25,6 +25,8 @@ The helper waits for its internal services and serves the UI at
 to create a local session. Set `STF_LOG_DIR` to choose the log directory.
 Binding port 80 may require the usual host permission for privileged ports; use
 `--port 7100` (or `STF_LOCAL_PORT=7100`) for an unprivileged development run.
+The active nickname is shown in the STF header; select `Logout` there to clear
+the guest session and return to nickname entry.
 
 Local runs preserve device state between Usage sessions. Device cleanup is not
 part of the provider or device lifecycle, so APKs and other device changes

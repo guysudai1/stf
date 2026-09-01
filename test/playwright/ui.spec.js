@@ -45,6 +45,16 @@ test.describe('STF web UI', function() {
       ).toHaveText(h.USER_NAME)
     })
 
+  test('[check:playwright_ui] the nickname is shown and logout returns to entry',
+    async function({page}) {
+      await h.enterNickname(page)
+
+      await expect(page.locator(h.SEL.currentUser)).toHaveText(h.USER_NAME)
+      await page.click(h.SEL.logout)
+      await page.waitForURL(/\/auth\/guest\/$/, {timeout: 30000})
+      await expect(page.locator(h.SEL.nicknameForm)).toBeVisible()
+    })
+
   test('[check:playwright_ui] the device list search box filters tiles',
     async function({page}) {
       await h.enterNickname(page)

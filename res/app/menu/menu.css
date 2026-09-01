@@ -81,6 +81,21 @@
   vertical-align: middle;
 }
 
+.stf-menu .stf-current-user {
+  color: #777777;
+  font-size: 14px;
+  line-height: 44px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.stf-menu .stf-logout a {
+  padding: 0 10px !important;
+  line-height: 44px;
+  color: #777777;
+  font-size: 14px;
+}
+
 .stf-menu .information-level {
   background-color: #5bc0df;
 }
@@ -120,4 +135,3 @@
    left: -100%;
   }
 }
-
