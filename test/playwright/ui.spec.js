@@ -85,4 +85,30 @@ test.describe('STF web UI', function() {
         page.locator('[ng-controller="SettingsCtrl"] .heading-for-tabs')
       ).toBeVisible()
     })
+
+  test('[check:playwright_ui] the device timeout setting persists and resets',
+    async function({page}) {
+      await h.enterNickname(page)
+
+      const timeoutInput = page.locator('[data-testid="device-timeout-input"]')
+      const timeoutReset = page.locator('[data-testid="device-timeout-reset"]')
+
+      await page.goto('/#!/settings')
+      await expect(timeoutInput).toBeVisible({timeout: 30000})
+      await expect(timeoutInput).toBeEnabled()
+      await expect(timeoutInput).toBeEditable()
+      await expect(timeoutReset).toBeVisible()
+      await expect(timeoutReset).toBeEnabled()
+
+      await timeoutInput.fill('30')
+      await expect(timeoutInput).toHaveValue('30')
+
+      await page.goto('/#!/devices')
+      await expect(page.locator(h.SEL.deviceList)).toBeVisible({timeout: 30000})
+      await page.goto('/#!/settings')
+      await expect(timeoutInput).toHaveValue('30')
+
+      await timeoutReset.click()
+      await expect(timeoutInput).toHaveValue('')
+    })
 })
