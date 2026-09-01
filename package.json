@@ -34,6 +34,8 @@
     "local": "node lib/cli/index.js local",
     "lint": "gulp lint",
     "test:unit": "mocha --reporter spec --recursive test/util test/wire",
+    "test:agent-board": "node --test agent-board/test/*.test.js",
+    "agent-board": "node agent-board/cli.js",
     "test:component": "karma start res/test/karma.ci.conf.js --single-run"
   },
   "dependencies": {
