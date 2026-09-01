@@ -40,6 +40,9 @@ Use `SIMPLEX_CHAT_COMMAND` to select the CLI binary and
 misconfigured. No invitation, contact acceptance, or security-code verification
 is automated by this integration.
 
+For unattended Codex workers, set `AGENT_CODEX_ARGS_JSON='["--full-auto"]'`
+explicitly; otherwise the Codex CLI keeps its normal approval behavior.
+
 ## Mission API
 
 Create a demo mission:

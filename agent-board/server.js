@@ -68,6 +68,17 @@ function createAgentBoard(options) {
   var store = options.store || new missionStore.MissionStore({filePath: options.filePath})
   var codexOptions = Object.assign({cwd: process.env.AGENT_WORKDIR || process.cwd()},
     options.codex || {})
+  if (!codexOptions.extraArgs && process.env.AGENT_CODEX_ARGS_JSON) {
+    try {
+      codexOptions.extraArgs = JSON.parse(process.env.AGENT_CODEX_ARGS_JSON)
+      if (!Array.isArray(codexOptions.extraArgs)) {
+        throw new Error('not an array')
+      }
+    }
+    catch (err) {
+      throw new Error('AGENT_CODEX_ARGS_JSON must be a JSON array')
+    }
+  }
   var configuredAdapters = Object.assign({
     demo: adapters.createDemoWorker(options.demo),
     codex: adapters.createCodexAdapter(codexOptions)

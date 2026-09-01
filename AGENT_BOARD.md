@@ -19,6 +19,8 @@ the state file.
 Set `AGENT_RUNNER=codex` to make new UI/API missions use the local Codex CLI.
 Use a dedicated checkout as `AGENT_WORKDIR` when running real agents. Real
 execution is opt-in because mission prompts can contain arbitrary instructions.
+For unattended execution, explicitly choose the Codex flags, for example
+`AGENT_CODEX_ARGS_JSON='["--full-auto"]'`.
 
 ## SimpleX Chat
 
