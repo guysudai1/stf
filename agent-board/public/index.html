@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101827">
+    <title>Mission Control | Agent board</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to mission board</a>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Mission Control home">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>mission<span class="brand-accent">control</span></span>
+        </a>
+        <div class="topbar-actions">
+          <div class="connection-status" id="connection-status" role="status" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="connection-label">Connecting…</span>
+          </div>
+          <button class="icon-button" id="refresh-button" type="button" title="Refresh missions and agents" aria-label="Refresh missions and agents">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11a8.1 8.1 0 0 0-14.7-3.8L3 10m0 0V5m0 5h5M4 13a8.1 8.1 0 0 0 14.7 3.8L21 14m0 0v5m0-5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </button>
+          <button class="button button-primary button-small" id="open-mission-button" type="button">
+            <span aria-hidden="true">+</span> New mission
+          </button>
+        </div>
+      </header>
+
+      <main id="main-content" class="page-content">
+        <section class="hero" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">LOCAL AGENT BOARD <span class="eyebrow-line" aria-hidden="true"></span> <span id="sync-copy">Ready for your next mission</span></p>
+            <h1 id="page-title">Make progress <em>visible.</em></h1>
+            <p class="hero-copy">Drop work into the queue and let your agent crew pick up the next best mission.</p>
+          </div>
+          <div class="hero-orbit" aria-hidden="true">
+            <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><span class="orbit-center">✦</span>
+          </div>
+        </section>
+
+        <section class="stats-grid" aria-label="Mission overview">
+          <div class="stat-card stat-card-featured">
+            <span class="stat-label">In motion</span>
+            <strong class="stat-value" id="stat-active">—</strong>
+            <span class="stat-footnote"><span class="stat-pulse" aria-hidden="true"></span> Active missions</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Up next</span>
+            <strong class="stat-value" id="stat-queued">—</strong>
+            <span class="stat-footnote">Waiting to be claimed</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Agent crew</span>
+            <strong class="stat-value" id="stat-agents">—</strong>
+            <span class="stat-footnote" id="stat-agents-footnote">Available now</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Completed</span>
+            <strong class="stat-value" id="stat-completed">—</strong>
+            <span class="stat-footnote">Missions shipped</span>
+          </div>
+        </section>
+
+        <div class="workspace-grid">
+          <section class="board-section" aria-labelledby="board-title" aria-busy="true" id="board-section">
+            <div class="section-heading">
+              <div>
+                <p class="section-kicker">Mission flow</p>
+                <h2 id="board-title">The board</h2>
+              </div>
+              <div class="board-tools">
+                <label class="search-field">
+                  <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+                  <span class="sr-only">Search missions</span>
+                  <input id="mission-search" type="search" placeholder="Search missions" autocomplete="off">
+                </label>
+                <label class="select-field">
+                  <span class="sr-only">Filter missions</span>
+                  <select id="mission-filter">
+                    <option value="all">All missions</option>
+                    <option value="queued">Queued</option>
+                    <option value="active">In motion</option>
+                    <option value="blocked">Needs attention</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="board" id="mission-board" aria-live="polite">
+              <div class="kanban-column" data-column="queued">
+                <div class="column-heading">
+                  <div class="column-title"><span class="column-marker marker-queued" aria-hidden="true"></span><h3>Queued</h3><span class="column-count" data-count-for="queued">0</span></div>
+                  <span class="column-hint">Ready for pickup</span>
+                </div>
+                <div class="card-stack" data-stack-for="queued"></div>
+              </div>
+              <div class="kanban-column" data-column="active">
+                <div class="column-heading">
+                  <div class="column-title"><span class="column-marker marker-active" aria-hidden="true"></span><h3>In motion</h3><span class="column-count" data-count-for="active">0</span></div>
+                  <span class="column-hint">Agents are on it</span>
+                </div>
+                <div class="card-stack" data-stack-for="active"></div>
+              </div>
+              <div class="kanban-column" data-column="blocked">
+                <div class="column-heading">
+                  <div class="column-title"><span class="column-marker marker-blocked" aria-hidden="true"></span><h3>Needs attention</h3><span class="column-count" data-count-for="blocked">0</span></div>
+                  <span class="column-hint">Waiting on a nudge</span>
+                </div>
+                <div class="card-stack" data-stack-for="blocked"></div>
+              </div>
+              <div class="kanban-column" data-column="completed">
+                <div class="column-heading">
+                  <div class="column-title"><span class="column-marker marker-completed" aria-hidden="true"></span><h3>Completed</h3><span class="column-count" data-count-for="completed">0</span></div>
+                  <span class="column-hint">Shipped missions</span>
+                </div>
+                <div class="card-stack" data-stack-for="completed"></div>
+              </div>
+            </div>
+          </section>
+
+          <aside class="agents-panel" aria-labelledby="agents-title">
+            <div class="section-heading agents-heading">
+              <div>
+                <p class="section-kicker">Your crew</p>
+                <h2 id="agents-title">Agents <span class="heading-count" id="agent-count">0</span></h2>
+              </div>
+              <span class="live-label"><span class="live-dot" aria-hidden="true"></span> Live</span>
+            </div>
+            <p class="panel-copy">See who is available and pause a worker when you need to.</p>
+            <div class="agent-list" id="agent-list" aria-live="polite"></div>
+            <div class="crew-footer">
+              <span class="crew-legend"><span class="legend-dot legend-online"></span> Online</span>
+              <span class="crew-legend"><span class="legend-dot legend-away"></span> Away</span>
+              <span class="crew-legend"><span class="legend-dot legend-offline"></span> Offline</span>
+            </div>
+          </aside>
+        </div>
+
+        <p class="last-updated" id="last-updated" role="status">Waiting for the first sync…</p>
+      </main>
+    </div>
+
+    <dialog class="mission-dialog" id="mission-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-header">
+        <div>
+          <p class="section-kicker">Queue a mission</p>
+          <h2 id="dialog-title">What should the crew tackle?</h2>
+        </div>
+        <button class="icon-button dialog-close" id="close-dialog-button" type="button" aria-label="Close new mission form">×</button>
+      </div>
+      <form id="mission-form">
+        <label class="form-label" for="mission-title">Mission title <span aria-hidden="true">*</span>
+          <input id="mission-title" name="title" type="text" maxlength="120" placeholder="e.g. Check the onboarding flow" required>
+        </label>
+        <label class="form-label" for="mission-description">Brief <span class="optional">Optional</span>
+          <textarea id="mission-description" name="description" maxlength="600" rows="4" placeholder="Give the agent enough context to make a good first move."></textarea>
+        </label>
+        <fieldset class="priority-fieldset">
+          <legend>Priority</legend>
+          <div class="priority-options">
+            <label><input type="radio" name="priority" value="low"><span>Low</span></label>
+            <label><input type="radio" name="priority" value="medium" checked><span>Medium</span></label>
+            <label><input type="radio" name="priority" value="high"><span>High</span></label>
+          </div>
+        </fieldset>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-quiet" id="cancel-dialog-button" type="button">Cancel</button>
+          <button class="button button-primary" type="submit"><span aria-hidden="true">+</span> Add to queue</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <noscript><div class="no-script">Mission Control needs JavaScript enabled to load missions and connect to agents.</div></noscript>
+  </body>
+</html>
