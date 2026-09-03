@@ -1,0 +1,284 @@
+/*
+ * STF dark theme. The class is applied to the app body by the theme toggle
+ * and the setting is persisted with the authenticated user's preferences.
+ */
+
+body.bg-1.stf-dark-theme {
+  --stf-dark-bg: #121820;
+  --stf-dark-surface: #1b2430;
+  --stf-dark-surface-raised: #242f3c;
+  --stf-dark-border: #3a4858;
+  --stf-dark-text: #e6edf3;
+  --stf-dark-muted: #a8b3bf;
+  --stf-dark-link: #65b7ff;
+  color-scheme: dark;
+  background: var(--stf-dark-bg);
+  color: var(--stf-dark-text);
+}
+
+body.bg-1.stf-dark-theme,
+.stf-dark-theme .pane-center,
+.stf-dark-theme .pane-top,
+.stf-dark-theme .main-content {
+  background-color: var(--stf-dark-bg);
+}
+
+.stf-dark-theme a,
+.stf-dark-theme .text-primary,
+.stf-dark-theme a.active {
+  color: var(--stf-dark-link) !important;
+}
+
+.stf-dark-theme a:hover,
+.stf-dark-theme .panel-title:hover {
+  color: #9bd2ff;
+}
+
+.stf-dark-theme h1,
+.stf-dark-theme h2,
+.stf-dark-theme h3,
+.stf-dark-theme h4,
+.stf-dark-theme h5,
+.stf-dark-theme h6,
+.stf-dark-theme label,
+.stf-dark-theme .help-block,
+.stf-dark-theme .control-label,
+.stf-dark-theme .text,
+.stf-dark-theme .panel-title,
+.stf-dark-theme .table,
+.stf-dark-theme .table > thead > tr > th,
+.stf-dark-theme .table > tbody > tr > td,
+.stf-dark-theme .table > tbody > tr > th {
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .navbar,
+.stf-dark-theme .widget-container,
+.stf-dark-theme .modal-content,
+.stf-dark-theme .popover,
+.stf-dark-theme .dropdown-menu {
+  background: var(--stf-dark-surface);
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .stf-menu .stf-nav > li > a,
+.stf-dark-theme .stf-menu .version-text,
+.stf-dark-theme .stf-menu .stf-current-user,
+.stf-dark-theme .stf-menu .stf-logout a {
+  color: var(--stf-dark-muted);
+}
+
+.stf-dark-theme .stf-menu .stf-nav > li > a.current {
+  color: var(--stf-dark-link);
+}
+
+.stf-dark-theme .stf-menu .stf-theme-toggle .btn {
+  color: var(--stf-dark-muted);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .stf-menu .stf-theme-toggle .btn:hover {
+  color: var(--stf-dark-text);
+  background: var(--stf-dark-surface-raised);
+  border-color: var(--stf-dark-link);
+}
+
+.stf-dark-theme .well,
+.stf-dark-theme .panel-heading,
+.stf-dark-theme .panel-heading .panel-toggle,
+.stf-dark-theme .modal-header,
+.stf-dark-theme .stf-drawer,
+.stf-dark-theme .stf-activity,
+.stf-dark-theme .devices-not-available {
+  background: var(--stf-dark-surface-raised);
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .widget-container .heading,
+.stf-dark-theme .widget-container .tabs {
+  background: var(--stf-dark-surface-raised);
+  color: var(--stf-dark-text);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .btn-default,
+.stf-dark-theme .btn-default-outline:hover,
+.stf-dark-theme .btn-default-outline.active {
+  color: var(--stf-dark-text);
+  background: var(--stf-dark-surface-raised);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .btn-default-outline {
+  color: var(--stf-dark-muted);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .btn-default:hover,
+.stf-dark-theme .btn-default-outline:hover,
+.stf-dark-theme .btn-default-outline.active {
+  background: var(--stf-dark-border);
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .form-control,
+.stf-dark-theme input,
+.stf-dark-theme select,
+.stf-dark-theme textarea {
+  color: var(--stf-dark-text);
+  background-color: var(--stf-dark-surface);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .form-control:focus,
+.stf-dark-theme input:focus,
+.stf-dark-theme select:focus,
+.stf-dark-theme textarea:focus {
+  background-color: var(--stf-dark-surface-raised);
+  border-color: var(--stf-dark-link);
+}
+
+.stf-dark-theme .form-control::placeholder,
+.stf-dark-theme input::placeholder,
+.stf-dark-theme textarea::placeholder {
+  color: var(--stf-dark-muted);
+}
+
+.stf-dark-theme input:-webkit-autofill,
+.stf-dark-theme textarea:-webkit-autofill,
+.stf-dark-theme select:-webkit-autofill {
+  -webkit-text-fill-color: var(--stf-dark-text) !important;
+  -webkit-box-shadow: 0 0 0 200px var(--stf-dark-surface) inset !important;
+  box-shadow: 0 0 0 200px var(--stf-dark-surface) inset !important;
+}
+
+.stf-dark-theme .table > thead > tr > th,
+.stf-dark-theme .table > tbody > tr > td,
+.stf-dark-theme .table > tbody > tr > th,
+.stf-dark-theme .table > tfoot > tr > td,
+.stf-dark-theme .table > tfoot > tr > th,
+.stf-dark-theme .ng-table-responsive tr,
+.stf-dark-theme .stf-group-list .user-line,
+.stf-dark-theme .stf-group-list .device-line,
+.stf-dark-theme .ng-table th.sortable.sort-desc,
+.stf-dark-theme .ng-table th.sortable.sort-asc {
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .table-striped > tbody > tr:nth-of-type(odd),
+.stf-dark-theme .ng-table th.sortable.sort-desc,
+.stf-dark-theme .ng-table th.sortable.sort-asc {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.stf-dark-theme .table-hover > tbody > tr:hover,
+.stf-dark-theme .list-group-item a:hover,
+.stf-dark-theme ul.devices-icon-view li:hover {
+  background-color: var(--stf-dark-surface-raised);
+}
+
+.stf-dark-theme .ng-table th.sortable div:after,
+.stf-dark-theme .ng-table th.sortable div:before {
+  border-color: var(--stf-dark-muted) transparent;
+}
+
+.stf-dark-theme .ng-table th.sortable div:before,
+.stf-dark-theme .ng-table th.sortable div:hover:before,
+.stf-dark-theme .ng-table th.sortable.sort-desc div:after {
+  border-top-color: var(--stf-dark-muted);
+}
+
+.stf-dark-theme .list-group,
+.stf-dark-theme .list-group-item,
+.stf-dark-theme .list-group-item p {
+  background: var(--stf-dark-surface);
+  color: var(--stf-dark-text);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .list-group-item a {
+  color: var(--stf-dark-muted);
+}
+
+.stf-dark-theme .dropdown-menu {
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .dropdown-menu > li > a {
+  color: var(--stf-dark-muted);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .dropdown-menu > li > a:hover,
+.stf-dark-theme .dropdown-menu > li > a.current {
+  background: transparent;
+  color: var(--stf-dark-link);
+}
+
+.stf-dark-theme .modal-footer,
+.stf-dark-theme .stf-modal .modal-body,
+.stf-dark-theme .stf-modal .modal-footer,
+.stf-dark-theme .stf-lightbox-image .modal-body {
+  background: var(--stf-dark-surface);
+  color: var(--stf-dark-text);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .popover-title {
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .badge,
+.stf-dark-theme .progress {
+  background-color: var(--stf-dark-surface-raised);
+}
+
+.stf-dark-theme .stf-device-list .line,
+.stf-dark-theme .stf-device-list .device-product,
+.stf-dark-theme .stf-group-list .group-device-id,
+.stf-dark-theme .stf-group-list .group-user-id,
+.stf-dark-theme .group-stats .text,
+.stf-dark-theme .stf-device-control .stf-vnc-device-name,
+.stf-dark-theme .nothing-to-show {
+  color: var(--stf-dark-muted);
+}
+
+.stf-dark-theme ul.devices-icon-view li {
+  background: var(--stf-dark-surface);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .stf-vnc-navbar,
+.stf-dark-theme .stf-upload .drop-area,
+.stf-dark-theme .stf-logcat-table {
+  background: var(--stf-dark-surface);
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .stf-vnc-bottom .btn-primary:hover,
+.stf-dark-theme .stf-vnc-bottom .btn-primary:active {
+  background: var(--stf-dark-surface-raised);
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .stf-drawer-bar {
+  background: var(--stf-dark-border);
+}
+
+.stf-dark-theme .ace_editor {
+  background: var(--stf-dark-surface);
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .ace_gutter {
+  background: var(--stf-dark-surface-raised);
+  color: var(--stf-dark-muted);
+}
+
+.stf-dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--stf-dark-border);
+}
+
+.stf-dark-theme ::-webkit-scrollbar-track {
+  background: var(--stf-dark-bg);
+}

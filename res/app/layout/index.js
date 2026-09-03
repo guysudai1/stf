@@ -3,6 +3,7 @@ require('nine-bootstrap')
 require('./cursor.css')
 require('./small.css')
 require('./stf-styles.css')
+require('./dark-theme.css')
 
 module.exports = angular.module('layout', [
   require('stf/landscape').name,

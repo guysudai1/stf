@@ -113,4 +113,23 @@ test.describe('STF web UI', function() {
       await timeoutReset.click()
       await expect(timeoutInput).toHaveValue('')
     })
+
+  test('[check:playwright_ui] the dark theme toggle persists',
+    async function({page}) {
+      await h.enterNickname(page)
+
+      const themeToggle = page.locator('[data-testid="theme-toggle"]')
+      const body = page.locator('body')
+
+      await expect(themeToggle).toBeVisible()
+      await themeToggle.click()
+      await expect(body).toHaveClass(/stf-dark-theme/)
+
+      await page.reload()
+      await expect(themeToggle).toBeVisible()
+      await expect(body).toHaveClass(/stf-dark-theme/)
+
+      await themeToggle.click()
+      await expect(body).not.toHaveClass(/stf-dark-theme/)
+    })
 })
