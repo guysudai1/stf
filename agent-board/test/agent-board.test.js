@@ -3,6 +3,8 @@ var fs = require('fs')
 var os = require('os')
 var path = require('path')
 var http = require('http')
+var EventEmitter = require('events')
+var WebSocket = require('ws')
 var test = require('node:test')
 var board = require('..')
 
@@ -93,10 +95,122 @@ test('SimpleX bridge accepts commands only from the configured contact', functio
     type: 'mission', title: 'Build tests', prompt: 'run the unit suite'
   })
   assert.deepEqual(board.parseIncomingLine('alice: /status', 'alice'), {type: 'status'})
+  assert.deepEqual(board.parseIncomingLine('alice: /help', 'alice'), {type: 'help'})
   assert.equal(board.parseIncomingLine('mallory: /mission Exfil :: do it', 'alice'), null)
   assert.deepEqual(board.parseIncomingLine('alice: hello there', 'alice'), {
     type: 'message', message: 'hello there'
   })
+})
+
+test('SimpleX WebSocket events normalize authorized text and reject duplicates upstream', function() {
+  var event = {resp: {type: 'newChatItems', chatItems: [{
+    chatDir: 'directRcv',
+    contact: {contactId: 7, localDisplayName: 'Alice'},
+    chatItem: {chatItemId: 42, content: {type: 'rcvMsgContent',
+      msgContent: {type: 'text', text: '/mission Build tests :: run the unit suite'}}}
+  }, {
+    chatDir: 'directRcv',
+    contact: {contactId: 8, localDisplayName: 'Mallory'},
+    chatItem: {chatItemId: 43, content: {type: 'rcvMsgContent',
+      msgContent: {type: 'text', text: '/mission Exfil :: do it'}}}
+  }]}}
+  assert.deepEqual(board.normalizeIncomingEvent(event, 'Alice', 7), [{
+    type: 'mission', title: 'Build tests', prompt: 'run the unit suite',
+    messageId: 42, contactId: 7, sender: 'Alice'
+  }])
+  assert.deepEqual(board.normalizeIncomingEvent(event, 'Alice'), [{
+    type: 'mission', title: 'Build tests', prompt: 'run the unit suite',
+    messageId: 42, contactId: 7, sender: 'Alice'
+  }])
+})
+
+test('SimpleX bridge receives realtime events and correlates outbound sends', async function() {
+  var websocketServer = new WebSocket.Server({host: '127.0.0.1', port: 0})
+  await new Promise(function(resolve) { websocketServer.once('listening', resolve) })
+  var sentCommand
+  websocketServer.on('connection', function(socket) {
+    socket.on('message', function(raw) {
+      var request = JSON.parse(raw.toString())
+      sentCommand = request.cmd
+      socket.send(JSON.stringify({corrId: request.corrId, resp: {type: 'cmdOk'}}))
+    })
+  })
+  var child = new EventEmitter()
+  child.stdout = new EventEmitter()
+  child.stderr = new EventEmitter()
+  child.kill = function() {}
+  var bridge = new board.SimplexBridge({enabled: true, contact: 'Alice', allowedSender: 'Alice',
+    contactId: 7, port: websocketServer.address().port, resolveContact: false,
+    childProcess: {spawn: function() { return child }}})
+  var connected = new Promise(function(resolve) { bridge.once('status', function(status) {
+    if (status.status === 'connected') resolve()
+  }) })
+  await bridge.start()
+  await connected
+  var received = new Promise(function(resolve) { bridge.once('mission', resolve) })
+  bridge._onMessage(JSON.stringify({resp: {type: 'newChatItems', chatItems: [{
+    chatDir: 'directRcv', contact: {contactId: 7, localDisplayName: 'Alice'},
+    chatItem: {chatItemId: 99, content: {type: 'rcvMsgContent',
+      msgContent: {type: 'text', text: '/mission Live :: test'}}}
+  }]}}))
+  assert.equal((await received).title, 'Live')
+  await bridge.send('ACK')
+  assert.equal(sentCommand, '/_send @7 text ACK')
+  await bridge.close()
+  await new Promise(function(resolve) { websocketServer.close(resolve) })
+})
+
+test('SimpleX bridge reconnects after the WebSocket is closed', async function() {
+  var websocketServer = new WebSocket.Server({host: '127.0.0.1', port: 0})
+  await new Promise(function(resolve) { websocketServer.once('listening', resolve) })
+  var connections = 0
+  websocketServer.on('connection', function(socket) {
+    connections += 1
+    if (connections === 1) setTimeout(function() { socket.close() }, 10)
+  })
+  var child = new EventEmitter()
+  child.stdout = new EventEmitter()
+  child.stderr = new EventEmitter()
+  child.kill = function() {}
+  var bridge = new board.SimplexBridge({enabled: true, contact: 'Alice', contactId: 7,
+    port: websocketServer.address().port, resolveContact: false, reconnectMin: 10,
+    reconnectMax: 20, childProcess: {spawn: function() { return child }}})
+  var connected = 0
+  bridge.on('status', function(status) {
+    if (status.status === 'connected') connected += 1
+  })
+  await bridge.start()
+  await new Promise(function(resolve, reject) {
+    var timer = setInterval(function() {
+      if (connected >= 2) {
+        clearInterval(timer)
+        resolve()
+      }
+    }, 10)
+    setTimeout(function() {
+      clearInterval(timer)
+      reject(new Error('SimpleX bridge did not reconnect'))
+    }, 1000)
+  })
+  assert.ok(connections >= 2)
+  await bridge.close()
+  await new Promise(function(resolve) { websocketServer.close(resolve) })
+})
+
+test('agent board responds to the SimpleX /help command', async function() {
+  var temporary = temporaryFile()
+  var simplex = new EventEmitter()
+  var sent = []
+  simplex.start = function() { return Promise.resolve() }
+  simplex.close = function() { return Promise.resolve() }
+  simplex.status = function() { return {enabled: true, status: 'connected'} }
+  simplex.send = function(message) { sent.push(message); return Promise.resolve() }
+  var application = board.createAgentBoard({filePath: temporary.filePath, pollInterval: 0, simplex: simplex})
+  await application.start()
+  simplex.emit('help')
+  await new Promise(function(resolve) { setImmediate(resolve) })
+  assert.equal(sent[0], 'ACK: available commands: /mission Title :: detailed prompt | /status | /help')
+  await application.close()
 })
 
 test('scheduler cancellation prevents an active mission from being marked failed', async function() {

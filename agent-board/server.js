@@ -115,6 +115,9 @@ function createAgentBoard(options) {
   simplex.on('error', function(err) {
     broadcast('integration', {name: 'simplex', status: 'error', error: err.message})
   })
+  simplex.on('status', function(status) {
+    broadcast('integration', {name: 'simplex', status: status.status, error: status.error || null})
+  })
   simplex.on('mission', function(input) {
     store.create({title: input.title, prompt: input.prompt,
       adapter: process.env.SIMPLEX_CHAT_MISSION_ADAPTER || 'codex'})
@@ -130,6 +133,10 @@ function createAgentBoard(options) {
       }).join('; ')
       return simplex.send(summary || 'No missions on the board')
     }).catch(function() {})
+  })
+  simplex.on('help', function() {
+    simplex.send('ACK: available commands: /mission Title :: detailed prompt | /status | /help')
+      .catch(function() {})
   })
   simplex.on('message', function() {
     simplex.send('ACK: received. Use /mission Title :: detailed prompt or /status')

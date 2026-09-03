@@ -29,19 +29,19 @@ npm run agent-board
 ```
 
 The local `simplex-chat` process must already have a profile and an established,
-manually verified contact. Send `/mission Title :: detailed prompt` to queue a
-mission, or `/status` to request a summary. Only the exact configured sender is
-accepted. The board sends queued, started, completed, failed, and cancelled
-status messages back to `@alice`.
+manually verified contact. The bridge starts SimpleX's localhost WebSocket bot
+API and receives structured `newChatItems` events in realtime. Send
+`/mission Title :: detailed prompt` to queue a mission, `/status` to request a
+summary, or `/help` to list the board commands. Only the exact configured sender
+is accepted. The board sends status messages back to the resolved contact.
 
 Use `SIMPLEX_CHAT_COMMAND` to select the CLI binary and
 `SIMPLEX_CHAT_ARGS_JSON='["-d","/path/to/profile"]'` for startup arguments.
-`GET /api/integrations` reports whether the bridge is disabled, connected, or
-misconfigured. No invitation, contact acceptance, or security-code verification
-is automated by this integration.
-
-The bridge allocates a pseudo-terminal through `script`, because the SimpleX
-terminal client expects a terminal even when it is controlled by the board.
+Use `SIMPLEX_CHAT_PORT` to change the local WebSocket port (default `5225`) or
+`SIMPLEX_CHAT_CONTACT_ID` to pin the numeric contact ID. The bridge resolves the
+configured display name when no contact ID is supplied. `GET /api/integrations`
+reports disabled, starting, connected, reconnecting, error, or stopped state.
+No invitation, contact acceptance, or security-code verification is automated.
 
 For unattended Codex workers, set `AGENT_CODEX_ARGS_JSON='["--full-auto"]'`
 explicitly; otherwise the Codex CLI keeps its normal approval behavior.

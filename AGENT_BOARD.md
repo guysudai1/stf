@@ -36,14 +36,20 @@ npm run agent-board
 
 The local `simplex-chat` profile must already exist and the contact must have
 been admitted and security-code verified by the operator. Send
-`/mission Title :: detailed prompt` to queue a mission or `/status` to request
-a summary. Only the exact configured sender is accepted. Board updates are
+`/mission Title :: detailed prompt` to queue a mission, `/status` to request a
+summary, or `/help` to list the board commands. Only the exact configured sender is accepted. Board updates are
 sent back to `@alice`; invitations, contact admission, and identity
 verification are never automated.
 
 Set `SIMPLEX_CHAT_COMMAND` for a non-default binary and
 `SIMPLEX_CHAT_ARGS_JSON='["-d","/path/to/profile"]'` for CLI arguments.
-`GET /api/integrations` exposes the bridge status.
+The bridge starts the CLI's localhost WebSocket bot API (`SIMPLEX_CHAT_PORT`,
+default `5225`) and consumes structured `newChatItems` events. Set
+`SIMPLEX_CHAT_CONTACT_ID` to pin the numeric contact ID; otherwise the bridge
+resolves the exact configured sender name through the SimpleX contacts API.
+`GET /api/integrations` exposes starting, connected, reconnecting, error, and
+stopped bridge states. Outbound commands use correlated WebSocket requests and
+are queued while the transport reconnects.
 
 ## Tests
 
