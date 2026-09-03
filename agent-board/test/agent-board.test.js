@@ -95,6 +95,7 @@ test('SimpleX bridge accepts commands only from the configured contact', functio
     type: 'mission', title: 'Build tests', prompt: 'run the unit suite'
   })
   assert.deepEqual(board.parseIncomingLine('alice: /status', 'alice'), {type: 'status'})
+  assert.deepEqual(board.parseIncomingLine('<alice> /status', 'alice'), {type: 'status'})
   assert.deepEqual(board.parseIncomingLine('alice: /help', 'alice'), {type: 'help'})
   assert.equal(board.parseIncomingLine('mallory: /mission Exfil :: do it', 'alice'), null)
   assert.deepEqual(board.parseIncomingLine('alice: hello there', 'alice'), {

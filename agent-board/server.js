@@ -131,7 +131,7 @@ function createAgentBoard(options) {
       var summary = missions.map(function(mission) {
         return mission.id + ' ' + mission.status + ' ' + mission.title
       }).join('; ')
-      return simplex.send(summary || 'No missions on the board')
+      return simplex.send('ACK: status request received. ' + (summary || 'No missions on the board'))
     }).catch(function() {})
   })
   simplex.on('help', function() {
