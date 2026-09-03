@@ -33,6 +33,34 @@ Binding port 80 may require the usual host permission for privileged ports; use
 The active nickname is shown in the STF header; select `Logout` there to clear
 the guest session and return to nickname entry.
 
+## Discover Wi-Fi ADB devices
+
+The provider can probe one IPv4 subnet for ADB-over-TCP endpoints, connect its
+configured ADB server to responsive ports, and repeat the scan. For example:
+
+```bash
+stf local \
+  --remote-adb-subnet 192.168.1.0/24 \
+  --remote-adb-ports 5555,9999 \
+  --remote-adb-scan-interval 300
+```
+
+The same settings are available as `STF_LOCAL_REMOTE_ADB_SUBNET`,
+`STF_LOCAL_REMOTE_ADB_PORTS`, and `STF_LOCAL_REMOTE_ADB_SCAN_INTERVAL` (or
+the corresponding `STF_PROVIDER_*` variables for a standalone provider).
+For a standalone provider, pass the same flags to `stf provider` together with
+its usual `--connect-sub`, `--connect-push`, and `--storage-url` settings.
+Ports are deduplicated, ordinary network and broadcast addresses are skipped,
+and a scan is limited to 4,096 address-port combinations. A configured subnet
+implicitly enables `--allow-remote`; this is logged by the provider because it
+changes which ADB devices STF accepts.
+
+The provider/container must have a route to the Wi-Fi subnet and TCP access to
+each selected port. With Docker, use the appropriate host/network mode and
+firewall rules; a container-local route or an ADB server in another network is
+not sufficient. ADB-over-TCP is unauthenticated on many devices, so never
+expose these ports to an untrusted network.
+
 Local runs preserve device state between Usage sessions. Device cleanup is not
 part of the provider or device lifecycle, so APKs and other device changes
 remain installed after releasing and reclaiming a device.
