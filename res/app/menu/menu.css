@@ -96,6 +96,42 @@
   font-size: 14px;
 }
 
+.stf-menu .stf-theme-toggle .btn {
+  line-height: 28px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.stf-menu .stf-theme-toggle .theme-label,
+.stf-theme-toggle-global .theme-label {
+  margin-left: 6px;
+}
+
+.stf-theme-toggle-global {
+  display: none;
+  position: fixed;
+  top: 6px;
+  right: 10px;
+  z-index: 1100;
+  line-height: 28px;
+  padding: 0 10px;
+  white-space: nowrap;
+  color: #777777;
+  background: transparent;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .stf-menu .stf-theme-toggle {
+    display: none;
+  }
+
+  .stf-theme-toggle-global {
+    display: block;
+  }
+}
+
 .stf-menu .information-level {
   background-color: #5bc0df;
 }

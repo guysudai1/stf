@@ -17,6 +17,18 @@ html(ng-app='app')
 
     title(ng-bind='pageTitle ? "STF - " + pageTitle : "STF"') STF
   body(ng-cloak, ng-class="{'stf-dark-theme': $root.darkTheme}").bg-1.fill-height.unselectable
+    button.stf-theme-toggle-global(
+      type='button'
+      ng-controller='ThemeCtrl'
+      ng-click='toggleTheme()'
+      data-testid='responsive-theme-toggle'
+      ng-attr-aria-label='{{$root.darkTheme ? "Switch to light theme" : "Switch to dark theme"}}'
+      ng-attr-title='{{$root.darkTheme ? "Switch to light theme" : "Switch to dark theme"}}'
+      ng-attr-aria-pressed='{{$root.darkTheme}}')
+      i.fa.fa-moon-o(ng-if='!$root.darkTheme')
+      i.fa.fa-sun-o(ng-if='$root.darkTheme')
+      span.theme-label(ng-if='!$root.darkTheme', translate) Dark theme
+      span.theme-label(ng-if='$root.darkTheme', translate) Light theme
     div(ng-controller='LayoutCtrl', basic-mode, admin-mode, standalone, landscape).fill-height
       .pane-top.fill-height(fa-pane)
         .pane-top-bar(fa-pane, pane-id='menu', pane-anchor='north',

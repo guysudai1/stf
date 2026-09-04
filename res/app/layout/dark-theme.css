@@ -77,7 +77,19 @@ body.bg-1.stf-dark-theme,
   border-color: var(--stf-dark-border);
 }
 
+.stf-dark-theme .stf-theme-toggle-global {
+  color: var(--stf-dark-muted);
+  background: var(--stf-dark-surface);
+  border-color: var(--stf-dark-border);
+}
+
 .stf-dark-theme .stf-menu .stf-theme-toggle .btn:hover {
+  color: var(--stf-dark-text);
+  background: var(--stf-dark-surface-raised);
+  border-color: var(--stf-dark-link);
+}
+
+.stf-dark-theme .stf-theme-toggle-global:hover {
   color: var(--stf-dark-text);
   background: var(--stf-dark-surface-raised);
   border-color: var(--stf-dark-link);

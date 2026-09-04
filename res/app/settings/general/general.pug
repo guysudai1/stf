@@ -14,6 +14,22 @@
     div(ng-include='"settings/general/email-address-separator/email-address-separator.pug"')
  .row.stf-general
   .col-md-3
+    .widget-container.fluid-height
+      .heading
+        i.fa.fa-adjust
+        span(translate) Appearance
+      .widget-content.padded
+        button.btn.btn-default-outline(
+          type='button'
+          ng-click='toggleTheme()'
+          data-testid='settings-theme-toggle'
+          ng-attr-aria-label='{{$root.darkTheme ? "Switch to light theme" : "Switch to dark theme"}}'
+          ng-attr-aria-pressed='{{$root.darkTheme}}')
+          i.fa.fa-moon-o(ng-if='!$root.darkTheme')
+          i.fa.fa-sun-o(ng-if='$root.darkTheme')
+          span(ng-if='!$root.darkTheme', translate) Dark theme
+          span(ng-if='$root.darkTheme', translate) Light theme
+  .col-md-3
     div(ng-include='"settings/general/device-timeout/device-timeout.pug"')
  .row.stf-general(ng-if='isAdmin()')
   .col-md-12

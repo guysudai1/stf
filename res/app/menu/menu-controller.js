@@ -8,6 +8,7 @@ module.exports = function MenuCtrl(
 , UsersService
 , AppState
 , SettingsService
+, ThemeService
 , $location
 , $http
 , CommonService
@@ -28,14 +29,7 @@ module.exports = function MenuCtrl(
     deviceEntries: LogcatService.deviceEntries
   })
 
-  SettingsService.bind($rootScope, {
-    target: 'darkTheme',
-    defaultValue: false
-  })
-
-  $scope.toggleTheme = function() {
-    $rootScope.darkTheme = !$rootScope.darkTheme
-  }
+  $scope.toggleTheme = ThemeService.toggle
 
   $scope.$on('$routeChangeSuccess', function() {
     $scope.isControlRoute = $location.path().search('/control') !== -1

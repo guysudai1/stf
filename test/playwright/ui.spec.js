@@ -122,8 +122,10 @@ test.describe('STF web UI', function() {
       const body = page.locator('body')
 
       await expect(themeToggle).toBeVisible()
+      await expect(themeToggle).toContainText('Dark theme')
       await themeToggle.click()
       await expect(body).toHaveClass(/stf-dark-theme/)
+      await expect(themeToggle).toContainText('Light theme')
 
       await page.reload()
       await expect(themeToggle).toBeVisible()
@@ -131,5 +133,10 @@ test.describe('STF web UI', function() {
 
       await themeToggle.click()
       await expect(body).not.toHaveClass(/stf-dark-theme/)
+
+      await page.goto('/#!/settings')
+      const settingsThemeToggle = page.locator('[data-testid="settings-theme-toggle"]')
+      await expect(settingsThemeToggle).toBeVisible()
+      await expect(settingsThemeToggle).toContainText('Dark theme')
     })
 })

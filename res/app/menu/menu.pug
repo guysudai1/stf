@@ -50,10 +50,13 @@
           type='button'
           ng-click='toggleTheme()'
           data-testid='theme-toggle'
-          aria-label='Toggle dark theme'
-          title='Toggle dark theme')
+          ng-attr-aria-label='{{$root.darkTheme ? "Switch to light theme" : "Switch to dark theme"}}'
+          ng-attr-title='{{$root.darkTheme ? "Switch to light theme" : "Switch to dark theme"}}'
+          ng-attr-aria-pressed='{{$root.darkTheme}}')
           i.fa.fa-moon-o(ng-if='!$root.darkTheme')
           i.fa.fa-sun-o(ng-if='$root.darkTheme')
+          span.theme-label(ng-if='!$root.darkTheme', translate) Dark theme
+          span.theme-label(ng-if='$root.darkTheme', translate) Light theme
 
       li
         span.version-text v{{ $root.state.config.stfVersion }}
