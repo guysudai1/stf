@@ -1,36 +1,51 @@
-version: "3"
-
 services:
   rethinkdb:
-    container_name: rethinkdb
     image: rethinkdb:2.4.2
     restart: unless-stopped
+    command: rethinkdb --bind all --cache-size 512
     volumes:
-        - "rethinkdb-data:/data"
-    command: "rethinkdb --bind all --cache-size 2048"
+      - rethinkdb-data:/data
 
   adb:
-    container_name: adb
     image: devicefarmer/adb:latest
     restart: unless-stopped
-    volumes: 
-      - "/dev/bus/usb:/dev/bus/usb"
     privileged: true
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
 
   stf:
-    container_name: stf
-    image: devicefarmer/stf
-    ports:
-      - "7100:7100"
-      - "7110:7110"
-      - "7400-7500:7400-7500"
-    environment:
-      - TZ='America/Los_Angeles'
-      - RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015
-      - STF_ADMIN_EMAIL=<YOUR_EMAIL>
-      - STF_ADMIN_NAME=<YOUR_NAME>
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: devicefarmer/stf:local
     restart: unless-stopped
-    command: stf local --adb-host adb --public-ip YOUR_IP --provider-min-port 7400 --provider-max-port 7500
+    depends_on:
+      - rethinkdb
+      - adb
+    environment:
+      TZ: ${TZ:-Asia/Jerusalem}
+      RETHINKDB_PORT_28015_TCP: tcp://rethinkdb:28015
+      STF_ADMIN_EMAIL: ${STF_ADMIN_EMAIL:-admin@localhost}
+      STF_ADMIN_NAME: ${STF_ADMIN_NAME:-STF Admin}
+    command:
+      - stf
+      - local
+      - --auth-type
+      - guest
+      - --port
+      - "7100"
+      - --public-ip
+      - ${STF_PUBLIC_IP:-127.0.0.1}
+      - --adb-host
+      - adb
+      - --provider-min-port
+      - "7400"
+      - --provider-max-port
+      - "7500"
+    ports:
+      - 127.0.0.1:7100:7100
+      - 127.0.0.1:7110:7110
+      - 127.0.0.1:7400-7500:7400-7500
 
 volumes:
-  rethinkdb-data: {}
+  rethinkdb-data:
