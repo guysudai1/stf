@@ -3,6 +3,9 @@ services:
     image: rethinkdb:2.4.2
     restart: unless-stopped
     command: rethinkdb --bind all --cache-size 512
+    networks:
+      default:
+        ipv4_address: 172.18.0.2
     volumes:
       - rethinkdb-data:/data
 
@@ -37,13 +40,12 @@ services:
     depends_on:
       - rethinkdb
       - adb
+    network_mode: host
     environment:
       TZ: ${TZ:-Asia/Jerusalem}
-      RETHINKDB_PORT_28015_TCP: tcp://rethinkdb:28015
+      RETHINKDB_PORT_28015_TCP: tcp://172.18.0.2:28015
       STF_ADMIN_EMAIL: ${STF_ADMIN_EMAIL:-admin@localhost}
       STF_ADMIN_NAME: ${STF_ADMIN_NAME:-STF Admin}
-    extra_hosts:
-      - host.docker.internal:172.18.0.1
     command:
       - stf
       - local
@@ -54,18 +56,13 @@ services:
       - --public-ip
       - ${STF_PUBLIC_IP:-127.0.0.1}
       - --adb-host
-      - host.docker.internal
+      - 127.0.0.1
       - --adb-port
-      - "5038"
+      - "5037"
       - --provider-min-port
       - "7400"
       - --provider-max-port
       - "7500"
-    ports:
-      - 127.0.0.1:7100:7100
-      - 127.0.0.1:7110:7110
-      - 127.0.0.1:7400-7500:7400-7500
-
 networks:
   default:
     ipam:
