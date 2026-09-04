@@ -7,11 +7,26 @@ services:
       - rethinkdb-data:/data
 
   adb:
-    image: devicefarmer/adb:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-adb
+    image: devicefarmer/adb:stf-local
     restart: unless-stopped
     privileged: true
+    network_mode: host
     volumes:
       - /dev/bus/usb:/dev/bus/usb
+    command:
+      - sh
+      - -c
+      - >-
+        adb -P 5037 server nodaemon &
+        server_pid=$$!;
+        socat TCP-LISTEN:5038,bind=172.18.0.1,reuseaddr,fork
+        TCP:127.0.0.1:5037 &
+        until adb -P 5037 connect 127.0.0.1:5555 |
+        grep -Eq 'connected|already connected'; do sleep 1; done;
+        wait $$server_pid
 
   stf:
     build:
@@ -27,6 +42,8 @@ services:
       RETHINKDB_PORT_28015_TCP: tcp://rethinkdb:28015
       STF_ADMIN_EMAIL: ${STF_ADMIN_EMAIL:-admin@localhost}
       STF_ADMIN_NAME: ${STF_ADMIN_NAME:-STF Admin}
+    extra_hosts:
+      - host.docker.internal:172.18.0.1
     command:
       - stf
       - local
@@ -37,7 +54,9 @@ services:
       - --public-ip
       - ${STF_PUBLIC_IP:-127.0.0.1}
       - --adb-host
-      - adb
+      - host.docker.internal
+      - --adb-port
+      - "5038"
       - --provider-min-port
       - "7400"
       - --provider-max-port
@@ -46,6 +65,13 @@ services:
       - 127.0.0.1:7100:7100
       - 127.0.0.1:7110:7110
       - 127.0.0.1:7400-7500:7400-7500
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
 
 volumes:
   rethinkdb-data:
