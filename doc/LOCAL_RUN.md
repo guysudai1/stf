@@ -3,35 +3,76 @@
 This development setup runs the checked-out STF server with nickname-only
 guest entry and the Android companion service on an emulator.
 
-## Start the server
+## Mandatory Docker Compose workflow
 
-Install Node.js, Docker, ADB, RethinkDB support, and STF native dependencies.
-From the `stf/` repository:
+This checkout **must be run with Docker Compose**. Do not start the local STF
+server with `stf local`, `npm run local`, or the legacy standalone RethinkDB
+commands; those paths do not provide the required Docker ADB and RethinkDB
+networking.
+
+From this `stf/` repository, install Docker Engine with the Compose plugin and
+make sure the Docker daemon is running. Docker access may be granted through
+the `docker` group, but start a new login session after changing group
+membership.
+
+The Compose file builds the checked-out STF image and a small ADB relay image,
+then starts three services:
+
+- `rethinkdb` stores STF state on the persistent `rethinkdb-data` volume.
+- `adb` runs the ADB server on the host network, connects to the local emulator
+  or USB devices, and exposes the host ADB server to STF.
+- `stf` runs on the host network so it can use the host ADB server and connects
+  to RethinkDB at the fixed Compose address `172.18.0.2`.
+
+Start the emulator or connect the Android device first. For an emulator, verify
+that it has finished booting before handing ADB port 5037 to Compose:
 
 ```bash
-export PATH=/path/to/node/bin:/path/to/yarn/bin:$PATH
-yarn install --ignore-optional --ignore-scripts
-node_modules/.bin/bower install --allow-root
-docker volume create stf-rethinkdb-data
-docker run -d --name stf-rethinkdb \
-  -p 28015:28015 -p 8080:8080 \
-  -v stf-rethinkdb-data:/data \
-  rethinkdb:2.4.2 rethinkdb --bind all --cache-size 512
-./.github/scripts/start-stf.sh
+adb -s emulator-5554 get-state
+adb -s emulator-5554 shell getprop sys.boot_completed
+adb kill-server
 ```
 
-The helper expects Docker access. After adding a user to the `docker` group,
-start a new login session, or run a single command with `sg docker -c '...'`.
-The RethinkDB container is stateful through the `stf-rethinkdb-data` volume;
-reusing the container preserves the STF database between server restarts.
+Start STF from the repository directory:
 
-The helper waits for its internal services and serves the UI at
-<http://127.0.0.1/> by default. This checkout uses `/auth/guest/`; enter a nickname
-to create a local session. Set `STF_LOG_DIR` to choose the log directory.
-Binding port 80 may require the usual host permission for privileged ports; use
-`--port 7100` (or `STF_LOCAL_PORT=7100`) for an unprivileged development run.
-The active nickname is shown in the STF header; select `Logout` there to clear
-the guest session and return to nickname entry.
+```bash
+cd /path/to/stf
+docker compose up -d --build
+docker compose ps
+```
+
+The first build can take several minutes. Subsequent starts can use
+`docker compose up -d`; use `--build` after changing STF source or either
+Dockerfile. Open <http://127.0.0.1:7100/auth/guest/>, enter a nickname, and
+select the device from the list. The dark-theme control is available from the
+header and the Settings page.
+
+Verify the ADB and STF layers independently:
+
+```bash
+docker compose exec adb adb -P 5037 devices -l
+docker compose logs --tail=200 stf | \
+  grep -E 'Found device|Registered device|Fully operational'
+curl --fail http://127.0.0.1:7100/auth/guest/
+```
+
+For `emulator-5554`, the logs should contain `Found device`, `Registered
+device`, and `Fully operational`. A device listed by the host ADB command alone
+does not prove that STF has registered it.
+
+Stop the stack without deleting the database:
+
+```bash
+docker compose down
+```
+
+Do not use `docker compose down -v` unless you intentionally want to delete the
+persistent RethinkDB data volume.
+
+Both `adb` and `stf` use host networking. This is required for the local
+emulator workflow, but it places STF's service ports directly on the host. Keep
+this Compose setup on a trusted machine or restrict access with the host
+firewall. No separate Docker bridge-to-host UFW relay rule is needed.
 
 ## Discover Wi-Fi ADB devices
 
