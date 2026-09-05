@@ -2,6 +2,10 @@
 
 const {test, expect} = require('@playwright/test')
 const h = require('./helpers')
+const logger = require('../../lib/util/logger')
+const wire = require('../../lib/wire')
+const wireutil = require('../../lib/wire/util')
+const zmqutil = require('../../lib/util/zmqutil')
 
 async function api(page, path) {
   return page.evaluate(async function(url) {
@@ -52,5 +56,33 @@ test.describe('administrator health and logs system behavior', function() {
         'Health & Logs')
       await expect(page.locator('.health-card-label').first()).toHaveText('Status')
       await expect(page.locator('.health-filters')).toBeVisible()
+
+      const message = 'health-system-test-' + Date.now()
+      const dealer = zmqutil.socket('dealer')
+      dealer.connect('tcp://127.0.0.1:7312')
+      try {
+        await new Promise(function(resolve) {
+          setTimeout(resolve, 500)
+        })
+        dealer.send([
+          wireutil.global
+        , wireutil.envelope(new wire.HealthLogMessage(
+            Date.now() / 1000
+          , logger.Level.IMPORTANT
+          , 'system-test'
+          , process.pid
+          , message
+          , 'playwright'
+          , 'emulator-5554'
+          , 'test'
+          ))
+        ])
+        await expect(page.locator('.health-log-table')).toContainText(message, {
+          timeout: 15000
+        })
+      }
+      finally {
+        dealer.close()
+      }
     })
 })
