@@ -74,6 +74,52 @@ emulator workflow, but it places STF's service ports directly on the host. Keep
 this Compose setup on a trusted machine or restrict access with the host
 firewall. No separate Docker bridge-to-host UFW relay rule is needed.
 
+## Run the system tests
+
+The local system-test suite is Playwright-based and must run against a live
+`stf local` instance. From the repository root, install the test-only
+dependencies and Chromium once:
+
+```bash
+cd test/playwright
+npm install --no-audit --no-fund
+npx playwright install chromium
+```
+
+Run the device-less UI and root-permission checks with the same guest endpoint
+used by the local server:
+
+```bash
+STF_URL=http://127.0.0.1:7100 npm run test:ui
+STF_URL=http://127.0.0.1:7100 npm run test:root-permissions
+```
+
+To run every Playwright system test, use `npm test`. The device suite skips
+itself when `STF_DEVICE_SERIAL` is unset. When a device is registered and its
+STF companion service is ready, run:
+
+```bash
+STF_URL=http://127.0.0.1:7100 \
+STF_DEVICE_SERIAL=emulator-5554 \
+npm run test:device
+```
+
+The root-permission suite verifies guest users receive `root` privilege, newly
+created users receive `root`, user-owned groups remain `user`, metrics are
+available to a root user, and the built-in root owner cannot be deleted. It
+removes the temporary user and group it creates. Run one check by title with,
+for example:
+
+```bash
+STF_URL=http://127.0.0.1:7100 \
+npm run test:root-permissions -- --grep root_permissions
+```
+
+Reports, traces, screenshots, and videos are written under
+`test-results/playwright/` at the repository root. A browser test proves the
+HTTP/API and UI path only; device behavior additionally requires the companion
+service, forwarded sockets, and a registered serial described below.
+
 ## Discover Wi-Fi ADB devices
 
 The provider can probe one IPv4 subnet for ADB-over-TCP endpoints, connect its
