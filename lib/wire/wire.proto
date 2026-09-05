@@ -93,6 +93,7 @@ enum MessageType {
   GroupChangeMessage         = 1205;
   UserChangeMessage          = 1206;
   DeviceChangeMessage        = 1207;
+  HealthLogMessage           = 1208;
 }
 
 message UpdateAccessTokenMessage {
@@ -302,6 +303,19 @@ message DeviceLogMessage {
   required uint32 pid = 5;
   required string message = 6;
   required string identifier = 7;
+}
+
+// Server health and curated device lifecycle logging. Unlike DeviceLogMessage,
+// this message is never used for Android logcat output.
+message HealthLogMessage {
+  required double timestamp = 1;
+  required uint32 priority = 2;
+  required string tag = 3;
+  required uint32 pid = 4;
+  required string message = 5;
+  required string identifier = 6;
+  optional string serial = 7;
+  optional string kind = 8;
 }
 
 // Introductions

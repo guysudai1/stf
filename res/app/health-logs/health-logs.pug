@@ -1,0 +1,46 @@
+.stf-health-logs(pane='center')
+  .widget-container.fluid-height
+    .widget-content
+      h3
+        i.fa.fa-heartbeat
+        |  Health & Logs
+      .health-summary(ng-if='summary')
+        .health-card
+          .health-card-label Status
+          .health-card-value(ng-class="summary.status") {{ summary.status }}
+        .health-card
+          .health-card-label Devices
+          .health-card-value {{ summary.devices.present }} / {{ summary.devices.total }} present
+        .health-card
+          .health-card-label Last 24 hours
+          .health-card-value {{ summary.logs.total }} events
+        .health-card
+          .health-card-label Errors / Fatal
+          .health-card-value {{ summary.logs.error }} / {{ summary.logs.fatal }}
+      .health-filters
+        input.form-control.input-sm(ng-model='filters.q', placeholder='Search tag, source, or message')
+        select.form-control.input-sm(ng-model='filters.priority')
+          option(value='') All levels
+          option(value='5') Warning and above
+          option(value='6') Error and above
+          option(value='7') Fatal only
+        button.btn.btn-sm.btn-default-outline(ng-click='refresh()')
+          i.fa.fa-refresh
+          |  Refresh
+      table.table.table-condensed.health-log-table
+        thead
+          tr
+            th Time
+            th Level
+            th Source
+            th Device
+            th Message
+        tbody
+          tr(ng-repeat='entry in logs track by $index')
+            td {{ entry.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}
+            td {{ entry.priority }}
+            td {{ entry.tag }}
+            td {{ entry.serial || '-' }}
+            td {{ entry.message }}
+          tr(ng-if='!logs.length && !loading')
+            td(colspan='5') No health events in the last 24 hours.
