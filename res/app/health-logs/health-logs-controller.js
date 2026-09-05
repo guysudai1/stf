@@ -22,7 +22,7 @@ module.exports = function HealthLogsCtrl($scope, $http, AppState, socket) {
       })
   }
 
-  if (AppState.user.privilege === 'user') {
+  if (AppState.user.privilege !== 'admin' && AppState.user.privilege !== 'root') {
     $scope.loading = false
     return
   }

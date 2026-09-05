@@ -19,7 +19,7 @@
         a(ng-href='/#!/settings')
           span.fa.fa-gears
           span(ng-if='!$root.basicMode', translate) Settings
-        a(ng-if='$root.state.user.privilege !== "user"', ng-href='/#!/health-logs')
+        a(ng-if='$root.state.user.privilege === "admin" || $root.state.user.privilege === "root"', ng-href='/#!/health-logs')
           span.fa.fa-heartbeat
           span(ng-if='!$root.basicMode') Health & Logs
     ul.nav.stf-nav(ng-if='isAlertMessageActive()', nav-menu='current').unselectable.col-xs-5

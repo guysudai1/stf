@@ -16,20 +16,21 @@ describe('Health logs', function() {
     expect(decoded.kind).to.equal('server')
   })
 
-  it('publishes warning and higher entries only', function() {
+  it('publishes important and higher entries only', function() {
     var sent = []
     var stop = publisher({
       send: function(message) { sent.push(message) }
     })
     var log = logger.createLogger('health-test')
     log.info('ignored')
+    log.important('kept')
     log.warn('kept')
     log.error('kept')
     stop()
 
-    expect(sent).to.have.length(2)
+    expect(sent).to.have.length(3)
     var envelope = wire.Envelope.decode(sent[0][1])
     expect(wire.HealthLogMessage.decode(envelope.message).priority)
-      .to.equal(logger.Level.WARNING)
+      .to.equal(logger.Level.IMPORTANT)
   })
 })
