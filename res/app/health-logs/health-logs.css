@@ -1,0 +1,47 @@
+.stf-health-logs .health-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.stf-health-logs .health-card {
+  background: #f5f5f5;
+  border-radius: 3px;
+  min-width: 145px;
+  padding: 10px;
+}
+
+.stf-health-logs .health-card-label {
+  color: #777;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.stf-health-logs .health-card-value {
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+.stf-health-logs .health-card-value.degraded {
+  color: #b94a48;
+}
+
+.stf-health-logs .health-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.stf-health-logs .health-filters input {
+  flex: 1;
+}
+
+.stf-health-logs .health-log-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.stf-health-logs .health-log-table td:last-child {
+  overflow-wrap: anywhere;
+}

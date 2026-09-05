@@ -2205,6 +2205,65 @@ paths:
             $ref: "#/definitions/UnexpectedErrorResponse"
       security:
         - accessTokenAuth: []
+  /health/summary:
+    x-swagger-router-controller: health
+    get:
+      summary: Gets the administrator health summary
+      operationId: getHealthSummary
+      tags:
+        - health
+        - admin
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Health summary
+          schema:
+            $ref: "#/definitions/HealthSummaryResponse"
+        default:
+          description: Unauthorized, forbidden, or internal error
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
+  /health/logs:
+    x-swagger-router-controller: health
+    get:
+      summary: Searches administrator health logs
+      operationId: getHealthLogs
+      tags:
+        - health
+        - admin
+      produces:
+        - application/json
+      parameters:
+        - name: q
+          in: query
+          type: string
+        - name: priority
+          in: query
+          type: integer
+          minimum: 1
+          maximum: 7
+        - name: serial
+          in: query
+          type: string
+        - name: limit
+          in: query
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        "200":
+          description: Health logs
+          schema:
+            $ref: "#/definitions/HealthLogsResponse"
+        default:
+          description: Unauthorized, forbidden, or internal error
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
   /metrics:
     x-swagger-router-controller: metrics
     get:
@@ -2565,6 +2624,48 @@ definitions:
     properties:
       message:
         type: string
+  HealthLog:
+    required:
+      - timestamp
+      - priority
+      - tag
+      - message
+    properties:
+      id:
+        type: string
+      timestamp:
+        type: string
+        format: date-time
+      priority:
+        type: integer
+      tag:
+        type: string
+      pid:
+        type: integer
+      message:
+        type: string
+      identifier:
+        type: string
+      serial:
+        type: string
+      kind:
+        type: string
+  HealthLogsResponse:
+    allOf:
+      - $ref: "#/definitions/Response"
+      - type: object
+        properties:
+          logs:
+            type: array
+            items:
+              $ref: "#/definitions/HealthLog"
+  HealthSummaryResponse:
+    allOf:
+      - $ref: "#/definitions/Response"
+      - type: object
+        properties:
+          summary:
+            type: object
 securityDefinitions:
   accessTokenAuth:
     type: apiKey
