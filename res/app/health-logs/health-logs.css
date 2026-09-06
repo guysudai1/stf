@@ -23,8 +23,26 @@
   margin-top: 4px;
 }
 
-.stf-health-logs .health-card-value.degraded {
-  color: #b94a48;
+.stf-health-logs .health-card-value.healthy {
+  color: #3c763d;
+}
+
+.stf-health-logs .health-card-value.warning {
+  color: #8a6d3b;
+}
+
+.stf-health-logs .health-card-value.degraded,
+.stf-health-logs .health-card-value.critical {
+  color: #a94442;
+}
+
+.stf-health-logs .health-status-description {
+  color: #777;
+  display: block;
+  font-size: 11px;
+  font-weight: normal;
+  margin-top: 4px;
+  max-width: 230px;
 }
 
 .stf-health-logs .health-filters {
@@ -44,4 +62,71 @@
 
 .stf-health-logs .health-log-table td:last-child {
   overflow-wrap: anywhere;
+}
+
+.stf-health-logs .health-log-table tr {
+  border-left: 4px solid transparent;
+}
+
+.stf-health-logs .health-row-important {
+  border-left-color: #337ab7;
+}
+
+.stf-health-logs .health-row-warning {
+  background: #fcf8e3;
+  border-left-color: #f0ad4e;
+}
+
+.stf-health-logs .health-row-error {
+  background: #f2dede;
+  border-left-color: #d9534f;
+}
+
+.stf-health-logs .health-row-fatal {
+  background: #ead1d1;
+  border-left-color: #7a0000;
+}
+
+.stf-health-logs .health-level-badge {
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 5px;
+  text-transform: uppercase;
+}
+
+.stf-health-logs .health-level-important {
+  background: #d9edf7;
+  color: #31708f;
+}
+
+.stf-health-logs .health-level-warning {
+  background: #fcf8e3;
+  color: #8a6d3b;
+}
+
+.stf-health-logs .health-level-error,
+.stf-health-logs .health-level-fatal {
+  background: #f2dede;
+  color: #a94442;
+}
+
+.stf-health-logs .health-message-summary {
+  font-weight: 500;
+}
+
+.stf-health-logs .health-log-table details {
+  margin-top: 4px;
+}
+
+.stf-health-logs .health-log-table pre {
+  max-height: 220px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.stf-health-logs .health-error {
+  color: #a94442;
+  margin-bottom: 10px;
 }

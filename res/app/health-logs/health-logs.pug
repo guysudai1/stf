@@ -8,6 +8,7 @@
         .health-card
           .health-card-label Status
           .health-card-value(ng-class="summary.status") {{ summary.status }}
+            small.health-status-description {{ summary.statusDescription }}
         .health-card
           .health-card-label Devices
           .health-card-value {{ summary.devices.present }} / {{ summary.devices.total }} present
@@ -27,6 +28,7 @@
         button.btn.btn-sm.btn-default-outline(ng-click='refresh()')
           i.fa.fa-refresh
           |  Refresh
+      .health-error(ng-if='error') {{ error }}
       table.table.table-condensed.health-log-table
         thead
           tr
@@ -36,11 +38,19 @@
             th Device
             th Message
         tbody
-          tr(ng-repeat='entry in logs track by $index')
+          tr(ng-repeat='entry in logs track by $index', ng-class="'health-row-' + entry.severity")
             td {{ entry.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}
-            td {{ entry.priority }}
+            td
+              span.health-level-badge(ng-class="'health-level-' + entry.severity")
+                | {{ entry.levelLabel }}
             td {{ entry.tag }}
-            td {{ entry.serial || '-' }}
-            td {{ entry.message }}
+            td.health-log-device
+              code(ng-if='entry.serial') {{ entry.serial }}
+              span(ng-if='!entry.serial') -
+            td
+              .health-message-summary {{ entry.messageSummary || entry.message }}
+              details(ng-if='entry.details')
+                summary Stack/details
+                pre {{ entry.details }}
           tr(ng-if='!logs.length && !loading')
             td(colspan='5') No health events in the last 24 hours.

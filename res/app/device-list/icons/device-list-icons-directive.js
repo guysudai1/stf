@@ -66,6 +66,8 @@ module.exports = function DeviceListIconsDirective(
             available: 'state-available btn-primary-outline',
             ready: 'state-ready btn-primary-outline',
             present: 'state-present btn-primary-outline',
+            connecting: 'state-connecting btn-primary-outline btn-warning-outline',
+            authorizing: 'state-authorizing btn-primary-outline btn-warning-outline',
             preparing: 'state-preparing btn-primary-outline btn-success-outline',
             unauthorized: 'state-unauthorized btn-danger-outline',
             offline: 'state-offline btn-warning-outline',

@@ -659,6 +659,8 @@ function DeviceStatusCell(options) {
   , available: 'state-available btn-primary-outline'
   , ready: 'state-ready btn-primary-outline'
   , present: 'state-present btn-primary-outline'
+  , connecting: 'state-connecting btn-primary-outline btn-warning-outline'
+  , authorizing: 'state-authorizing btn-primary-outline btn-warning-outline'
   , preparing: 'state-preparing btn-primary-outline btn-success-outline'
   , unauthorized: 'state-unauthorized btn-danger-outline'
   , offline: 'state-offline btn-warning-outline'
@@ -700,11 +702,13 @@ function DeviceStatusCell(options) {
       , available: 20
       , busy: 30
       , ready: 40
-      , preparing: 50
-      , unauthorized: 60
-      , offline: 70
-      , present: 80
-      , absent: 90
+      , connecting: 50
+      , authorizing: 55
+      , preparing: 60
+      , unauthorized: 70
+      , offline: 80
+      , present: 90
+      , absent: 100
       }
       return function(deviceA, deviceB) {
         return order[deviceA.state] - order[deviceB.state]

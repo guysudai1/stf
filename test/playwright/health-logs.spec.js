@@ -59,7 +59,7 @@ test.describe('administrator health and logs system behavior', function() {
 
       const message = 'health-system-test-' + Date.now()
       const dealer = zmqutil.socket('dealer')
-      dealer.connect('tcp://127.0.0.1:7312')
+      dealer.connect('tcp://127.0.0.1:7112')
       try {
         await new Promise(function(resolve) {
           setTimeout(resolve, 500)
