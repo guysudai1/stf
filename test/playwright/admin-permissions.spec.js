@@ -47,25 +47,25 @@ async function api(page, path, options) {
 test.describe('all-users-admin system behavior', function() {
   test.describe.configure({mode: 'serial'})
 
-  test('[check:root_permissions] guest authentication grants root privilege',
+  test('[check:admin_permissions] guest authentication grants admin privilege',
     async function({page}) {
       await h.enterNickname(page)
 
       const currentUser = await api(page, '/api/v1/user')
       expect(currentUser.status).toBe(200)
-      expect(currentUser.body.user.privilege).toBe('root')
+      expect(currentUser.body.user.privilege).toBe('admin')
 
       const metrics = await api(page, '/api/v1/metrics')
       expect(metrics.status).toBe(200)
       expect(metrics.body).toContain('stf_')
     })
 
-  test('[check:root_permissions] new users receive root privilege',
+  test('[check:admin_permissions] new users receive admin privilege',
     async function({page}) {
       await h.enterNickname(page)
 
       const suffix = Date.now() + '-' + Math.random().toString(16).slice(2)
-      const email = 'stf-root-permissions-' + suffix + '@localhost'
+      const email = 'stf-admin-permissions-' + suffix + '@localhost'
 
       try {
         const createdUser = await api(page, '/api/v1/users/' +
@@ -73,7 +73,7 @@ test.describe('all-users-admin system behavior', function() {
             method: 'POST'
           })
         expect(createdUser.status).toBe(201)
-        expect(createdUser.body.user.privilege).toBe('root')
+        expect(createdUser.body.user.privilege).toBe('admin')
       }
       finally {
         const deletedUser = await api(page, '/api/v1/users/' +
@@ -82,7 +82,7 @@ test.describe('all-users-admin system behavior', function() {
       }
     })
 
-  test('[check:root_permissions] the built-in root owner cannot be deleted',
+  test('[check:admin_permissions] the built-in root owner cannot be deleted',
     async function({page}) {
       await h.enterNickname(page)
 
