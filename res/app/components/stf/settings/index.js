@@ -4,4 +4,3 @@ module.exports = angular.module('stf/settings', [
 ])
   .factory('SettingsService', require('./settings-service'))
   .factory('ThemeService', require('./theme-service'))
-  .controller('ThemeCtrl', require('./theme-controller'))
