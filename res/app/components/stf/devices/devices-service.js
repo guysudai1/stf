@@ -46,6 +46,10 @@ module.exports = function DevicesServiceFactory(
     return $http.get('/api/v1/devices/' + serial + '?fields=' + fields)
   }
 
+  DevicesService.runShell = function(command, force) {
+    return $http.post('/api/v1/devices/shell', {command: command, force: force})
+  }
+
   DevicesService.removeDevice = function(serial, filters) {
     return $http.delete('/api/v1/devices/' + serial + buildQueryParameters(filters))
   }
