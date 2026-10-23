@@ -58,20 +58,10 @@ module.exports = function DeviceServiceFactory($http, socket, EnhanceDeviceServi
     }
 
     function sync(data) {
-      var statusNames = {
-        1: 'OFFLINE'
-      , 2: 'UNAUTHORIZED'
-      , 3: 'ONLINE'
-      , 4: 'CONNECTING'
-      , 5: 'AUTHORIZING'
-      }
-      data.status = typeof data.status === 'string' ?
-        data.status.toUpperCase() : statusNames[data.status]
-
       // usable IF device is physically present AND device is online AND
       // preparations are ready AND the device has no owner or we are the
       // owner
-      data.usable = data.present && data.status === 'ONLINE' && data.ready &&
+      data.usable = data.present && data.status === 3 && data.ready &&
         (!data.owner || data.using)
 
       // Make sure we don't mistakenly think we still have the device
