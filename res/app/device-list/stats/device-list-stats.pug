@@ -18,4 +18,4 @@
     .number.color-orange
       .icon.fa.fa-user.visitors(ng-class='{"fa-trophy": $root.adminMode, "fa-user": !$root.adminMode}')
       span(class='counter', data-type='using') 0
-    .text(ng-bind='currentUser.name')
+    .text(translate, uib-tooltip='{{currentUser.name}}') My Devices

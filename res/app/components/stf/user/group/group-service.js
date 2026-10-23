@@ -4,8 +4,16 @@ module.exports = function GroupServiceFactory(
   socket
 , TransactionService
 , TransactionError
+, $filter
+, gettext
 ) {
   var groupService = {
+  }
+
+  groupService.confirmForceRelease = function(device) {
+    // eslint-disable-next-line no-alert
+    return confirm($filter('translate')(gettext('Force release this device?')) +
+      '\n' + device.serial + ' — ' + (device.owner ? device.owner.name : ''))
   }
 
   groupService.invite = function(device) {
