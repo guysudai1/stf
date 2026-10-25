@@ -29,7 +29,7 @@ describe('EnhanceDeviceService', function() {
   }
 
   it('shows connecting instead of connected while ADB is connecting', function() {
-    var device = enhance('CONNECTING')
+    var device = enhance(4)
 
     expect(device.state).toBe('connecting')
     expect(device.enhancedStateAction).toBe('Connecting')

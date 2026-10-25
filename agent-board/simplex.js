@@ -91,8 +91,9 @@ function isReceived(item) {
   return !direction || direction.indexOf('rcv') !== -1 || direction.indexOf('receiv') !== -1
 }
 
-function normalizeIncomingEvent(payload, allowedSender, allowedContactId) {
+function normalizeIncomingEvent(payload, allowedContactId) {
   var response = responseOf(payload)
+  if (!allowedContactId) return []
   if (!response || String(response.type || '').toLowerCase() !== 'newchatitems') return []
   var items = Array.isArray(response.chatItems) ? response.chatItems : []
   return items.reduce(function(result, item) {
@@ -100,8 +101,7 @@ function normalizeIncomingEvent(payload, allowedSender, allowedContactId) {
     var sender = contactNameOf(item)
     var contactId = contactIdOf(item)
     if (!text || !isReceived(item)) return result
-    if (allowedContactId && String(contactId) !== String(allowedContactId)) return result
-    if (allowedSender && (!sender || sender.toLowerCase() !== allowedSender.toLowerCase())) return result
+    if (String(contactId) !== String(allowedContactId)) return result
     var command = parseCommand(text.trim())
     command.messageId = itemIdOf(item)
     command.contactId = contactId
@@ -266,7 +266,7 @@ SimplexBridge.prototype._onMessage = function(data) {
     }
     else pending.resolve(response)
   }
-  normalizeIncomingEvent(payload, this.allowedSender, this.contactId).forEach(this._emitIncoming.bind(this))
+  normalizeIncomingEvent(payload, this.contactId).forEach(this._emitIncoming.bind(this))
 }
 
 SimplexBridge.prototype._emitIncoming = function(command) {
@@ -275,7 +275,6 @@ SimplexBridge.prototype._emitIncoming = function(command) {
     this._seen.add(String(command.messageId))
     if (this._seen.size > 2000) this._seen.delete(this._seen.values().next().value)
   }
-  if (command.contactId && !this.contactId) this.contactId = command.contactId
   this.emit(command.type, command)
   this.emit('log', 'Received SimpleX command from ' + (command.sender || 'authorized contact'))
 }

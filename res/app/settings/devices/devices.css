@@ -63,3 +63,35 @@
   color: #999999;
   font-weight: 300;
 }
+
+.stf-devices .shell-all-title {
+  margin: 0 0 10px;
+}
+
+.stf-devices .shell-all .form-group,
+.stf-devices .shell-all .checkbox {
+  margin-right: 14px;
+  vertical-align: middle;
+}
+
+.stf-devices .shell-all .checkbox input {
+  margin-right: 6px;
+}
+
+.stf-devices .shell-all-results {
+  margin-top: 14px;
+}
+
+.stf-devices .shell-all-result {
+  margin-bottom: 12px;
+}
+
+.stf-devices .shell-all-result .label {
+  margin-left: 8px;
+}
+
+.stf-devices .shell-all-result pre {
+  margin: 6px 0 0;
+  max-height: 240px;
+  overflow: auto;
+}

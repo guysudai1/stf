@@ -1,0 +1,49 @@
+.widget-container.fluid-height.stf-packages(ng-controller='PackagesCtrl')
+  .heading
+    i.fa.fa-th
+    span(translate) Installed apps
+    span.badge {{(packages.rows | filter:{name: packages.search}).length}}
+    button.btn.btn-sm.btn-primary-outline.pull-right(
+      type='button'
+      ng-click='loadPackages()'
+      ng-disabled='packages.loading')
+        i.fa.fa-refresh(ng-class='{"fa-spin": packages.loading}')
+  .widget-content.padded
+    form.form-inline.packages-toolbar
+      .form-group
+        input.form-control.input-sm(
+          type='search'
+          ng-model='packages.search'
+          placeholder="{{'Filter packages' | translate}}")
+      .checkbox
+        label
+          input(type='checkbox' ng-model='packages.includeSystem' ng-change='loadPackages()')
+          span(translate) Include system apps
+    p.text-danger(ng-if='packages.error') {{packages.error}}
+    .table-responsive
+      table.table.table-condensed.table-hover.packages-table(ng-style='{width: packageTableWidth() + "px"}')
+        thead
+          tr
+            th(
+              ng-repeat='column in packageColumns'
+              ng-style='{width: column.width + "px"}'
+              resizable-column='column'
+              ng-click='sortPackages(column.field)')
+              span {{column.title | translate}}
+              i.fa.fa-fw(ng-class='{"fa-sort-asc": packages.sort === column.field && !packages.reverse, "fa-sort-desc": packages.sort === column.field && packages.reverse}')
+        tbody
+          tr(ng-repeat='row in packages.rows | filter:{name: packages.search} | orderBy:packages.sort:packages.reverse track by row.name')
+            td
+              code(title='{{row.path}}') {{row.name}}
+            td(title='{{row.versionName}}') {{row.versionName}}
+            td {{row.versionCode}}
+            td {{row.targetSdk}}
+            td.text-nowrap {{row.firstInstallTime}}
+            td.text-nowrap {{row.lastUpdateTime}}
+            td
+              code(ng-if='row.md5') {{row.md5}}
+              button.btn.btn-xs.btn-default-outline(
+                type='button'
+                ng-if='!row.md5'
+                ng-click='loadMd5(row)'
+                translate) Get MD5

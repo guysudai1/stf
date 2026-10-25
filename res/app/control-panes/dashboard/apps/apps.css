@@ -10,6 +10,8 @@
 
 .stf-apps .heading .icon-app {
   margin-top: -8px;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 
 .stf-apps .icon-app:hover .fa {

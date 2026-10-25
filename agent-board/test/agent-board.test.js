@@ -13,11 +13,12 @@ function temporaryFile() {
   return {directory: directory, filePath: path.join(directory, 'missions.json')}
 }
 
-function request(server, method, pathname, body) {
+function request(server, method, pathname, body, headers) {
   return new Promise(function(resolve, reject) {
     var address = server.address()
     var request = http.request({hostname: '127.0.0.1', port: address.port, method: method,
-      path: pathname, headers: {'Content-Type': 'application/json'}}, function(response) {
+      path: pathname, headers: Object.assign({'Content-Type': 'application/json'}, headers)},
+    function(response) {
       var chunks = []
       response.on('data', function(chunk) { chunks.push(chunk) })
       response.on('end', function() {
@@ -115,14 +116,72 @@ test('SimpleX WebSocket events normalize authorized text and reject duplicates u
     chatItem: {chatItemId: 43, content: {type: 'rcvMsgContent',
       msgContent: {type: 'text', text: '/mission Exfil :: do it'}}}
   }]}}
-  assert.deepEqual(board.normalizeIncomingEvent(event, 'Alice', 7), [{
+  assert.deepEqual(board.normalizeIncomingEvent(event, 7), [{
     type: 'mission', title: 'Build tests', prompt: 'run the unit suite',
     messageId: 42, contactId: 7, sender: 'Alice'
   }])
-  assert.deepEqual(board.normalizeIncomingEvent(event, 'Alice'), [{
-    type: 'mission', title: 'Build tests', prompt: 'run the unit suite',
-    messageId: 42, contactId: 7, sender: 'Alice'
-  }])
+})
+
+test('SimpleX authorizes by contact id, not display name', function() {
+  var event = {resp: {type: 'newChatItems', chatItems: [{
+    chatDir: 'directRcv',
+    contact: {contactId: 8, localDisplayName: 'Alice'},
+    chatItem: {chatItemId: 50, content: {type: 'text', text: '/mission Exfil :: do it'}}
+  }, {
+    chatDir: 'directRcv',
+    contact: {contactId: 7, localDisplayName: 'Alice renamed'},
+    chatItem: {chatItemId: 51, content: {type: 'text', text: '/status'}}
+  }]}}
+  assert.deepEqual(board.normalizeIncomingEvent(event), [])
+  assert.deepEqual(board.normalizeIncomingEvent(event, 7).map(function(command) {
+    return command.messageId
+  }), [51])
+
+  var bridge = new board.SimplexBridge({enabled: true, contact: 'Alice', resolveContact: false})
+  var received = []
+  bridge.on('mission', function(command) { received.push(command) })
+  bridge._onMessage(JSON.stringify(event))
+  assert.deepEqual(received, [])
+  assert.equal(bridge.contactId, null)
+})
+
+test('JSON mission store keeps saving after a failed write', async function() {
+  var temporary = temporaryFile()
+  var store = new board.MissionStore({filePath: temporary.filePath})
+  await store.ready
+  var rename = fs.promises.rename
+  fs.promises.rename = function() {
+    fs.promises.rename = rename
+    return Promise.reject(new Error('disk full'))
+  }
+  await assert.rejects(store.create({title: 'lost', prompt: 'x'}), /disk full/)
+  await store.create({title: 'saved', prompt: 'y'})
+  var reopened = new board.MissionStore({filePath: temporary.filePath})
+  assert.deepEqual((await reopened.list()).map(function(mission) { return mission.title }).sort(),
+    ['lost', 'saved'])
+})
+
+test('HTTP API rejects foreign hosts and non-JSON writes', async function() {
+  var temporary = temporaryFile()
+  var application = board.createAgentBoard({filePath: temporary.filePath, pollInterval: 0})
+  await application.start()
+  await new Promise(function(resolve) { application.server.listen(0, '127.0.0.1', resolve) })
+  var port = application.server.address().port
+  var plain = await request(application.server, 'POST', '/api/missions',
+    {title: 'x', prompt: 'y'}, {'Content-Type': 'text/plain'})
+  assert.equal(plain.statusCode, 415)
+  var foreign = await request(application.server, 'GET', '/api/missions', null,
+    {Host: 'evil.example:' + port})
+  assert.equal(foreign.statusCode, 403)
+  var rebound = await request(application.server, 'GET', '/api/missions', null,
+    {Host: 'localhost:1'})
+  assert.equal(rebound.statusCode, 403)
+  var created = await request(application.server, 'POST', '/api/missions',
+    {title: 'UI mission', prompt: 'run'}, {Host: 'localhost:' + port,
+      'Content-Type': 'application/json; charset=utf-8'})
+  assert.equal(created.statusCode, 201)
+  assert.equal((await request(application.server, 'GET', '/api/missions')).body.missions.length, 1)
+  await application.close()
 })
 
 test('SimpleX bridge receives realtime events and correlates outbound sends', async function() {

@@ -55,6 +55,10 @@
   flex: 1;
 }
 
+.stf-health-logs .health-filters select {
+  width: 180px;
+}
+
 .stf-health-logs .health-log-table {
   table-layout: fixed;
   width: 100%;

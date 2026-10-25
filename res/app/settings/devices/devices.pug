@@ -12,6 +12,44 @@
 
   .widget-content.padded
 
+    h5.shell-all-title
+      i.fa.fa-terminal.fa-fw
+      span(translate) Run a shell command on all devices
+    form.form-inline.shell-all(ng-submit='shellAll.command && runShellAll()')
+      .form-group
+        input.form-control.input-sm(
+          type='text'
+          ng-model='shellAll.command'
+          placeholder="{{'e.g. getprop ro.product.model' | translate}}"
+          size='48')
+      .checkbox
+        label
+          input(type='checkbox' ng-model='shellAll.force')
+          span(translate) Include devices in use
+      button.btn.btn-sm.btn-primary(
+        type='submit'
+        ng-disabled='!shellAll.command || shellAll.running')
+          i.fa.fa-fw(ng-class='shellAll.running ? "fa-spinner fa-spin" : "fa-play"')
+          span(translate) Run
+    .shell-all-results(ng-if='shellAll.response')
+      p.text-muted
+        span {{shellAll.response.description}}
+        button.btn.btn-xs.btn-primary-outline.pull-right(
+          type='button'
+          ng-if='shellAll.response.results.length || shellAll.response.skipped.length'
+          ng-click='exportShellAll()')
+            i.fa.fa-download.fa-fw
+            span(translate) Export CSV
+      .shell-all-result(ng-repeat='result in shellAll.response.results')
+        strong {{result.serial}}
+        span.label(ng-class='{"label-success": result.success, "label-danger": !result.success}')
+          | {{shellStatus(result)}}
+        pre {{result.data || result.error}}
+      .shell-all-result(ng-repeat='skip in shellAll.response.skipped')
+        strong {{skip.serial}}
+        span.label.label-warning skipped: {{skip.reason}}
+    hr
+
     nothing-to-show(icon='fa-mobile' message='{{"No Devices" | translate}}' ng-if='!devices.length')
 
     div(ng-if='devices.length')
