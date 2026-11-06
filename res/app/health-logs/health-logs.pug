@@ -19,7 +19,7 @@
           .health-card-label Errors / Fatal
           .health-card-value {{ summary.logs.error }} / {{ summary.logs.fatal }}
       .health-filters
-        input.form-control.input-sm(ng-model='filters.q', placeholder='Search tag, source, or message')
+        input.form-control.input-sm(ng-model='filters.q', ng-model-options='{debounce: 300}', placeholder='Search tag, source, or message')
         select.form-control.input-sm(ng-model='filters.priority')
           option(value='') All levels
           option(value='5') Warning and above

@@ -165,5 +165,61 @@ module.exports = function DevicesCtrl(
     updateDevice(publishDevice(message.device), message.timeStamp)
   })
 
+  $scope.shellAll = {command: '', force: false, running: false, response: null}
+
+  $scope.shellStatus = function(result) {
+    if (result.success === null) {
+      return 'timed out'
+    }
+    return result.success ? 'ok' : 'failed'
+  }
+
+  $scope.runShellAll = function() {
+    var command = $scope.shellAll.command
+    $scope.shellAll.running = true
+    $scope.shellAll.response = null
+    DevicesService.runShell(command, $scope.shellAll.force)
+      .then(function(response) {
+        $scope.shellAll.response = response.data
+        $scope.shellAll.response.command = command
+      })
+      .catch(function(response) {
+        $scope.shellAll.response = {
+          description: (response.data && response.data.description) || 'Request failed'
+        , results: []
+        , skipped: []
+        }
+      })
+      .finally(function() {
+        $scope.shellAll.running = false
+      })
+  }
+
+  function csvCell(value) {
+    return '"' + String(value === null || typeof value === 'undefined' ? '' : value)
+      .replace(/"/g, '""') + '"'
+  }
+
+  $scope.exportShellAll = function() {
+    var response = $scope.shellAll.response
+    var rows = [['command', 'serial', 'status', 'output']]
+      .concat(response.results.map(function(result) {
+        return [response.command, result.serial, $scope.shellStatus(result),
+          result.data || result.error]
+      }))
+      .concat(response.skipped.map(function(skip) {
+        return [response.command, skip.serial, 'skipped', skip.reason]
+      }))
+    var csv = rows.map(function(row) {
+      return row.map(csvCell).join(',')
+    }).join('\r\n')
+
+    var link = document.createElement('a')
+    link.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}))
+    link.download = 'shell-all-' + new Date().toISOString().replace(/[:.]/g, '-') + '.csv'
+    link.click()
+    URL.revokeObjectURL(link.href)
+  }
+
   initScope()
 }

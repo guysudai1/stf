@@ -17,8 +17,11 @@ services:
     restart: unless-stopped
     privileged: true
     network_mode: host
+    environment:
+      ADB_VENDOR_KEYS: /adbkeys
     volumes:
       - /dev/bus/usb:/dev/bus/usb
+      - ${STF_ADB_KEYS_DIR:-./adbkeys}:/adbkeys:ro
     command:
       - sh
       - -c
@@ -42,10 +45,12 @@ services:
       - adb
     network_mode: host
     environment:
-      TZ: ${TZ:-Asia/Jerusalem}
+      TZ: ${TZ:-UTC}
       RETHINKDB_PORT_28015_TCP: tcp://172.18.0.2:28015
       STF_ADMIN_EMAIL: ${STF_ADMIN_EMAIL:-admin@localhost}
       STF_ADMIN_NAME: ${STF_ADMIN_NAME:-STF Admin}
+    volumes:
+      - ${STF_ADB_KEYS_DIR:-./adbkeys}:/adbkeys
     command:
       - stf
       - local
@@ -63,6 +68,8 @@ services:
       - "7400"
       - --provider-max-port
       - "7500"
+      - --adb-keys-dir
+      - /adbkeys
 networks:
   default:
     ipam:

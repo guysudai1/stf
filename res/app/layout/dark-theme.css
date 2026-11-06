@@ -77,19 +77,7 @@ body.bg-1.stf-dark-theme,
   border-color: var(--stf-dark-border);
 }
 
-.stf-dark-theme .stf-theme-toggle-global {
-  color: var(--stf-dark-muted);
-  background: var(--stf-dark-surface);
-  border-color: var(--stf-dark-border);
-}
-
 .stf-dark-theme .stf-menu .stf-theme-toggle .btn:hover {
-  color: var(--stf-dark-text);
-  background: var(--stf-dark-surface-raised);
-  border-color: var(--stf-dark-link);
-}
-
-.stf-dark-theme .stf-theme-toggle-global:hover {
   color: var(--stf-dark-text);
   background: var(--stf-dark-surface-raised);
   border-color: var(--stf-dark-link);
@@ -293,4 +281,205 @@ body.bg-1.stf-dark-theme,
 
 .stf-dark-theme ::-webkit-scrollbar-track {
   background: var(--stf-dark-bg);
+}
+
+/* ---- consistency pass: nav tabs, pagination, addons, disabled, code, health ---- */
+
+.stf-dark-theme .nav-tabs {
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .nav-tabs > li > a:hover,
+.stf-dark-theme .nav-pills > li > a:hover {
+  background: var(--stf-dark-surface-raised);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .nav-tabs > li.active > a,
+.stf-dark-theme .nav-tabs > li.active > a:hover,
+.stf-dark-theme .nav-tabs > li.active > a:focus {
+  background: var(--stf-dark-surface);
+  border-color: var(--stf-dark-border);
+  border-bottom-color: transparent;
+}
+
+.stf-dark-theme .pagination > li > a,
+.stf-dark-theme .pagination > li > span {
+  background: var(--stf-dark-surface);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .pagination > li > a:hover {
+  background: var(--stf-dark-surface-raised);
+}
+
+.stf-dark-theme .pagination > .active > a,
+.stf-dark-theme .pagination > .active > a:hover,
+.stf-dark-theme .pagination > .active > span {
+  background: #2f5f94;
+  border-color: var(--stf-dark-link);
+  color: #fff !important;
+}
+
+.stf-dark-theme .pagination > .disabled > a,
+.stf-dark-theme .pagination > .disabled > span {
+  background: var(--stf-dark-bg);
+  color: var(--stf-dark-muted) !important;
+  opacity: 0.6;
+}
+
+.stf-dark-theme .input-group-addon {
+  background: var(--stf-dark-surface-raised);
+  color: var(--stf-dark-muted);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .form-control[disabled],
+.stf-dark-theme .form-control[readonly],
+.stf-dark-theme fieldset[disabled] .form-control,
+.stf-dark-theme input:disabled,
+.stf-dark-theme select:disabled,
+.stf-dark-theme textarea:disabled {
+  background-color: var(--stf-dark-bg);
+  color: var(--stf-dark-muted);
+  opacity: 0.7;
+}
+
+.stf-dark-theme .btn-default.disabled,
+.stf-dark-theme .btn-default[disabled],
+.stf-dark-theme .btn-default-outline.disabled,
+.stf-dark-theme .btn-default-outline[disabled] {
+  background: var(--stf-dark-surface);
+  opacity: 0.5;
+}
+
+.stf-dark-theme code {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ff9eb5;
+}
+
+.stf-dark-theme pre {
+  background: var(--stf-dark-surface);
+  color: var(--stf-dark-text);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme hr {
+  border-color: var(--stf-dark-border);
+}
+
+/* Health & Logs */
+.stf-dark-theme .stf-health-logs .health-card {
+  background: var(--stf-dark-surface-raised);
+}
+
+.stf-dark-theme .stf-health-logs .health-card-label,
+.stf-dark-theme .stf-health-logs .health-status-description {
+  color: var(--stf-dark-muted);
+}
+
+.stf-dark-theme .stf-health-logs .health-card-value.healthy { color: #7ed07e; }
+.stf-dark-theme .stf-health-logs .health-card-value.warning { color: #e6b95f; }
+.stf-dark-theme .stf-health-logs .health-card-value.degraded,
+.stf-dark-theme .stf-health-logs .health-card-value.critical,
+.stf-dark-theme .stf-health-logs .health-error { color: #ff8a87; }
+
+.stf-dark-theme .stf-health-logs .health-row-warning { background: rgba(240, 173, 78, 0.16); }
+.stf-dark-theme .stf-health-logs .health-row-error { background: rgba(217, 83, 79, 0.2); }
+.stf-dark-theme .stf-health-logs .health-row-fatal { background: rgba(217, 83, 79, 0.32); }
+
+.stf-dark-theme .stf-health-logs .health-level-important { background: rgba(91, 192, 222, 0.2); color: #8fd6ea; }
+.stf-dark-theme .stf-health-logs .health-level-warning { background: rgba(240, 173, 78, 0.2); color: #f0c27a; }
+.stf-dark-theme .stf-health-logs .health-level-error,
+.stf-dark-theme .stf-health-logs .health-level-fatal { background: rgba(217, 83, 79, 0.25); color: #ff9c99; }
+
+/* link colour must not override filled buttons */
+.stf-dark-theme a.btn:not(.btn-default):not(.btn-default-outline):not(.btn-link) {
+  color: #fff !important;
+}
+
+.stf-dark-theme .panel,
+.stf-dark-theme .panel-default,
+.stf-dark-theme .panel-body {
+  background: var(--stf-dark-surface);
+  color: var(--stf-dark-text);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .panel-default > .panel-heading {
+  border-color: var(--stf-dark-border);
+}
+
+/* ---- selected / active states: dark background, readable text ---- */
+.stf-dark-theme ::selection {
+  background: #2f5f94;
+  color: #fff !important;
+}
+
+.stf-dark-theme .nav-tabs > li.active > a,
+.stf-dark-theme .nav-tabs > li.active > a:hover,
+.stf-dark-theme .nav-tabs > li.active > a:focus,
+.stf-dark-theme .nav-pills > li.active > a,
+.stf-dark-theme .nav-pills > li.active > a:hover,
+.stf-dark-theme .nav-pills > li.active > a:focus {
+  background: var(--stf-dark-surface-raised);
+  color: var(--stf-dark-text) !important;
+}
+
+.stf-dark-theme .dropdown-menu > .active > a,
+.stf-dark-theme .dropdown-menu > li > a:hover,
+.stf-dark-theme .dropdown-menu > li > a:focus {
+  background: var(--stf-dark-surface-raised);
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .list-group-item.active,
+.stf-dark-theme .list-group-item.active:hover,
+.stf-dark-theme .table > tbody > tr.active > td,
+.stf-dark-theme .table > tbody > tr.active > th,
+.stf-dark-theme .table > tbody > tr.selected > td,
+.stf-dark-theme tr.active,
+.stf-dark-theme tr.selected {
+  background: #25415f;
+  color: var(--stf-dark-text);
+  border-color: var(--stf-dark-border);
+}
+
+.stf-dark-theme .btn.active,
+.stf-dark-theme .btn:active,
+.stf-dark-theme .btn-group > .btn.active,
+.stf-dark-theme .btn-default.active,
+.stf-dark-theme .btn-default-outline.active {
+  background: #25415f;
+  color: var(--stf-dark-text) !important;
+  border-color: var(--stf-dark-link);
+  box-shadow: none;
+}
+
+.stf-dark-theme select option,
+.stf-dark-theme select optgroup {
+  background: var(--stf-dark-surface);
+  color: var(--stf-dark-text);
+}
+
+.stf-dark-theme .stf-apps .color-darkgray {
+  color: var(--stf-dark-muted);
+}
+
+.stf-dark-theme .nav > li > a:hover,
+.stf-dark-theme .nav > li > a:focus {
+  background: var(--stf-dark-surface-raised);
+}
+
+.stf-dark-theme .label-info,
+.stf-dark-theme .btn-info {
+  background-color: #2f5f94;
+  border-color: var(--stf-dark-border);
+  color: #fff;
+}
+
+.stf-dark-theme .list-group-item.active a,
+.stf-dark-theme .list-group-item.active a:hover {
+  background: transparent;
+  color: #fff !important;
 }

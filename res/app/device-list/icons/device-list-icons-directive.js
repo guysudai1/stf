@@ -176,6 +176,13 @@ module.exports = function DeviceListIconsDirective(
               e.preventDefault()
             }
           }
+          else if (device.state === 'busy' &&
+              e.target.classList.contains('btn') && e.target.classList.contains('state-busy')) {
+            if (GroupService.confirmForceRelease(device)) {
+              kickDevice(device, true)
+            }
+            e.preventDefault()
+          }
         }
       })
 

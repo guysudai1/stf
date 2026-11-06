@@ -14,27 +14,17 @@ module.exports = function EnhanceDeviceServiceFactory($filter, AppState) {
       // transitional state explicit instead of showing the misleading
       // generic "Connected" label while ADB is connecting or authorizing.
       data.state = 'connecting'
-      var status = typeof data.status === 'string' ?
-        data.status.toUpperCase() : data.status
-      switch (status) {
+      switch (data.status) {
         case 1:
-        case 'OFFLINE':
           data.state = 'offline'
           break
         case 2:
-        case 'UNAUTHORIZED':
           data.state = 'unauthorized'
           break
-        case 4:
-        case 'CONNECTING':
-          data.state = 'connecting'
-          break
         case 5:
-        case 'AUTHORIZING':
           data.state = 'authorizing'
           break
         case 3:
-        case 'ONLINE':
           data.state = 'preparing'
           if (data.ready) {
             data.state = 'ready'

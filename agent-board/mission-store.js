@@ -72,6 +72,7 @@ JsonMissionStore.prototype._persist = function() {
   var directory = path.dirname(this.filePath)
   var temporaryPath = this.filePath + '.tmp'
   this._writeQueue = this._writeQueue
+    .catch(function() {})
     .then(function() {
       return fsp.mkdir(directory, {recursive: true})
     })

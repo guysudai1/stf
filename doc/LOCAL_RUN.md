@@ -86,12 +86,12 @@ npm install --no-audit --no-fund
 npx playwright install chromium
 ```
 
-Run the device-less UI and root-permission checks with the same guest endpoint
+Run the device-less UI and admin-permission checks with the same guest endpoint
 used by the local server:
 
 ```bash
 STF_URL=http://127.0.0.1:7100 npm run test:ui
-STF_URL=http://127.0.0.1:7100 npm run test:root-permissions
+STF_URL=http://127.0.0.1:7100 npm run test:admin-permissions
 ```
 
 To run every Playwright system test, use `npm test`. The device suite skips
@@ -104,15 +104,14 @@ STF_DEVICE_SERIAL=emulator-5554 \
 npm run test:device
 ```
 
-The root-permission suite verifies guest users receive `root` privilege, newly
-created users receive `root`, user-owned groups remain `user`, metrics are
-available to a root user, and the built-in root owner cannot be deleted. It
-removes the temporary user and group it creates. Run one check by title with,
+The admin-permission suite verifies guest users receive `admin` privilege, newly
+created users receive `admin`, metrics are available to an admin user, and the
+built-in root owner cannot be deleted. It removes the temporary user it creates. Run one check by title with,
 for example:
 
 ```bash
 STF_URL=http://127.0.0.1:7100 \
-npm run test:root-permissions -- --grep root_permissions
+npm run test:admin-permissions -- --grep admin_permissions
 ```
 
 Reports, traces, screenshots, and videos are written under
@@ -148,9 +147,11 @@ firewall rules; a container-local route or an ADB server in another network is
 not sufficient. ADB-over-TCP is unauthenticated on many devices, so never
 expose these ports to an untrusted network.
 
-Local runs preserve device state between Usage sessions. Device cleanup is not
-part of the provider or device lifecycle, so APKs and other device changes
-remain installed after releasing and reclaiming a device.
+Local runs preserve device state between Usage sessions. In particular, APKs
+installed during a session remain installed after releasing the device. This
+is the local command's default (`--no-cleanup`). Use `--cleanup` explicitly
+when a disposable device reset is required; that mode removes packages added
+after the provider starts when the device is released.
 
 To run the persistent APK regression against a real emulator, set the serial,
 APK path, and package name before running the device Playwright suite:
@@ -160,6 +161,33 @@ STF_DEVICE_SERIAL=emulator-5554 \
 STF_PERSISTENCE_APK=/path/to/test.apk \
 STF_PERSISTENCE_PACKAGE=com.example.test \
 npm --prefix test/playwright run test:device
+```
+
+## Multiple ADB keys
+
+Devices that already trust another machine's key can be used without a new
+"Allow USB debugging" prompt. Copy that machine's private key
+(`~/.android/adbkey`) into `./adbkeys/` (git-ignored) as `<name>.adb_key`, or
+point `STF_ADB_KEYS_DIR` at another directory; the `adb` service reads it
+through `ADB_VENDOR_KEYS`. adb only loads directory entries ending in
+`.adb_key`, tries each key in turn, and shows the prompt for its own key only
+when none is accepted.
+
+Admins can also list, upload and delete these keys under Settings > Keys >
+Provider ADB Keys. The page needs `--adb-keys-dir` (`STF_LOCAL_ADB_KEYS_DIR`,
+or `STF_API_ADB_KEYS_DIR` for a standalone `stf api`); Compose passes
+`/adbkeys` and mounts the folder read-write into `stf`, so it must be writable
+by the container's `stf` user. Uploads must be unencrypted 2048-bit RSA PEM
+keys, are stored with mode 0600 and are never overwritten; fingerprints use
+the same MD5 format as the per-user ADB keys and the device's prompt.
+
+adb reads the keys only when its server starts, and the provider exits when
+the ADB server goes away, so restart adb and then STF to apply changes. With
+Compose, `docker compose restart adb stf`; for `stf local` without Docker:
+
+```bash
+adb kill-server && ADB_VENDOR_KEYS=/path/to/keys adb start-server
+stf local --adb-keys-dir /path/to/keys ...
 ```
 
 ## Install and start the companion
@@ -233,10 +261,11 @@ The local guest flow is nickname-only. The nickname is shown in the STF header
 after login, and `Logout` clears the signed guest session and returns to
 `/auth/guest/`. Logout does not release or reset the emulator.
 
-Device cleanup on release has been removed. Releasing a Usage session does not
-uninstall APKs, clear configured folders, reset Bluetooth, or remove Bluetooth
-bonds. This is intentional for the local workflow; direct uninstall or device
-reset commands remain explicit user actions.
+`stf local` disables device cleanup by default. Releasing a Usage session does
+not uninstall APKs, clear configured folders, reset Bluetooth, or remove
+Bluetooth bonds unless `--cleanup` (and the related `--cleanup-*` options) is
+passed. A standalone `stf provider` keeps upstream's default of cleaning up on
+release; pass `--no-cleanup` to preserve device state there.
 
 To prove APK persistence through STF rather than through a direct ADB install,
 run the permanent Playwright regression with a compatible APK and its actual

@@ -29,7 +29,7 @@ test.describe('administrator health and logs system behavior', function() {
 
       const user = await api(page, '/api/v1/user')
       expect(user.status).toBe(200)
-      expect(user.body.user.privilege).toBe('root')
+      expect(user.body.user.privilege).toBe('admin')
 
       const summary = await api(page, '/api/v1/health/summary')
       expect(summary.status).toBe(200)
@@ -58,13 +58,14 @@ test.describe('administrator health and logs system behavior', function() {
       await expect(page.locator('.health-filters')).toBeVisible()
 
       const message = 'health-system-test-' + Date.now()
-      const dealer = zmqutil.socket('dealer')
-      dealer.connect('tcp://127.0.0.1:7112')
+      // Same route as provider and device workers: dev pull -> processor -> app pub.
+      const push = zmqutil.socket('push')
+      push.connect('tcp://127.0.0.1:7116')
       try {
         await new Promise(function(resolve) {
           setTimeout(resolve, 500)
         })
-        dealer.send([
+        push.send([
           wireutil.global
         , wireutil.envelope(new wire.HealthLogMessage(
             Date.now() / 1000
@@ -82,7 +83,7 @@ test.describe('administrator health and logs system behavior', function() {
         })
       }
       finally {
-        dealer.close()
+        push.close()
       }
     })
 })

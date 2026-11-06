@@ -30,6 +30,10 @@ describe('Remote ADB scanner', function() {
       expect(function() {
         scanner.validateConfig({subnet: '10.0.0.0/20', ports: [1, 2]})
       }).to.throw(/4096/)
+      expect(function() {
+        scanner.validateConfig({subnet: '10.0.0.0/24', intervalSeconds: 0})
+      }).to.throw(/interval/)
+      expect(scanner.validateConfig({}).enabled).to.equal(false)
     })
   })
 
@@ -67,6 +71,55 @@ describe('Remote ADB scanner', function() {
     current.start().then(function(summary) {
       expect(summary.responsive).to.equal(1)
       expect(connects).to.deep.equal([['10.0.0.1', 5555]])
+      current.stop()
+      done()
+    }).catch(done)
+  })
+
+  it('logs the endpoint and the adb error when connect fails', function(done) {
+    var warnings = []
+    var fakeNet = {
+      createConnection: function(options) {
+        var socket = new EventEmitter()
+        socket.setTimeout = function() {}
+        socket.destroy = function() {}
+        setImmediate(function() {
+          if (options.host === '10.0.0.1') {
+            socket.emit('connect')
+          }
+          else {
+            socket.emit('error', new Error('closed'))
+          }
+        })
+        return socket
+      }
+    }
+    var current = scanner({
+      subnet: '10.0.0.0/30'
+    , ports: [5555]
+    , intervalSeconds: 60
+    , net: fakeNet
+    , log: {
+        info: function() {}
+      , warn: function() {
+          warnings.push(Array.prototype.slice.call(arguments))
+        }
+      }
+    , client: {
+        connect: function() {
+          return Promise.reject(new Error('unable to connect to 10.0.0.1:5555'))
+        }
+      }
+    })
+
+    current.start().then(function(summary) {
+      expect(summary.responsive).to.equal(1)
+      expect(summary.connected).to.equal(0)
+      expect(summary.failed).to.equal(1)
+      expect(warnings).to.have.lengthOf(1)
+      expect(warnings[0][1]).to.equal('10.0.0.1')
+      expect(warnings[0][2]).to.equal(5555)
+      expect(warnings[0][3]).to.equal('unable to connect to 10.0.0.1:5555')
       current.stop()
       done()
     }).catch(done)

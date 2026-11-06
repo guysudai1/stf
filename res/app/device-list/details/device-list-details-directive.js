@@ -69,8 +69,10 @@ module.exports = function DeviceListDetailsDirective(
             e.preventDefault()
           }
 
-          if ($rootScope.adminMode && device.state === 'busy') {
-            kickDevice(device, true)
+          if (device.state === 'busy') {
+            if (GroupService.confirmForceRelease(device)) {
+              kickDevice(device, true)
+            }
             e.preventDefault()
           }
           else if (device.using) {

@@ -1,0 +1,20 @@
+.stf-provider-keys .provider-keys-upload {
+  margin-bottom: 10px;
+}
+
+.stf-provider-keys .provider-keys-upload .form-group {
+  margin-right: 6px;
+}
+
+.stf-provider-keys .provider-keys-file {
+  margin-left: 6px;
+}
+
+.stf-provider-keys .key-list-fingerprint {
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  font-size: 11px;
+}
+
+.stf-provider-keys .label {
+  margin-left: 6px;
+}

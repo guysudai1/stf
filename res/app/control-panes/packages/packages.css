@@ -1,0 +1,47 @@
+.stf-packages .heading .badge {
+  margin-left: 8px;
+}
+
+.stf-packages .packages-toolbar {
+  margin-bottom: 10px;
+}
+
+.stf-packages .packages-toolbar .checkbox {
+  margin-left: 12px;
+}
+
+.stf-packages .packages-toolbar .checkbox input {
+  margin-right: 6px;
+}
+
+/* Fixed layout so the header widths govern the columns; overflow truncates. */
+.stf-packages .packages-table {
+  table-layout: fixed;
+  max-width: none;
+}
+
+.stf-packages .packages-table th,
+.stf-packages .packages-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stf-packages .packages-table th {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.stf-packages .column-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.stf-packages .column-resize-handle:hover {
+  background: rgba(0, 0, 0, 0.15);
+}

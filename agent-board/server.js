@@ -12,8 +12,7 @@ function json(res, status, body) {
   var payload = JSON.stringify(body)
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(payload),
-    'Access-Control-Allow-Origin': '*'
+    'Content-Length': Buffer.byteLength(payload)
   })
   res.end(payload)
 }
@@ -23,7 +22,7 @@ function errorResponse(res, status, message) {
 }
 
 function noContent(res) {
-  res.writeHead(204, {'Access-Control-Allow-Origin': '*'})
+  res.writeHead(204)
   res.end()
 }
 
@@ -56,6 +55,17 @@ function readBody(req, limit) {
 function writeEvent(res, event, payload) {
   res.write('event: ' + event + '\n')
   res.write('data: ' + JSON.stringify(payload) + '\n\n')
+}
+
+function isLocalHost(host, port) {
+  host = String(host || '').toLowerCase()
+  return ['localhost', '127.0.0.1', '[::1]'].some(function(name) {
+    return host === name + ':' + port
+  })
+}
+
+function isJsonRequest(req) {
+  return /^application\/json\s*(;|$)/i.test(req.headers['content-type'] || '')
 }
 
 function contentType(filePath) {
@@ -146,12 +156,12 @@ function createAgentBoard(options) {
   var server = http.createServer(function(req, res) {
     var requestUrl = new URL(req.url, 'http://127.0.0.1')
     var pathname = requestUrl.pathname
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS')
-    if (req.method === 'OPTIONS') {
-      res.writeHead(204)
-      res.end()
+    if (!isLocalHost(req.headers.host, server.address().port)) {
+      errorResponse(res, 403, 'Forbidden host')
+      return
+    }
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].indexOf(req.method) !== -1 && !isJsonRequest(req)) {
+      errorResponse(res, 415, 'Content-Type must be application/json')
       return
     }
 
@@ -181,8 +191,7 @@ function createAgentBoard(options) {
       res.writeHead(200, {
         'Content-Type': 'text/event-stream; charset=utf-8',
         'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-        'Access-Control-Allow-Origin': '*'
+        Connection: 'keep-alive'
       })
       clients.add(res)
       writeEvent(res, 'ready', {ok: true})

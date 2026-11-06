@@ -33,6 +33,12 @@ module.exports =
         filters: ['native', 'web']
       },
       {
+        title: gettext('Apps'),
+        icon: 'fa-th color-green',
+        templateUrl: 'control-panes/packages/packages.pug',
+        filters: ['native', 'web']
+      },
+      {
         title: gettext('Info'),
         icon: 'fa-info color-orange',
         templateUrl: 'control-panes/info/info.pug',
