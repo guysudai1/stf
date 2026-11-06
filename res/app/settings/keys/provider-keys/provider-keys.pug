@@ -1,0 +1,54 @@
+.widget-container.fluid-height.stf-keys.stf-provider-keys(ng-if='isAdmin')
+  .heading
+    i.fa.fa-server
+    span(translate) Provider ADB Keys
+
+  .widget-content.padded
+    p.text-muted(ng-if='configured === false' translate)
+      | Not configured: start STF with --adb-keys-dir pointing at the ADB_VENDOR_KEYS folder.
+
+    div(ng-if='configured')
+      p.text-muted(translate)
+        | Private keys adb offers to devices that trust another machine. adb reads them only when its server starts: restart the adb server, then STF, to apply changes.
+
+      form.form-inline.provider-keys-upload(ng-submit='addKey()')
+        .form-group
+          label.btn.btn-sm.btn-primary-outline.btn-file
+            i.fa.fa-upload.fa-fw
+            span(translate) Choose key file
+            input(type='file' ng-file-select='readKey($files)')
+          span.text-muted.provider-keys-file(ng-bind='upload.fileName')
+        .form-group
+          input.form-control.input-sm(
+            type='text'
+            ng-model='upload.name'
+            maxlength='64'
+            placeholder="{{'Key name' | translate}}")
+        button.btn.btn-sm.btn-primary(type='submit' ng-disabled='!upload.key || !upload.name')
+          i.fa.fa-plus.fa-fw
+          span(translate) Add key
+
+      .alert.alert-danger.provider-keys-error(ng-if='error' ng-bind='error')
+
+      nothing-to-show(icon='fa-key' message='{{"No provider ADB keys" | translate}}' ng-if='!keys.length')
+
+      table.table.table-condensed.provider-keys-table(ng-if='keys.length')
+        thead
+          tr
+            th(translate) Name
+            th(translate) Fingerprint
+            th(translate) Size
+            th(translate) Modified
+            th
+        tbody
+          tr(ng-repeat='key in keys track by key.name')
+            td.selectable
+              span(ng-bind='key.name')
+              span.label.label-warning(ng-if='!key.loaded' translate) ignored by adb
+            td.selectable.key-list-fingerprint(ng-bind='key.fingerprint || "-"')
+            td {{key.size}} B
+            td {{key.modified | date:'yyyy-MM-dd HH:mm'}}
+            td.text-right
+              button.btn.btn-xs.btn-danger-outline(type='button' ng-click='removeKey(key)')
+                i.fa.fa-trash-o
+                span(translate) Delete

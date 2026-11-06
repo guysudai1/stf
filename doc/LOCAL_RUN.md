@@ -167,14 +167,27 @@ npm --prefix test/playwright run test:device
 
 Devices that already trust another machine's key can be used without a new
 "Allow USB debugging" prompt. Copy that machine's private key
-(`~/.android/adbkey`) into `./adbkeys/` (git-ignored), or point
-`STF_ADB_KEYS_DIR` at another directory; the `adb` service reads it through
-`ADB_VENDOR_KEYS`. adb tries each key in turn and shows the prompt for its own
-key only when none is accepted. For `stf local` without Docker, restart the
-host ADB server with the variable (colon-separated files or directories):
+(`~/.android/adbkey`) into `./adbkeys/` (git-ignored) as `<name>.adb_key`, or
+point `STF_ADB_KEYS_DIR` at another directory; the `adb` service reads it
+through `ADB_VENDOR_KEYS`. adb only loads directory entries ending in
+`.adb_key`, tries each key in turn, and shows the prompt for its own key only
+when none is accepted.
+
+Admins can also list, upload and delete these keys under Settings > Keys >
+Provider ADB Keys. The page needs `--adb-keys-dir` (`STF_LOCAL_ADB_KEYS_DIR`,
+or `STF_API_ADB_KEYS_DIR` for a standalone `stf api`); Compose passes
+`/adbkeys` and mounts the folder read-write into `stf`, so it must be writable
+by the container's `stf` user. Uploads must be unencrypted 2048-bit RSA PEM
+keys, are stored with mode 0600 and are never overwritten; fingerprints use
+the same MD5 format as the per-user ADB keys and the device's prompt.
+
+adb reads the keys only when its server starts, and the provider exits when
+the ADB server goes away, so restart adb and then STF to apply changes. With
+Compose, `docker compose restart adb stf`; for `stf local` without Docker:
 
 ```bash
 adb kill-server && ADB_VENDOR_KEYS=/path/to/keys adb start-server
+stf local --adb-keys-dir /path/to/keys ...
 ```
 
 ## Install and start the companion
