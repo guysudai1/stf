@@ -1,6 +1,5 @@
 module.exports = function ProviderKeysCtrl($scope, $http, $filter, gettext, AppState) {
   $scope.isAdmin = AppState.user.privilege === 'admin'
-  $scope.keys = []
   $scope.upload = {}
 
   function fail(response) {
@@ -15,7 +14,7 @@ module.exports = function ProviderKeysCtrl($scope, $http, $filter, gettext, AppS
   }
 
   $scope.readKey = function($files) {
-    var file = $files && $files[0]
+    var file = $files[0]
     $scope.error = null
     if (!file) {
       return
@@ -36,23 +35,17 @@ module.exports = function ProviderKeysCtrl($scope, $http, $filter, gettext, AppS
   $scope.addKey = function() {
     $scope.error = null
     return $http.post('/api/v1/adbkeys', {name: $scope.upload.name, key: $scope.upload.key})
-      .then(function() {
-        $scope.upload = {}
-        return load()
-      }, fail)
+      .then(load, fail)
       .finally(function() {
-        // never keep private key material around after an attempt
-        delete $scope.upload.key
-        delete $scope.upload.fileName
+        $scope.upload = {}
       })
   }
 
   $scope.removeKey = function(key) {
-    if (!confirm($filter('translate')(gettext('Delete this ADB key?')) + '\n' + key.name)) {
-      return
+    if (confirm($filter('translate')(gettext('Delete this ADB key?')) + '\n' + key.name)) {
+      $scope.error = null
+      $http.delete('/api/v1/adbkeys/' + encodeURIComponent(key.name)).then(load, fail)
     }
-    $scope.error = null
-    return $http.delete('/api/v1/adbkeys/' + encodeURIComponent(key.name)).then(load, fail)
   }
 
   if ($scope.isAdmin) {

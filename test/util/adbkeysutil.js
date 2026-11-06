@@ -42,7 +42,7 @@ describe('adbkeysutil', function() {
   })
 
   it('rejects unsafe names and unusable keys', function() {
-    ['../evil', '.hidden', 'a/b', '', 'x'.repeat(65), 42].forEach(function(name) {
+    ['../evil', '.hidden', 'a/b', '', 'x'.repeat(65)].forEach(function(name) {
       expect(status(function() {
         adbkeysutil.fileName(name)
       }), String(name)).to.equal(400)

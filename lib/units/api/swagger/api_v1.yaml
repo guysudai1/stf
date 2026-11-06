@@ -1815,6 +1815,7 @@ paths:
               * 401: Unauthorized => bad credentials
               * 403: Forbidden => privileged operation (admin)
               * 409: Conflict => name already used
+              * 500: Internal Server Error
               * 503: Service Unavailable => no keys folder configured
           schema:
             $ref: "#/definitions/UnexpectedErrorResponse"
@@ -1845,6 +1846,7 @@ paths:
               * 401: Unauthorized => bad credentials
               * 403: Forbidden => privileged operation (admin)
               * 404: Not Found => unknown key
+              * 500: Internal Server Error
               * 503: Service Unavailable => no keys folder configured
           schema:
             $ref: "#/definitions/UnexpectedErrorResponse"
