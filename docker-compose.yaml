@@ -17,8 +17,11 @@ services:
     restart: unless-stopped
     privileged: true
     network_mode: host
+    environment:
+      ADB_VENDOR_KEYS: /adbkeys
     volumes:
       - /dev/bus/usb:/dev/bus/usb
+      - ${STF_ADB_KEYS_DIR:-./adbkeys}:/adbkeys:ro
     command:
       - sh
       - -c

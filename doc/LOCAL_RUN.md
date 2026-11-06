@@ -163,6 +163,20 @@ STF_PERSISTENCE_PACKAGE=com.example.test \
 npm --prefix test/playwright run test:device
 ```
 
+## Multiple ADB keys
+
+Devices that already trust another machine's key can be used without a new
+"Allow USB debugging" prompt. Copy that machine's private key
+(`~/.android/adbkey`) into `./adbkeys/` (git-ignored), or point
+`STF_ADB_KEYS_DIR` at another directory; the `adb` service reads it through
+`ADB_VENDOR_KEYS`. adb tries each key in turn and shows the prompt for its own
+key only when none is accepted. For `stf local` without Docker, restart the
+host ADB server with the variable (colon-separated files or directories):
+
+```bash
+adb kill-server && ADB_VENDOR_KEYS=/path/to/keys adb start-server
+```
+
 ## Install and start the companion
 
 With an online emulator or device selected as `SERIAL`:
