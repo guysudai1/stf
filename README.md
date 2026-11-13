@@ -26,6 +26,10 @@ Thank you to all the people who have already contributed to STF!
     * Supports Wear 5.1 (but not 5.0 due to missing permissions)
     * Supports Fire OS, CyanogenMod, and other heavily Android based distributions
     * `root` is **not** required for any current functionality
+  - Experimental iOS on a Linux USB host
+    * Live screen, touch/text/Home, signed IPA installation, device health and iPhone controls
+    * [Local Compose/native setup](docker/ios/README.md) and [provider behavior and limits](doc/ios-provider.md)
+    * Requires a signed WebDriverAgent prepared with Xcode; no Mac runtime node is needed
 * Remote control any device from your browser
   - Real-time screen view
     * Refresh speed can reach 30-40 FPS depending on specs and Android version. See [minicap](https://github.com/devicefarmer/minicap) for more information.
@@ -105,7 +109,7 @@ Here are some things we are planning to address ASAP.
 
 ### Long term goals
 
-1. iOS support
+1. Expand experimental iOS support (landscape, multi-touch and Appium integration)
 
 ## A quick note about security
 
@@ -134,7 +138,8 @@ brew install rethinkdb graphicsmagick zeromq protobuf yasm pkg-config cmake
 On Windows you're on your own. In theory you might be able to get STF installed via [Cygwin](https://www.cygwin.com/) or similar, but we've never tried. In principle we will not provide any Windows installation support, but please do send a documentation pull request if you figure out what to do.
 
 We also provide a [Docker](http://docker.com/) container in the [Docker Hub](https://hub.docker.com/) as [devicefarmer/stf](https://hub.docker.com/r/devicefarmer/stf). You can use our [Dockerfile](Dockerfile) as guidance if you'd prefer to do the installation yourself.
-An example standalone [docker-compose.yaml](docker-compose.yaml) file is also provided.
+The [docker-compose.yaml](docker-compose.yaml) runs STF units as separate services. See the [Compose setup guide](docker/compose/README.md) for configuration and startup instructions.
+For Kubernetes, see the [Helm deployment guide](kubernetes/helm/README.md).
 
 You should now be ready to [build](#building) or [run](#running) STF.
 
@@ -152,12 +157,41 @@ Now you're ready to [run](#running). For development, though, you should [build]
 
 ## Building
 
-After you've got all the [requirements](#requirements) installed, it's time to fetch the rest of the dependencies.
-
-First, fetch all NPM and Bower modules:
+To build a container from this checkout, use Docker with BuildKit:
 
 ```bash
-npm install
+docker build -t stf:local .
+docker run --rm stf:local
+```
+
+The Dockerfile supports `linux/amd64` and `linux/arm64`. Build tools stay in separate stages. The runtime contains Node.js, production dependencies, GraphicsMagick and a headless Java runtime. STF runs as an unprivileged user with read-only access to the application files in `/app`. Dependency installation is cached independently of application sources. It runs `npm ci`, so the image gets the versions recorded in `package-lock.json`; a source tree without that file falls back to `npm install`. The bundled AAB-to-APK tool requires amd64.
+
+For custom health checks inside STF containers, replace `wget` with a Node.js probe like the one in [Docker Compose](docker-compose.yaml). Derived images that use `npm` or compile native modules should do so in a build stage and copy the resulting files into the runtime image. To refresh Ubuntu packages in a local build, pass `--no-cache-filter runtime-base` to `docker buildx build`.
+
+To use a custom npm registry or credentials, pass an npm config as a BuildKit secret:
+
+```bash
+docker build --secret id=npmrc,src="$HOME/.npmrc" -t stf:local .
+```
+
+The config file is mounted only for npm build steps and is not copied into image layers. The Ubuntu build excludes `.npmrc` files from its context via `Dockerfile.dockerignore`. Without the secret, npm uses its defaults. Host environment variables referenced by the file (such as `${NPM_TOKEN}`) are not forwarded.
+
+Secret contents do not invalidate the build cache; after changing the config, rebuild with `docker buildx build --no-cache-filter dependencies,production-dependencies,build --secret id=npmrc,src="$HOME/.npmrc" --load -t stf:local .`.
+
+After you've got all the [requirements](#requirements) installed, it's time to fetch the rest of the dependencies.
+
+First, fetch all NPM modules:
+
+```bash
+npm ci
+```
+
+`npm ci` installs exactly the versions recorded in `package-lock.json`, as CI and the Docker image do. `npm install` works as well; it also updates `package-lock.json` when `package.json` asks for something the lockfile does not have.
+
+Then compile the TypeScript sources in `lib/`, which `bin/stf` runs from:
+
+```bash
+node build.mts compile
 ```
 
 You may also wish to link the module so that you'll be able to access the `stf` command directly from the command line:
@@ -170,9 +204,9 @@ You should now have a working installation for local development.
 
 ## Running
 
-STF comprises of several independent processes that must normally be launched separately. In our own setup each one these processes is its own [systemd](http://www.freedesktop.org/wiki/Software/systemd/) unit. See [DEPLOYMENT.md](doc/DEPLOYMENT.md) and [Setup Examples](https://github.com/devicefarmer/setup-examples) if you're interested.
+STF comprises several independent processes that must normally be launched separately. Deploy them with the [Compose setup guide](docker/compose/README.md); [DEPLOYMENT.md](doc/DEPLOYMENT.md) covers the older route with one [systemd](http://www.freedesktop.org/wiki/Software/systemd/) unit per process.
 
-For development purposes, however, there's a helper command to quickly launch all required processes with a nickname-only guest entry page. No external authentication is required. Note that you **must** have RethinkDB running first. See [LOCAL_RUN.md](doc/LOCAL_RUN.md) for the verified STFService/emulator workflow, readiness checks, persistent device state, and troubleshooting notes.
+For development purposes, however, there's a helper command to quickly launch all required processes along with a nickname-only guest login (`--auth-type guest`, the default). See [doc/LOCAL_RUN.md](doc/LOCAL_RUN.md) for local run options. Note that you **must** have RethinkDB running first.
 
 If you don't have RethinkDB set up yet, to start it up, go to the folder where you'd like RethinkDB to create a `rethinkdb_data` folder in (perhaps the folder where this repo is) and run the following command:
 
@@ -217,7 +251,7 @@ Later, if you want to change the values of these built-in objects, for example t
 stf local
 ```
 
-After the [webpack](http://webpack.github.io/) build process has finished (which can take a small while) you should have your private STF running on [http://localhost](http://localhost). The active guest nickname is shown in the header and can be cleared with `Logout`. Local device state is preserved when a Usage session is released. If you had devices connected before running the command, those devices should now be available for use. If not, you should see what went wrong from your console. Feel free to plug in or unplug any devices at any time.
+After the [webpack](http://webpack.github.io/) build process has finished (which can take a small while) you should have your private STF running on [http://localhost:7100](http://localhost:7100). If you had devices connected before running the command, those devices should now be available for use. If not, you should see what went wrong from your console. Feel free to plug in or unplug any devices at any time.
 
 Note that if you see your device ready to use but without a name or a proper image, we're probably missing the data for that model in [our device database](https://github.com/devicefarmer/stf-device-db). Everything should work fine either way.
 
@@ -229,13 +263,13 @@ stf local --public-ip <your_internal_network_ip_here>
 
 ## Updating
 
-To update your development version, simply pull the repo and run `npm install` again. You may occasionally have to remove the whole `node_modules` and `res/bower_components` folder to prevent NPM or Bower from complaining about version mismatches.
+To update your development version, simply pull the repo and run `npm ci` and `node build.mts compile` again. `npm ci` replaces `node_modules` with the versions in `package-lock.json`, so leftovers from an older checkout do not linger.
 
 ## FAQ
 
 ### Can I deploy STF to actual servers?
 
-Yes, see [DEPLOYMENT.md](doc/DEPLOYMENT.md) and [Setup Examples](https://github.com/devicefarmer/setup-examples).
+Yes, see the [Compose setup guide](docker/compose/README.md). [DEPLOYMENT.md](doc/DEPLOYMENT.md) describes the older systemd + Docker route.
 
 ### Will I have to change battery packs all the time?
 
@@ -428,30 +462,40 @@ Most powered USB 3.0 hubs we've tested have had a serious problem: the whole hub
 
 ## Translating
 
-Currently STF UI is available in English and Japanese.
+Translations are managed in the [STF Transifex project](https://app.transifex.com/devicefarmer/stf-main). If you would like to translate STF into your language, please contribute there rather than editing the `po` files directly, so that your work is not overwritten by the next sync.
 
-If you would like translate to any other language, please contribute in the [STF Transifex project](https://www.transifex.com/devicefarmer/stf-main).
+Transifex language codes are used as-is for the files in `res/common/lang/po` and the keys in `res/common/lang/langs.json`.
 
-For updating the source and all the translation files first you have to install the [Transifex client](http://docs.transifex.com/client/setup/).
+See [doc/TRANSLATING.md](doc/TRANSLATING.md) for the file layout, the status of machine translations and the list of translators.
 
-Then just run:
+The `json` catalogs the UI loads are not committed. `node build.mts webpack`, and so `npm install` and `node build.mts build`, compiles them from the `po` files first; run `node build.mts translate-compile` yourself if you serve the UI through webpack without building it.
+
+When you add or change a translatable string in the UI, run `node build.mts translate-extract` and commit the updated `stf.pot`. `node build.mts lint`, and so CI, runs `node build.mts translate-check`, which fails when `stf.pot` does not match the sources, when `langs.json` and the catalogs disagree, or when a translation uses a placeholder its source string does not have.
+
+The [Transifex GitHub integration](https://help.transifex.com/en/articles/6265125-github-installation-and-configuration), configured in [`transifex.yml`](transifex.yml), does the rest:
+
+1. A new `stf.pot` on `master` is sent to Transifex.
+2. Translations are sent back as a pull request that updates the `po` files. Run `node build.mts translate-contributors` after merging one to refresh the list of translators in `doc/TRANSLATING.md`.
+
+A language Transifex sends that is not in `langs.json` fails `translate-check`, so it can be added together with its label in the same pull request.
+
+To sync by hand instead, install the [Transifex client](https://developers.transifex.com/docs/cli), provide an API token in the `TX_TOKEN` environment variable and run:
 ```bash
-gulp translate
+node build.mts translate
 ```
 
 It will do the following:
 
-1. Convert all the `jade` files to `html`.
-2. Extract with gettext all translatable strings to `stf.pot`.
-3. Push `stf.pot` to Transifex.
-4. Pull from Transifex all `po` translations.
-5. Compile all `po` files to `json`.
+1. Extract all translatable strings from the UI sources to `stf.pot`.
+2. Push `stf.pot` to Transifex.
+3. Pull from Transifex the translations of every language that has a `po` file.
+4. Compile all `po` files to the `json` catalogs the UI loads.
+5. Update the list of current translators in `doc/TRANSLATING.md` from the `po` headers.
 
-Then in order to add it officially (only needs to be done once):
+Then in order to add a language officially (only needs to be done once):
 
 1. Add the language to `res/common/lang/langs.json`.
-2. Pull the specific language `tx pull -l <lang>`.
-3. Run `gulp translate`.
+2. Pull the specific language with `tx pull -l <lang>`.
 
 ## Testing
 

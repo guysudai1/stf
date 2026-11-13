@@ -7,6 +7,7 @@
 # report can name the layer that broke instead of showing one opaque red cross:
 #
 #   emulator_boot -> stf_device_present -> stf_device_usable
+#     -> subscriber_properties
 #     -> screen_stream / touch_roundtrip / device_shell / playwright_ui
 #
 # Never exits non-zero for a test failure. The verdict is $CHECKS_FILE; the
@@ -69,7 +70,7 @@ trap collect_logs EXIT
 
 # Anything we do not reach stays "skip". `image` seeds "pass" instead: reaching
 # this script proves the image exists, and ci.yml records the unpublished case.
-node .github/scripts/checks.js seed "$CHECKS_FILE"
+node .github/scripts/checks.mts seed "$CHECKS_FILE"
 
 note "waiting for $SERIAL to finish booting"
 adb -s "$SERIAL" wait-for-device
@@ -105,14 +106,6 @@ SDK="$(adb -s "$SERIAL" shell getprop ro.build.version.sdk | tr -d '\r\n')"
 ABI="$(adb -s "$SERIAL" shell getprop ro.product.cpu.abi | tr -d '\r\n')"
 echo "sdk level: $SDK"
 echo "abi:       $ABI"
-
-# @devicefarmer/minicap-prebuilt only ships a native minicap.so up to
-# android-30, so above that go straight to the app_process grabber instead of
-# letting STF fail the native attempt first.
-if [ -n "$SDK" ] && [ "$SDK" -gt 30 ] 2>/dev/null; then
-  export SCREEN_GRABBER=minicap-apk
-  echo "using the minicap apk grabber (no native lib for android-$SDK)"
-fi
 
 set_check emulator_boot pass
 
@@ -154,6 +147,29 @@ note "turning on show_touches so gestures are visible in the recording"
 adb -s "$SERIAL" shell settings put system show_touches 1 2>&1 | sed 's/^/  /' || \
   echo "  could not set show_touches, the device recording will show less"
 
+note "waiting for the SIM before STF reads the device identity"
+sim_state=""
+sim_read=no
+sim_ready=no
+waited=0
+while [ "$waited" -lt 30 ]; do
+  if sim_state="$(adb -s "$SERIAL" shell getprop gsm.sim.state | tr -d '\r\n')"; then
+    sim_read=yes
+  else
+    sim_state=""
+    sim_read=no
+  fi
+  case ",$sim_state," in
+    *,READY,* | *,LOADED,*)
+      sim_ready=yes
+      break
+      ;;
+  esac
+  sleep 3
+  waited=$((waited + 3))
+done
+echo "  gsm.sim.state=${sim_state:-unknown}"
+
 note "starting stf local against $SERIAL"
 if ! bash .github/scripts/start-stf.sh "$SERIAL"; then
   echo "::error::stf local did not come up"
@@ -161,7 +177,7 @@ if ! bash .github/scripts/start-stf.sh "$SERIAL"; then
 fi
 
 note "waiting for STF to register the device"
-if node .github/scripts/stf-devices.js wait-count 1 "$STF_WAIT"; then
+if node .github/scripts/stf-devices.mts wait-count 1 "$STF_WAIT"; then
   set_check stf_device_present pass
 else
   echo "::error::STF never registered $SERIAL"
@@ -170,7 +186,7 @@ else
 fi
 
 note "waiting for STF to mark the device present and ready"
-if node .github/scripts/stf-devices.js wait-ready "$SERIAL" "$STF_WAIT"; then
+if node .github/scripts/stf-devices.mts wait-ready "$SERIAL" "$STF_WAIT"; then
   set_check stf_device_usable pass
 else
   echo "::error::$SERIAL never became present+ready in STF"
@@ -178,23 +194,37 @@ else
   # Keep going: Playwright's failure output explains why far better than this.
 fi
 
-node .github/scripts/stf-devices.js list > "$LOG_DIR/stf-devices.json" \
+note "checking that the SIM identifiers reached the device document"
+if [ "$sim_read" != "yes" ]; then
+  echo "::error::could not read gsm.sim.state on $SERIAL, so there is nothing to judge the identifiers against"
+  set_check subscriber_properties fail
+elif [ "$sim_ready" != "yes" ]; then
+  echo "::warning::no usable SIM on $SERIAL (gsm.sim.state=${sim_state:-unknown}), so there are no identifiers to read"
+  set_check subscriber_properties pass
+elif node .github/scripts/stf-devices.mts subscriber "$SERIAL"; then
+  set_check subscriber_properties pass
+else
+  echo "::error::the SIM identifiers never reached the device document on $SERIAL"
+  set_check subscriber_properties fail
+fi
+
+node .github/scripts/stf-devices.mts list > "$LOG_DIR/stf-devices.json" \
   2> "$LOG_DIR/stf-devices.err" || true
 
 note "running the Playwright suite against $SERIAL"
 (
   cd test/playwright
   STF_DEVICE_SERIAL="$SERIAL" \
-  STF_URL="http://${STF_PUBLIC_IP:-127.0.0.1}:${STF_PORT:-80}" \
+  STF_URL="http://${STF_PUBLIC_IP:-127.0.0.1}:7100" \
   npx playwright test
 ) || echo "::warning::playwright reported failures"
 
 note "merging Playwright results"
-node .github/scripts/playwright-checks.js \
+node .github/scripts/playwright-checks.mts \
   test-results/playwright/report.json \
   "$LOG_DIR/playwright-checks.json" || true
 
-node .github/scripts/merge-checks.js \
+node .github/scripts/merge-checks.mts \
   "$CHECKS_FILE" "$LOG_DIR/playwright-checks.json"
 
 exit 0

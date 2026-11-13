@@ -4,6 +4,10 @@
 
 STF API is a RESTful API which allows you to reserve and release any STF device. Internally STF uses [Swagger](http://swagger.io/) interface for its API implementation. For those who don't know about Swagger, Swagger provides specifications for RESTful apis. By using it you can generate documentation and client SDKs in various language automatically for Swagger-enabled apps. This gives you power to use STF APIs in any language of your favorite. You can read more about Swagger [here](http://swagger.io/getting-started/).
 
+## Guide for AI agents
+
+A concise, self-describing guide for LLM agents is served at `/agents.md` (also `/llms.txt`) on every STF server, for example <http://localhost:7100/agents.md>.
+
 ## Swagger documentation
 
 Swagger documentation for the API is available [here](https://vbanthia.github.io/angular-swagger-ui).
@@ -14,7 +18,7 @@ Swagger documentation for the API is available [here](https://vbanthia.github.io
 - [Devices](#devices)
 - [User](#user)
 
-A few [examples](#examples) are also provided. We also have a more advanced example showing [how to use the API with Appium](https://github.com/openstf/stf-appium-example).
+A few [examples](#examples) are also provided. The archived [stf-appium-example](https://github.com/DeviceFarmer/stf-appium-example) repository has an older, more advanced example of using the API with Appium.
 
 ### Authentication
 
@@ -151,6 +155,72 @@ clientWithPromise.then(function(api) {
 })
 ```
 
+#### POST /devices/shell
+
+Runs one `adb shell` command on every present and ready device (admin only). Devices in use are skipped unless `force` is set. `timeout` is in milliseconds (default 10000, max 60000).
+
+```bash
+POST /api/v1/devices/shell
+```
+
+Using cURL:
+
+```bash
+curl -X POST -H "Authorization: Bearer YOUR-TOKEN-HERE" -H "Content-Type: application/json" \
+  -d '{"command": "getprop ro.build.version.release", "force": false, "timeout": 10000}' \
+  https://stf.example.org/api/v1/devices/shell
+```
+
+The same call is available from the command line with `stf shell-all <command..> --token YOUR-TOKEN-HERE [--url] [--force] [--timeout]`.
+
+#### GET /adbkeys
+
+Lists the provider's ADB private keys (the `ADB_VENDOR_KEYS` folder, set with `--adb-keys-dir`) with their fingerprints (admin only). Key contents are never returned.
+
+```bash
+GET /api/v1/adbkeys
+```
+
+#### POST /adbkeys
+
+Stores a 2048-bit RSA PEM private key as `<name>.adb_key`. Existing keys are never overwritten (409). Returns 503 when no keys folder is configured.
+
+```bash
+POST /api/v1/adbkeys
+```
+
+```bash
+curl -X POST -H "Authorization: Bearer YOUR-TOKEN-HERE" -H "Content-Type: application/json" \
+  -d "$(jq -n --rawfile key my.adb_key '{name: "my", key: $key}')" \
+  https://stf.example.org/api/v1/adbkeys
+```
+
+#### DELETE /adbkeys/{name}
+
+Deletes a key by its listed file name.
+
+```bash
+DELETE /api/v1/adbkeys/{name}
+```
+
+### Health
+
+#### GET /health/summary
+
+Returns the health summary for administrators.
+
+```bash
+GET /api/v1/health/summary
+```
+
+#### GET /health/logs
+
+Searches the health logs (admin only). Query parameters: `q` (text), `priority` (1-7), `serial`, `limit` (1-1000).
+
+```bash
+GET /api/v1/health/logs?priority=3&serial=SERIAL&limit=100
+```
+
 ### User
 
 #### GET /user
@@ -216,7 +286,9 @@ clientWithPromise.then(function(api) {
 
 #### POST /user/devices
 
-Attempts to add a device under the authenticated user's control. This is analogous to pressing "Use" in the UI.
+Reserves a device for automation under the authenticated user's ownership.
+The reservation is marked `usage: automation`; group members can
+[watch the automated session](automation-viewer.md) through STF.
 
 ```bash
 POST /api/v1/user/devices
@@ -245,9 +317,51 @@ clientWithPromise.then(function(api) {
 })
 ```
 
+#### GET /user/devices/{serial}
+
+Returns information about a specific device owned by the authenticated user.
+
+```bash
+GET /api/v1/user/devices/{serial}
+```
+
+Using cURL:
+
+```bash
+curl -H "Authorization: Bearer YOUR-TOKEN-HERE" https://stf.example.org/api/v1/user/devices/{serial}
+```
+
+Using Node.js:
+
+```js
+clientWithPromise.then(function(api) {
+  return api.user.getUserDeviceBySerial({serial: 'xxxx'})
+    .then(function(res) {
+      console.log(res.obj.device.serial)
+      // xxxx
+    })
+})
+.catch(function(err) {
+  console.log(err)
+})
+
+// OR
+clientWithPromise.then(function(api) {
+  return api.user.getUserDeviceBySerial({serial: 'xxxx', fields: 'serial,using,ready'})
+    .then(function(res) {
+      console.log(res.obj.device)
+      // { serial: 'xxxx', using: true, ready: true }
+    })
+})
+.catch(function(err) {
+  console.log(err)
+})
+```
+
 #### DELETE /user/devices/{serial}
 
-Removes a device from the authenticated user's device list. This is analogous to pressing "Stop using" in the UI.
+Releases a device owned by the authenticated user. Close the test session before
+releasing its reservation, including in cleanup after a failed test.
 
 ```bash
 DELETE /api/v1/user/devices/{serial}
@@ -335,6 +449,35 @@ clientWithPromise.then(function(api) {
 .catch(function(err) {
   console.log(err)
   // {"success":false,"description":"Device is not owned by you or is not available"}
+})
+```
+
+#### GET /user/accessTokens
+
+Returns the titles of all valid access tokens for the authenticated user.
+
+```bash
+GET /api/v1/user/accessTokens
+```
+
+Using cURL:
+
+```bash
+curl -H "Authorization: Bearer YOUR-TOKEN-HERE" https://stf.example.org/api/v1/user/accessTokens
+```
+
+Using Node.js:
+
+```js
+clientWithPromise.then(function(api) {
+  return api.user.getUserAccessTokens()
+    .then(function(res) {
+      console.log(res.obj)
+      // { success: true, titles: [ 'token-1', 'token-2' ] }
+    })
+})
+.catch(function(err) {
+  console.log(err)
 })
 ```
 

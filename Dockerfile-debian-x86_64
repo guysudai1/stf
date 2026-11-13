@@ -28,7 +28,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y install wget python3 build-essential && \
     cd /tmp && \
     wget --progress=dot:mega \
-      https://nodejs.org/dist/v22.11.0/node-v22.11.0-linux-x64.tar.xz && \
+      https://nodejs.org/dist/v22.23.4/node-v22.23.4-linux-x64.tar.xz && \
     tar -xJf node-v*.tar.xz --strip-components 1 -C /usr/local && \
     rm node-v*.tar.xz && \
     useradd --system \
@@ -48,7 +48,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     echo '--- Assembling app' && \
     echo 'npm pack' | su stf -s /bin/bash && \
     tar xzf devicefarmer-stf-*.tgz --strip-components 1 -C /app && \
-    echo '/tmp/build/node_modules/.bin/bower cache clean' | su stf -s /bin/bash && \
     echo 'npm prune --omit=dev' | su stf -s /bin/bash && \
     wget --progress=dot:mega \
       https://github.com/google/bundletool/releases/download/1.2.0/bundletool-all-1.2.0.jar && \

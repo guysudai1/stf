@@ -1,3 +1,0 @@
-FROM devicefarmer/adb:latest
-
-RUN apk add --no-cache socat

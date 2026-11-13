@@ -4,46 +4,42 @@
 `master`. Everything runs on `ubuntu-24.04` and needs no secrets: the only
 token involved is the automatic `GITHUB_TOKEN`, used to post the report.
 
+`.github/workflows/docker.yml` builds the images on the same events, and
+`prepare-release.yml` and `release.yml` cut a release between them. Neither
+holds a stored credential either: both registries are reached over OIDC,
+described under Releasing below.
+
 ## What runs
 
 | Job | What it proves |
 |---|---|
 | `plan` | `.github/android-matrix.json` is well formed, and produces the Android matrix |
-| `build` | `npm install`, `bower install` and the webpack bundle all succeed, and `stf -V` runs |
-| `lint` | `gulp lint` (eslint over `lib/`, `res/`, root JS, plus jsonlint) |
+| `build` | `npm ci` and the webpack bundle all succeed, and `stf -V` runs |
+| `lint` | `node build.mts lint` (eslint over `lib/`, the React/TypeScript UI in `res/app/src`, root JS, a `tsc` typecheck, plus jsonlint) |
 | `unit` | `mocha` over `test/` (`lib/util`, `lib/wire`) |
-| `component` | `karma` + headless Chrome over the 82 AngularJS specs in `res/app/**/*-spec.js`. Read the count with the caveat below |
+| `component` | `vitest` + jsdom over the UI specs in `res/app/src/**/*.test.ts(x)` |
 | `integration` | `stf local` boots against a RethinkDB service, fake devices round-trip through STF's own db layer, and the Playwright web UI suite passes without any device |
 | `android` (matrix) | one leg per Android release from 5.0 to 16: boot an emulator, attach `stf local` to it, and drive it from the browser |
 | `report` | aggregates everything into one sticky PR comment |
 
-### The component tier counts more than it proves
+### The component tier
 
-karma reports 82 specs and the report says so, but that number is not coverage.
-Of the 82 executable `it()` blocks in `res/app`, 3 assert something real, 33 are
-`expect(1).toEqual(1)`, and 46 have an empty body with the assertion left
-commented out, which is the unmodified AngularJS generator stub. The whole tier
-runs in about 0.12s, which is the giveaway. They are upstream's specs and this
-branch does not rewrite them, so the report line names the split instead:
-
-```
-82 specs, 0 failed, 0 errored (3 assert, 79 are upstream stubs)
-```
-
-`.github/scripts/count-assertions.js` computes that split at report time rather
-than hardcoding it, so writing a real spec moves the number without anyone
-having to remember to update it. Run it on its own to see the breakdown:
-
-```bash
-node .github/scripts/count-assertions.js
-```
-
-What the tier does still prove is worth keeping: every spec is compiled and run
-against real AngularJS in a real headless Chrome, so a module that fails to load,
-a broken `require` in `res/app`, or a directive that throws on compile fails the
-job. That is a smoke test of the front end, not a behavioural one.
+`npm run test:component` runs Vitest with jsdom over `res/app/src/**/*.test.ts(x)`.
+It covers the protocol pieces the UI cannot work without (the `tx.*` transaction
+ordering, device state derivation, screen scaling math, translation lookup) and
+pure feature logic such as the logcat filters. It needs no browser, so it runs in
+seconds anywhere; the Playwright tiers are what exercise the rendered UI.
 
 ## The Android matrix
+
+The Android legs, retries and Compose emulator use
+`.github/scripts/with-emulator-cleanup.sh` to stop the emulator after the test
+script and its diagnostics finish. Cleanup limits `adb emu kill` to 10 seconds,
+then allows 10 seconds for QEMU to exit before sending SIGTERM and another
+5 seconds before SIGKILL. It checks that the selected emulator has stopped
+within another 5 seconds and preserves the test script's exit status. This
+prevents an emulator that acknowledges shutdown but stays alive from holding
+the action open until its 50 minute step timeout.
 
 Legs come from `.github/android-matrix.json`. To add or change one, edit that
 file only: the matrix is generated from it and the report uses the same file to
@@ -55,7 +51,7 @@ minimum.
 
 Each leg walks these layers in order and records the result of each, so the
 report names the layer that broke rather than showing one opaque cross.
-`.github/scripts/checks.js` is where they are defined: the order, which ones
+`.github/scripts/checks.mts` is where they are defined: the order, which ones
 gate a leg, how a failure is worded and the report's legend all come from there,
 so adding a layer is one edit rather than four.
 
@@ -97,9 +93,8 @@ Notes that matter when changing the matrix:
   root before STF is watching matters too: `adb root` restarts adbd, and a
   transport flap while the provider is tracking leaves a stale device record.
 - `@devicefarmer/minicap-prebuilt` only ships a native `minicap.so` up to
-  `android-30`. Above that, `.github/scripts/android-leg.sh` sets
-  `SCREEN_GRABBER=minicap-apk` so STF goes straight to the `app_process`
-  grabber instead of failing the native attempt first.
+  `android-30`. Above that, STF's default `auto` screen grabber goes straight
+  to the `app_process` apk grabber.
 - A leg whose system image is not published self-skips instead of failing, and
   the report says so. The probe fails open: if `sdkmanager` cannot be read at
   all the leg still runs, because a probe that fails closed would let the whole
@@ -145,32 +140,65 @@ STF's own prebuilts rather than from CI:
   `android.hardware.display.DisplayManagerGlobal` was added in API 17, so no
   amount of fixing minitouch reaches this one. It needs a rebuilt STFService.
 
-For the record on the floor below that: `vendor/STFService/STFService.apk`
-declares `minSdkVersion 16` (decoded from its manifest, version 2.5.5, targetSdk
-30) and STF only uses PIE binaries from sdk 16 up (`pie: sdk.level >= 16` in
+For the record on the floor below that: the STFService APK shipped by
+`@devicefarmer/stfservice-prebuilt` declares `minSdkVersion 16` (decoded from its
+manifest, version 2.5.6, targetSdk 30) and STF only uses PIE binaries from sdk 16 up (`pie: sdk.level >= 16` in
 `lib/units/device/support/abi.js`), so API 15 and API 10 cannot even install the
 service, although they do have published x86 images that boot. API 20 is 4.4W
 and only ever shipped for wearables.
 
-### Android 17 (API 37) is parked
+### Minor-versioned levels need current cmdline-tools
 
-Not in the matrix for now. It is an STF limitation, not a CI one: the image
-exists, the emulator boots, the provider registers the device and STF marks it
-present and ready, then the device worker dies in a loop on
-`Service had an error: "Error: Not found; no service started."` plus a
-`PackageManagerInternal.freeStorage` NPE. STFService installs and gets its
-permissions granted, so the on-device service fails to start on API 37 rather
-than failing to install.
+API 36.1 and all three published API 37 levels, 37.0, 37.1 and 37.2, are in the
+matrix. API 37 was parked for a while, and the cause turned out to be the CI
+image rather than STF or the emulator.
 
-To bring it back once STFService supports API 37, add one line to
-`.github/android-matrix.json`:
+`ubuntu-24.04` ships Android cmdline-tools 12.0, which cannot parse a dotted API
+level. `avdmanager create avd --package 'system-images;android-37.1;...'` exits 0
+and writes the correct `image.sysdir.1`, but sets `target=android-0` instead of
+`target=android-37.1`. That mis-configures gfxstream, the guest is offered
+`ReadColorBufferDma`, and `mapper.ranchu.so` aborts:
 
-```json
-{"android": "17", "api": "37.0", "target": "google_apis", "arch": "x86_64", "boot": 900}
+```
+Abort message: 'Assertion failed: !rcEnc->featureInfo()->hasReadColorBufferDma'
+  #03 /vendor/lib64/hw/mapper.ranchu.so  GoldfishMapper::readFromHost(cb_handle_t const&)
+tid: RegionSampling  >>> /system/bin/surfaceflinger <<<  signal 6 (SIGABRT)
 ```
 
-API 37 is published only under the minor-versioned path `37.0` and has no AOSP
-image, so it has to be `google_apis`. Plain `android-37` does not exist.
+SurfaceFlinger then crashloops, `DisplayEventReceiver.nativeInit` fails with
+`status=-32`, `DisplayManagerGlobal.getInstance()` throws, and STFService dies
+reflecting on it. The symptom therefore reads as an STF or STFService bug and is
+not one. Measured before and after, same images, same `-gpu swiftshader_indirect`:
+
+| image | cmdline-tools 12.0 | cmdline-tools 23.0 |
+|---|---|---|
+| `android-37.0;google_apis` | 8 aborts, SF started 4x | 0 aborts, SF started once |
+| `android-37.1;google_apis_ps16k` | 11 aborts, SF started 5x | 0 aborts, SF started once |
+| `android-37.2;google_apis_ps16k` | 11 aborts, SF started 5x | 0 aborts, SF started once |
+
+`.github/scripts/update-cmdline-tools.sh` replaces
+`$ANDROID_HOME/cmdline-tools/latest` in place. It has to be in place:
+android-emulator-runner puts that exact directory on `PATH` and invokes a bare
+`avdmanager`, and `sdkmanager --install "cmdline-tools;latest"` cannot overwrite
+the directory it is running from, so it silently installs to a sibling
+`cmdline-tools/latest-2` that nothing then uses. The update is a no-op for the
+integer levels: API 36 gets `target=android-36` under both 12.0 and 23.0.
+
+On image paths, the AOSP repo stops at `android-36;default`, so neither 36.1 nor
+any API 37 level has a `default` image. 36.1 and 37.0 publish a plain
+`google_apis` one; from `37.1` on Google publishes only the 16 KB page size
+variant, so those legs use `google_apis_ps16k`. Plain `android-37` does not
+exist. No `playstore` variant is usable here, because they block `adb root`,
+which minitouch needs to open `/dev/input`. `37.2` is additionally published only
+on the `dev` SDK channel, which is why its leg carries `channel`/`channelId`;
+`--channel` is cumulative, so the stable legs are unaffected. The 37.2 beta
+images are deliberately left out: GA supersedes them, and Google prunes beta
+images after GA, which would make the leg self-skip and report green with no
+coverage.
+
+Upstream: https://issuetracker.google.com/issues/546200928 (resolved) and
+https://github.com/actions/runner-images/issues/14484 (open, so the update is
+still needed on current images).
 
 ### Rotation control is dead on API 29 and up, and no check catches it
 
@@ -210,7 +238,7 @@ Two things follow, and both are deliberate:
 ## Running the tests locally
 
 ```bash
-npm install                    # deps, bower components and the bundle
+npm ci                         # the versions in package-lock.json
 npm test                       # lint, stf -V, then the mocha specs
 ```
 
@@ -219,55 +247,53 @@ Or one tier at a time:
 ```bash
 npm run lint
 npm run test:unit
-CHROME_BIN=$(which google-chrome) npm run test:component
+npm run test:component
 ```
 
-`npm test` was `gulp test`, which is `gulp.parallel('lint',
-'run:checkversion')`: it ran eslint and `stf -V` and nothing else, so the mocha
-specs under `test/` existed but `npm test` never ran them and still passed. It
-now runs that same gulp task and then the mocha specs, so it still needs no
-browser and works anywhere, which is what CONTRIBUTING asks of it.
+`npm test` used to run only the lint tasks and `stf -V`, so the mocha specs
+under `test/` existed but `npm test` never ran them and still passed. It now
+runs `node build.mts test` (compile, lint and `stf -V`) and then the mocha
+specs, so it still needs no browser and works anywhere, which is what
+CONTRIBUTING asks of it.
 
-`test:component` is the karma tier. It needs a Chrome, which is what `CHROME_BIN`
-is for, so CI runs it as its own job where a browser is guaranteed rather than
-making `npm test` depend on one.
+`test:component` is the Vitest tier. It runs in jsdom and needs no browser; CI
+still runs it as its own job so the report shows it as a separate line.
 
-There is no committed `package-lock.json`: `.gitignore` excludes it, so CI uses
-`npm install` and keys its dependency cache on `package.json` and `bower.json`.
+`package-lock.json` is committed, so CI installs with `npm ci` and keys its
+dependency cache on `package.json`, `package-lock.json` and `.nvmrc`. `npm ci`
+fails when `package.json` and the lockfile disagree, so a dependency change
+commits both; `package.json` is in the key so such a change cannot hide behind
+a cache hit. Under `npm ci`, as under `npm install`, `prepare` does not build;
+the jobs compile and bundle in their own steps, and `npm pack` and
+`npm publish` still build through `prepare`. The release workflow and the
+`Dockerfile` also use `npm ci`, and fall back to `npm install` for a tree
+without the lockfile. `test/playwright` has no lockfile; its cache key hashes
+its own `package.json`.
 
-Every job reads its Node version from `.nvmrc` (22.11.0), which is also what the
+Every job reads its Node version from `.nvmrc` (22.23.4), which is also what the
 `Dockerfile` and `.semaphore/semaphore.yml` use, so CI tests the runtime the
 project actually ships rather than a second version pinned in the workflow.
 
-If you bump past Node 22, the karma tier needs an `overrides` entry for log4js.
-karma 2.0.5 pulls log4js 2.11.0, whose layout formatter calls `util.isError` on
-every log argument, and Node 23 removed it. The first line karma logs throws,
-karma's `uncaughtException` handler logs the throw, log4js throws again inside
-the handler, and the process dies with exit code 7 before any test runs. log4js
-dropped that call in 3.0.6, so `"overrides": {"log4js": "^6.9.1"}` fixes it and
-affects nothing outside karma's tree.
-
-`phantomjs-prebuilt` and `karma-phantomjs-launcher` are gone from
-`devDependencies`. PhantomJS has been unmaintained since 2018 and nothing here
-uses it: `karma.conf.js` already defaulted to Chrome with the PhantomJS launcher
-commented out. `.semaphore/semaphore.yml` currently has to run
-`sed -i'' -e '/phantomjs/d' package.json` before `npm install`; with the
-dependency gone that line is a no-op and can be dropped.
+The npm publish job in `release.yml` is the exception: it pins Node 24, because
+npm trusted publishing needs Node 22.14.0 or later and npm 11.5.1 or later, and
+22.23.4 ships npm 10.x. The tarball's bundle is therefore built on a runtime no
+test tier exercises. Nothing else in the release path needs it, so the rest
+reads `.nvmrc` like every other job.
 
 For the Playwright suite you need a running `stf local`:
 
 ```bash
 docker run -d --name rethinkdb -p 28015:28015 rethinkdb:2.4.2
 bash .github/scripts/start-stf.sh            # add a serial to limit it to one device
-node .github/scripts/stf-devices.js list     # what STF thinks it has
+node .github/scripts/stf-devices.mts list     # what STF thinks it has
 
 cd test/playwright
 npm install && npx playwright install chromium
-npx playwright test ui.spec.js               # no device needed
+npx playwright test ui.spec.ts               # no device needed
 STF_DEVICE_SERIAL=emulator-5554 npx playwright test
 ```
 
-`device.spec.js` skips itself unless `STF_DEVICE_SERIAL` is set.
+`device.spec.ts` skips itself unless `STF_DEVICE_SERIAL` is set.
 
 ## The report
 
@@ -279,6 +305,54 @@ only mechanism that works here.
 A job that dies before writing its verdict is reported as failed rather than
 disappearing from the table, which is what `EXPECTED_TIERS` and
 `EXPECTED_ANDROID_FILE` in the `report` job are for.
+
+## Flakes
+
+Every leg gates the run and the matrix is twenty legs wide, so per-leg flake
+rates multiply: a leg that fails one time in a hundred reds about one run in
+five no matter how healthy STF is. Two different mechanisms deal with that, and
+which one applies depends on whether the emulator was ever reached.
+
+**Before the emulator**, the setup steps retry in place. `apt-install.sh` skips
+packages that are already on the image, caps `apt-get update` at
+`APT_UPDATE_TIMEOUT` seconds (120 by default) because a stalling mirror will
+otherwise spend the whole step budget inside apt's own retries, and then retries
+the install three times, refreshing the indexes between the tries. `build`
+caches `test/playwright/node_modules` and `~/.cache/ms-playwright` for the
+browser jobs, and `.github/scripts/install-playwright.sh` installs only the
+Chromium binary under `retry.sh` and smoke-tests `chromium.launch()` before
+touching apt at all (routing any missing library packages from
+`playwright install-deps --dry-run` through `apt-install.sh`), because
+`playwright install --with-deps` otherwise runs a bare `apt-get` across every
+leg even when `ubuntu-24.04` already has every shared library Chromium links
+against. The Android SDK packages the
+emulator action needs (platform, emulator, system image) are installed ahead of
+it by `install-android-sdk.sh` under `retry.sh`, because the action downloads
+them once with no retry and a truncated archive from `dl.google.com` would
+otherwise fail the leg before the emulator starts.
+
+**From the emulator on**, each Android matrix leg (and the `compose` AVD leg)
+is retried once. The verdict is derived,
+and if it failed the leg runs a second time from a fresh AVD and the second
+verdict is the one recorded. The gate is the verdict rather than the emulator
+step's exit status on purpose: `android-leg.sh` never exits non-zero for a test
+failure, so a leg that booted and then lost its minicap stream leaves the step
+green and only the verdict knows it failed.
+
+A retry is never silent. The leg gets a warning annotation, its verdict details
+end in `(attempt 2)`, and the report prints a `Retried once after failing` line
+naming the leg and how it ended, so a leg that is quietly degrading still shows
+up instead of hiding behind a tick. The first attempt's logs are kept alongside
+the second's in the same artifact, as `stf-logs-attempt-1` and
+`checks-attempt-1.json`.
+
+The retry deliberately does not fire when a step before the emulator failed.
+There is nothing to retry in that case, and the in-step retries above are the
+fix. That case is also worth recognising in the report: an emulator step that
+was **skipped** cannot have timed out booting, so the verdict says the leg never
+got as far as the emulator rather than blaming the boot. Before that distinction
+existed, three runs' worth of apt timeouts were reported as emulator boot
+failures, which is a good way to spend an afternoon debugging the wrong thing.
 
 ## Debugging a failed leg
 
@@ -323,3 +397,57 @@ resolved fractions are what tie a capture to the leg that produced it.
 
 Traces and screenshots are still failure only, since the trace viewer already
 carries per action screenshots and traces are large.
+
+## Releasing
+
+Releasing takes two dispatches with a pull request between them.
+
+1. Run `Prepare release` with the version as input, for example `3.8.0`. It
+   bumps `package.json`, writes the `CHANGELOG.md` section from GitHub's
+   generated notes, and pushes `release/v3.8.0`. It writes nothing to `master`.
+2. Open the pull request it links to in the job summary, label it
+   `ignore-for-release`, and merge it once the checks pass.
+3. Run `Release` with the same version. It tags `v3.8.0`, publishes the GitHub
+   release, then publishes to npm and pushes the Docker image.
+
+The bump lands through a pull request because `master` is protected. A workflow
+holding only `GITHUB_TOKEN` cannot push to it, and having the workflow open the
+pull request itself would not help: a pull request opened with `GITHUB_TOKEN`
+starts no workflow run, so it would arrive with no checks and could never
+satisfy a required check.
+
+The split is also why the two guards differ. `Prepare release` requires the
+input to be greater than `package.json`, since it is about to do the bump.
+`Release` requires it to be equal, since by then the bump has merged. `Release`
+additionally refuses to run anywhere but the default branch: `release/v3.8.0`
+satisfies the equality check by construction, so without that guard the
+unmerged branch could be tagged and published.
+
+`Release` reads the release body back out of `CHANGELOG.md` rather than
+regenerating it. The changelog and the release then cannot drift, and a
+correction made while reviewing the release pull request reaches both.
+
+The publish jobs live in `release.yml` alongside the tag rather than in a
+separate workflow keyed on the tag, because a tag pushed with `GITHUB_TOKEN`
+does not start another workflow run. Jobs in the same run are not subject to
+that.
+
+Renaming `release.yml` breaks npm publishing. npm trusted publishing matches on
+the exact workflow filename, so the name is part of the configuration held on
+npmjs.com. `prepare-release.yml` publishes nothing and can be renamed freely.
+
+Neither registry uses a stored credential:
+
+- npm authenticates with a trusted publisher, configured on npmjs.com against
+  this repository and `release.yml`. The job needs `id-token: write` and no
+  `.npmrc`.
+- Docker Hub authenticates with an OIDC connection created by an organization
+  admin. `docker/login-action` picks it up from the `DOCKERHUB_OIDC_CONNECTIONID`
+  repository variable.
+
+`.semaphore/` still builds and tests, but no longer publishes. Both systems
+publishing the same tag would race, and only one can win.
+
+To keep a pull request out of the release notes and the changelog, label it
+`ignore-for-release`. The release pull request itself should carry that label,
+or the next release's notes open with the previous version bump.

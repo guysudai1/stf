@@ -6,14 +6,20 @@
 .python-version
 /*.tgz
 /.env
+/docker-compose.override.yaml
+/ios.local.json
 /node_modules/
-/res/bower_components/
 /res/build/
-/res/test_out/
 /rethinkdb_data/
 /temp/
 /tmp/
-.stf-agent-board/
+# Only the root lockfile is tracked.
 package-lock.json
+!/package-lock.json
 yarn.lock
 /test-results/
+/lib/**/*.js
+/lib/types/wire.d.ts
+/lib/types/stfservice-wire.d.ts
+/res/common/lang/translations/
+/adbkeys/

@@ -1506,6 +1506,18 @@ paths:
           description: Device Serial
           required: true
           type: string
+        - name: reservationId
+          in: query
+          description: Release only this reservation. Must be used with deviceChannel.
+          type: string
+          minLength: 1
+          maxLength: 128
+        - name: deviceChannel
+          in: query
+          description: Expected device runtime channel. Must be used with reservationId.
+          type: string
+          minLength: 1
+          maxLength: 512
       responses:
         "200":
           description: Delete User Device Status
@@ -1516,6 +1528,7 @@ paths:
             Unexpected Error:
               * 401: Unauthorized => bad credentials
               * 403: Forbidden => device is not controlled by the user
+              * 409: Conflict => device reservation changed
               * 404: Not Found => unknown device 
               * 500: Internal Server Error
               * 504: Gateway Time-out => device is not responding
@@ -1581,6 +1594,47 @@ paths:
               * 404: Not Found => unknown device 
               * 500: Internal Server Error
               * 504: Gateway Time-out => device is not responding
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
+  /user/devices/{serial}/reboot:
+    x-swagger-router-controller: user
+    post:
+      summary: Reboot
+      description: >
+        Reboots a device you are using. By default the device is released as it leaves, exactly
+        as any other reboot; pass keepOwnership to have it kept for you while it is away so the
+        session survives. Answers once the request has been dispatched: a reboot cannot be
+        acknowledged, since it disconnects the worker that would answer. Poll the device until
+        it is present and ready again.
+      operationId: rebootUserDeviceBySerial
+      tags:
+        - user
+      parameters:
+        - name: serial
+          in: path
+          description: Device Serial
+          required: true
+          type: string
+        - name: keepOwnership
+          in: query
+          description: Keep the device for you while it reboots instead of releasing it
+          required: false
+          type: boolean
+          default: false
+      responses:
+        "200":
+          description: Device Reboot Requested
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: >
+            Unexpected Error:
+              * 401: Unauthorized => bad credentials
+              * 403: Forbidden => device is not controlled by the user
+              * 404: Not Found => unknown device
+              * 500: Internal Server Error
           schema:
             $ref: "#/definitions/UnexpectedErrorResponse"
       security:
@@ -1763,6 +1817,95 @@ paths:
             $ref: "#/definitions/ErrorResponse"
       security:
         - accessTokenAuth: []        
+  /adbkeys:
+    x-swagger-router-controller: adbkeys
+    get:
+      summary: Lists the provider's ADB private keys
+      description: >
+        Lists the files in the ADB_VENDOR_KEYS folder with their fingerprints.
+        Key contents are never returned.
+      operationId: getAdbKeys
+      tags:
+        - admin
+      responses:
+        "200":
+          description: ADB keys (configured is false when no folder is set)
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: >
+            Unexpected Error:
+              * 401: Unauthorized => bad credentials
+              * 403: Forbidden => privileged operation (admin)
+              * 500: Internal Server Error
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
+    post:
+      summary: Adds an ADB private key
+      description: >
+        Stores a 2048-bit RSA PEM private key as <name>.adb_key (mode 0600).
+        Existing keys are never overwritten. adb loads it on its next start.
+      operationId: addAdbKey
+      tags:
+        - admin
+      parameters:
+        - name: body
+          in: body
+          description: The key name and PEM contents
+          required: true
+          schema:
+            $ref: "#/definitions/AdbKeyBody"
+      responses:
+        "201":
+          description: Key stored
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: >
+            Unexpected Error:
+              * 400: Bad Request => invalid name or key
+              * 401: Unauthorized => bad credentials
+              * 403: Forbidden => privileged operation (admin)
+              * 409: Conflict => name already used
+              * 500: Internal Server Error
+              * 503: Service Unavailable => no keys folder configured
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
+  /adbkeys/{name}:
+    x-swagger-router-controller: adbkeys
+    delete:
+      summary: Deletes an ADB private key
+      operationId: deleteAdbKey
+      tags:
+        - admin
+      parameters:
+        - name: name
+          in: path
+          description: Key file name as listed
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Key deleted
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: >
+            Unexpected Error:
+              * 400: Bad Request => invalid name
+              * 401: Unauthorized => bad credentials
+              * 403: Forbidden => privileged operation (admin)
+              * 404: Not Found => unknown key
+              * 500: Internal Server Error
+              * 503: Service Unavailable => no keys folder configured
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
   /devices:
     x-swagger-router-controller: devices 
     get:
@@ -1853,6 +1996,41 @@ paths:
               * 404: Not Found => unknown devices 
               * 500: Internal Server Error
               * 503: Service Unavailable => server too busy or a lock on a resource is pending
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
+  /devices/shell:
+    x-swagger-router-controller: devices
+    post:
+      summary: Runs a shell command on all devices
+      description: >
+        Runs one adb shell command on every present and ready device and
+        returns each device's output keyed by serial. Devices currently in
+        use are skipped unless force is set.
+      operationId: runShellOnDevices
+      tags:
+        - admin
+        - devices
+      parameters:
+        - name: body
+          in: body
+          description: The command to run and how to run it
+          required: true
+          schema:
+            $ref: "#/definitions/ShellCommandBody"
+      responses:
+        "200":
+          description: Per-device command results
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: >
+            Unexpected Error:
+              * 400: Bad Request => missing command
+              * 401: Unauthorized => bad credentials
+              * 403: Forbidden => privileged operation (admin)
+              * 500: Internal Server Error
           schema:
             $ref: "#/definitions/UnexpectedErrorResponse"
       security:
@@ -2240,6 +2418,7 @@ paths:
         - name: q
           in: query
           type: string
+          description: Case-insensitive text matched against message, tag, identifier and serial
         - name: priority
           in: query
           type: integer
@@ -2248,6 +2427,7 @@ paths:
         - name: serial
           in: query
           type: string
+          description: Only rows for this exact device serial
         - name: limit
           in: query
           type: integer
@@ -2294,6 +2474,20 @@ paths:
   /swagger.json:
     x-swagger-pipe: swagger_raw
 definitions:
+  AdbKeyBody:
+    type: object
+    required:
+      - name
+      - key
+    properties:
+      name:
+        type: string
+        description: File name; ".adb_key" is appended when missing
+        maxLength: 64
+      key:
+        type: string
+        description: PEM private key
+        maxLength: 16384
   UnexpectedErrorResponse:
     required:
       - success
@@ -2304,6 +2498,24 @@ definitions:
         default: false
       description:
         type: string
+  ShellCommandBody:
+    type: object
+    required:
+      - command
+    properties:
+      command:
+        type: string
+        description: The shell command to run on each device
+      timeout:
+        type: integer
+        description: Milliseconds before the command is killed on the device
+        default: 10000
+        minimum: 1
+        maximum: 60000
+      force:
+        type: boolean
+        description: Also run on devices that are currently in use
+        default: false
   Response:
     required:
       - success

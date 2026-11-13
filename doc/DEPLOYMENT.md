@@ -1,6 +1,9 @@
 # Deployment
 
-So you've got STF running via `stf local` and now you'd like to deploy it to real servers. While there are of course various ways to set everything up, this document will focus on a [systemd](http://www.freedesktop.org/wiki/Software/systemd/) + [Docker](https://www.docker.com/) deployment. Even if you've got a different setup, you should be able to use the configuration files as a rough guide. You can also check some [Setup Examples](https://github.com/devicefarmer/setup-examples) which uses [Vagrant](https://www.vagrantup.com/) and [Virtual Box](https://www.virtualbox.org/) to create a virtual setup. But before going there, it is highly recommended that you read this document thoroughly.
+> [!NOTE]
+> For new deployments, use the Docker Compose setup: [docker-compose.yaml](../docker-compose.yaml) and the [Compose setup guide](../docker/compose/README.md). This document describes the older systemd + Docker route, which is still supported for existing installations.
+
+So you've got STF running via `stf local` and now you'd like to deploy it to real servers. While there are of course various ways to set everything up, this document will focus on a [systemd](http://www.freedesktop.org/wiki/Software/systemd/) + [Docker](https://www.docker.com/) deployment. Even if you've got a different setup, you should be able to use the configuration files as a rough guide. The archived [Setup Examples](https://github.com/DeviceFarmer/setup-examples) repository shows an older virtual setup with [Vagrant](https://www.vagrantup.com/) and [VirtualBox](https://www.virtualbox.org/). But before going there, it is highly recommended that you read this document thoroughly.
 
 STF consists of multiple independent processes communicating via [ZeroMQ](http://zeromq.org/) and [Protocol Buffers](https://github.com/google/protobuf). We call each process a "unit" to match systemd terminology.
 
@@ -16,6 +19,8 @@ For this example deployment, the following assumptions will be made. You will ne
 
 * You have [systemd](http://www.freedesktop.org/wiki/Software/systemd/) running on each host
 * You have [Docker](https://www.docker.com/) running on each host
+  - Docker 29 and later no longer set the legacy `--link` environment variables. STF finds RethinkDB through `RETHINKDB_PORT_28015_TCP`, so the units below pass it explicitly. Units written for older Docker versions without that line fail to connect to the database after a Docker upgrade.
+  - Variables in `/etc/environment` only fill in the `${...}` placeholders in the unit files. They don't reach the containers unless a unit passes them with `-e`.
 * Each host has an `/etc/environment` (a la [CoreOS](https://coreos.com/)) file with `COREOS_PRIVATE_IPV4=MACHINE_IP_HERE`. This is used to load the machine IP address in configuration files.
   - You can create the file yourself or alternatively replace `${COREOS_PRIVATE_IPV4}` manually as required.
 * You're deploying [devicefarmer/stf:latest](https://registry.hub.docker.com/u/devicefarmer/stf/). There's also a fixed tag for each release if you're feeling less adventurous.
@@ -158,6 +163,8 @@ You need a single instance of the `rethinkdb-proxy-28015.service` unit on each h
 
 Note that the `After` condition also specifies the [rethinkdb.service](#rethinkdbservice) unit just in case you're on a low budget and want to run the RethinkDB unit on the same server as the rest of the units, which by the way is NOT recommended at all.
 
+The unit runs [devicefarmer/ambassador](https://github.com/DeviceFarmer/docker-ambassador), which is kept for existing systemd deployments. The Compose setup connects to RethinkDB directly and doesn't need it.
+
 ```ini
 [Unit]
 Description=RethinkDB proxy/28015
@@ -208,11 +215,12 @@ ExecStartPre=-/usr/bin/docker rm %p-%i
 ExecStart=/usr/bin/docker run --rm \
   --name %p-%i \
   --link rethinkdb-proxy-28015:rethinkdb \
+  -e "RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015" \
   -e "SECRET=YOUR_SESSION_SECRET_HERE" \
   -p %i:3000 \
   devicefarmer/stf:latest \
   stf app --port 3000 \
-    --auth-url https://stf.example.org/auth/guest/ \
+    --auth-url https://stf.example.org/auth/mock/ \
     --websocket-url wss://stf.example.org/
 ExecStop=-/usr/bin/docker stop -t 10 %p-%i
 ```
@@ -221,17 +229,11 @@ You may have to change the `--auth-url` depending on which authentication method
 
 ### `stf-auth@.service`
 
-You have multiple options here. STF provides a nickname-only guest entry for local or trusted deployments, along with authentication units for [OAuth 2.0](http://oauth.net/2/), [LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol), and legacy mock authentication.
+You have multiple options here. STF currently provides authentication units for [OAuth 2.0](http://oauth.net/2/) and [LDAP](https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol), plus a mock implementation that simply asks for a name and an email address.
 
-#### Option A: Guest entry
+#### Option A: Mock auth
 
-With guest entry, users choose a nickname and enter without an external identity provider. This is convenient for local or trusted deployments; it does not provide authentication or authorization by itself.
-
-Use `stf auth-guest --port 3000 --app-url https://stf.example.org/` and set the app unit's `--auth-url` to `https://stf.example.org/auth/guest/`.
-
-#### Option B: Mock auth
-
-With the mock auth provider the user simply enters their name and email and the system trusts those values. This remains available for compatibility, but the development version now uses nickname-only guest entry by default. Obviously not very secure, but very easy to set up if you can trust your users.
+With the mock auth provider the user simply enters their name and email and the system trusts those values. This is what the development version uses by default. Obviously not very secure, but very easy to set up if you can trust your users.
 
 This is a template unit, meaning that you'll need to start it with an instance identifier. In this example configuration the identifier is used to specify the exposed port number (i.e. `stf-auth@3200.service` runs on port 3200). You can have multiple instances running on the same host by using different ports.
 
@@ -369,6 +371,7 @@ ExecStartPre=-/usr/bin/docker rm %p
 ExecStart=/usr/bin/docker run --rm \
   --name %p \
   --link rethinkdb-proxy-28015:rethinkdb \
+  -e "RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015" \
   -e "STF_ROOT_GROUP_NAME=YOUR_ROOT_GROUP_NAME_HERE" \
   -e "STF_ADMIN_NAME=YOUR_ADMIN_NAME_HERE" \
   -e "STF_ADMIN_EMAIL=YOUR_ADMIN_EMAIL_HERE" \
@@ -400,6 +403,7 @@ ExecStartPre=-/usr/bin/docker rm %p-%i
 ExecStart=/usr/bin/docker run --rm \
   --name %p-%i \
   --link rethinkdb-proxy-28015:rethinkdb \
+  -e "RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015" \
   devicefarmer/stf:latest \
   stf processor %p-%i \
     --connect-app-dealer tcp://appside.stf.example.org:7160 \
@@ -480,6 +484,7 @@ ExecStartPre=-/usr/bin/docker rm %p
 ExecStart=/usr/bin/docker run --rm \
   --name %p \
   --link rethinkdb-proxy-28015:rethinkdb \
+  -e "RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015" \
   devicefarmer/stf:latest \
   stf reaper dev \
     --connect-push tcp://devside.stf.example.org:7270 \
@@ -667,6 +672,7 @@ ExecStartPre=-/usr/bin/docker rm %p-%i
 ExecStart=/usr/bin/docker run --rm \
   --name %p-%i \
   --link rethinkdb-proxy-28015:rethinkdb \
+  -e "RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015" \
   -e "SECRET=YOUR_SESSION_SECRET_HERE" \
   -p %i:3000 \
   devicefarmer/stf:latest \
@@ -701,6 +707,7 @@ ExecStartPre=-/usr/bin/docker rm %p-%i
 ExecStart=/usr/bin/docker run --rm \
   --name %p-%i \
   --link rethinkdb-proxy-28015:rethinkdb \
+  -e "RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015" \
   -e "SECRET=YOUR_SESSION_SECRET_HERE" \
   -p %i:3000 \
   devicefarmer/stf:latest \
@@ -744,6 +751,7 @@ ExecStartPre=-/usr/bin/docker rm %p
 ExecStart=/usr/bin/docker run --rm \
   --name %p \
   --link rethinkdb-proxy-28015:rethinkdb \
+  -e "RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015" \
   -e "SECRET=YOUR_SESSION_SECRET_HERE" \
   devicefarmer/stf:latest \
   stf groups-engine \
@@ -782,6 +790,7 @@ ExecStartPre=-/usr/bin/docker rm %p
 ExecStart=/usr/bin/docker run --rm \
   --name %p \
   --link rethinkdb-proxy-28015:rethinkdb \
+  -e "RETHINKDB_PORT_28015_TCP=tcp://rethinkdb:28015" \
   devicefarmer/stf:latest \
   stf log-rethinkdb \
     --connect-sub tcp://appside.stf.example.org:7150
@@ -1119,3 +1128,36 @@ ExecStop=/usr/bin/docker stop -t 2 %p
 ```
 
 Start everything up and you should be good to go.
+
+## Embedding STF in an iframe (cookie options)
+
+By default STF sends its session cookie and its `XSRF-TOKEN` cookie exactly as it always has, without a `SameSite` attribute set by STF. A page on another origin that embeds STF in an `<iframe>` ([#710](https://github.com/DeviceFarmer/stf/issues/710)) will therefore not have those cookies sent along with cross-site requests, and login fails. Two options change this:
+
+| Option | Values | Environment variable |
+|--------|--------|----------------------|
+| `--cookie-same-site` | `lax`, `strict`, `none` | `COOKIE_SAME_SITE` or `STF_COOKIE_SAME_SITE` |
+| `--cookie-secure` / `--no-cookie-secure` | boolean | `COOKIE_SECURE` or `STF_COOKIE_SECURE` (`true`/`1`/`yes`, `false`/`0`/`no`) |
+
+Both are unset by default. Unset means the cookie attributes are unchanged from before the options existed. The options also read the per-command prefixed variables, for example `STF_APP_COOKIE_SAME_SITE` and `STF_AUTH_MOCK_COOKIE_SECURE`, which take precedence over the unprefixed ones. For a cross-site iframe use `--cookie-same-site none`; with that value the `XSRF-TOKEN` cookie is marked `Secure` automatically when the request arrives over HTTPS, and the session cookie is marked `Secure` by `cookie-session` under the same condition.
+
+Where the options apply:
+
+* `stf app` (the same options are read for the session cookie and the `XSRF-TOKEN` cookie).
+* `stf auth-guest`, `stf auth-mock` and `stf auth-ldap`.
+* `stf local` accepts the options and passes them on to the app unit and, when `--auth-type` is `guest`, `mock` or `ldap`, to the auth unit.
+* `stf auth-oauth2`, `stf auth-openid` and `stf auth-saml2` do not accept these options, so their cookies are unchanged. Use them in a cross-site iframe only if their own cookie behaviour is acceptable to you.
+
+**HTTPS is required for `SameSite=None`.** Browsers discard `SameSite=None` cookies that are not `Secure`, so the iframe only works when STF is served over HTTPS. `--cookie-same-site none` together with `--no-cookie-secure` (or `COOKIE_SECURE=false` in the environment) is rejected at startup. Setting `--cookie-secure` while a request reaches STF over plain HTTP makes the cookie library fail with `Cannot send secure cookie over unencrypted connection`.
+
+In the usual deployment TLS is terminated by a reverse proxy and the STF units themselves speak plain HTTP. The proxy must then send `X-Forwarded-Proto: https` (in nginx, `proxy_set_header X-Forwarded-Proto $scheme;`; the example configuration below does not include this line). STF reads the header through Express `trust proxy`, which `stf app` always enables. `stf auth-guest`, `stf auth-mock` and `stf auth-ldap` enable it only when `--cookie-same-site none` or `--cookie-secure`/`--no-cookie-secure` is set. With `none`, these units log a warning at startup reminding you of the HTTPS requirement.
+
+Example for `stf-app@.service` and `stf-auth@.service` behind a TLS proxy:
+
+```
+stf app --port 3000 \
+  --auth-url https://stf.example.org/auth/mock/ \
+  --websocket-url wss://stf.example.org/ \
+  --cookie-same-site none
+```
+
+STF itself sets no `X-Frame-Options` or `frame-ancestors` header; if your proxy adds one, it must allow the embedding origin.
