@@ -17,7 +17,7 @@ import type {ChangeRow} from '../../../types/groups-engine.js'
 
 type WatchedUser = Pick<UserDocument, 'email' | 'name' | 'privilege'> & {
   groups: Pick<UserGroups, 'quotas' | 'subscribed'>
-  settings: Pick<UserSettings, 'alertMessage'>
+  settings: Pick<UserSettings, 'alertMessage'> | null | undefined
 }
 
 export default function(pushdev: Socket) {
@@ -33,7 +33,7 @@ export default function(pushdev: Socket) {
       wireutil.global
     , wireutil.envelope(
         new wire.UserChangeMessage(
-          user as unknown as UserField
+          {...user, settings: user.settings ?? {}} as unknown as UserField
         , isAddedGroup
         , groups
         , action
@@ -97,8 +97,8 @@ export default function(pushdev: Socket) {
           targets.push('settings')
         }
         else if (!_.isEqual(
-               data.new_val.settings.alertMessage
-             , data.old_val.settings.alertMessage)) {
+               data.new_val.settings?.alertMessage
+             , data.old_val.settings?.alertMessage)) {
           targets.push('menu')
         }
         if (targets.length) {
