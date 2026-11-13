@@ -403,7 +403,7 @@ function deleteUsers(req: ApiRequest<EmailsBody>, res: Response) {
       }
       results = _.without(results, 'forbidden')
       if (!results.length) {
-        apiutil.respond(res, 403, `Forbidden (${target})`)
+        return apiutil.respond(res, 403, `Forbidden (${target})`)
       }
       return apiutil.respond(res, 200, `Deleted (${target})`)
     })
