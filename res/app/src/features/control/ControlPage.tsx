@@ -1,5 +1,6 @@
 import {lazy, startTransition, Suspense, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type ComponentType} from 'react'
 import {useNavigate, useParams, useSearchParams} from 'react-router'
+import {useQueryClient} from '@tanstack/react-query'
 import {
   Alert
   , Box
@@ -16,6 +17,7 @@ import {
 } from '@mantine/core'
 import {
   IconBolt
+  , IconApps
   , IconCamera
   , IconFolderOpen
   , IconGauge
@@ -43,6 +45,7 @@ import {reportStandaloneSession} from '../device-list/standalone-session'
 import {ControlRedirect} from './ControlRedirect'
 import DeviceControlPanel from './device-control/DeviceControlPanel'
 import {visibleIds} from './layout/layout'
+import {packagesQuery} from './panes/apps/packages-query'
 import {LayoutTabBar} from './layout/TabBar'
 import {EditingProvider, useControlLayout} from './layout/use-layout'
 import type {PaneProps} from './types'
@@ -54,6 +57,12 @@ interface PaneDefinition {
   icon: ComponentType<{size?: number}>
   component: ComponentType<PaneProps>
   fill?: boolean
+}
+
+function OnMount({callback}: {callback: () => void}) {
+  const onMount = useEffectEvent(callback)
+  useEffect(() => onMount(), [])
+  return null
 }
 
 export const panes: PaneDefinition[] = [
@@ -93,6 +102,12 @@ export const panes: PaneDefinition[] = [
     , title: gettext('File Explorer')
     , icon: IconFolderOpen
     , component: lazy(() => import('./panes/explorer/ExplorerPane'))
+  }
+  , {
+    id: 'apps'
+    , title: gettext('Apps')
+    , icon: IconApps
+    , component: lazy(() => import('./panes/apps/AppsPane'))
   }
   , {
     id: 'info'
@@ -176,6 +191,7 @@ function ControlWorkspace({device, control}: PaneProps) {
   const [activePane, setActivePane] = useState(savedPane)
   const split = useSplit(Math.round(window.innerWidth * 0.34))
   const [layout] = useControlLayout()
+  const queryClient = useQueryClient()
   const [editing, setEditing] = useState(false)
   const stopEditing = useCallback(() => setEditing(false), [])
   const ios = device.platform === 'iOS'
@@ -187,6 +203,23 @@ function ControlWorkspace({device, control}: PaneProps) {
   const visiblePanes = shown.map(id => panes.find(pane => pane.id === id) as PaneDefinition)
   const selectedPane = shown.includes(activePane) ? activePane : shown[0] ?? 'dashboard'
   const current = control.readOnly ? 'info' : selectedPane
+  const [loadedPane, setLoadedPane] = useState<string | null>(null)
+  const appsPrefetched = useRef(false)
+  const prefetchApps = shown.includes('apps') && !control.readOnly && !ios && current !== 'apps'
+
+  useEffect(() => {
+    if (!prefetchApps || loadedPane !== current || appsPrefetched.current) {
+      return
+    }
+    const idle = requestIdleCallback(() => {
+      appsPrefetched.current = true
+      return Promise.all([
+        import('./panes/apps/AppsPane')
+      , queryClient.prefetchQuery(packagesQuery(control, device.serial, false))
+      ])
+    }, {timeout: 2000})
+    return () => cancelIdleCallback(idle)
+  }, [prefetchApps, loadedPane, current, control, device.serial, queryClient])
 
   return (
     <EditingProvider value={editing}>
@@ -224,6 +257,7 @@ function ControlWorkspace({device, control}: PaneProps) {
           const content = (
             <Suspense fallback={<Center p='xl'><Loader /></Center>}>
               <Pane device={device} control={control} />
+              <OnMount callback={() => setLoadedPane(id)} />
             </Suspense>
           )
           return (
