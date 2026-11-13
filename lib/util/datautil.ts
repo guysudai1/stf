@@ -154,8 +154,7 @@ datautil.applyBrowsers = function<D extends DeviceView>(device: D) {
 }
 
 datautil.applyOwner = function<D extends DeviceView>(device: D, user: deviceutil.Viewer) {
-  device.using = !!device.owner &&
-                 (device.owner.email === user.email || user.privilege === 'admin')
+  device.using = !!device.owner && device.owner.email === user.email
   return device
 }
 

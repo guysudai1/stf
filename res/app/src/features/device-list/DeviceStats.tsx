@@ -1,17 +1,18 @@
 import {useMemo, type ReactNode} from 'react'
-import {Group, Text, ThemeIcon} from '@mantine/core'
+import {Group, Text, ThemeIcon, Tooltip} from '@mantine/core'
 import {IconCircleCheck, IconDevices, IconTrophy, IconUser, IconUsers} from '@tabler/icons-react'
 import type {Device} from '@/core/devices/types'
 import {useTranslation} from '@/core/i18n'
 import {currentUser} from '@/core/user'
 import classes from './DeviceList.module.css'
 
-function Stat({icon, color, value, label, labelClassName}: {
+function Stat({icon, color, value, label, labelClassName, tooltip}: {
   icon: ReactNode
   color: string
   value: number
   label: string
   labelClassName?: string
+  tooltip?: string
 }) {
   return (
     <Group gap={8} wrap='nowrap' className={classes.stat}>
@@ -20,7 +21,9 @@ function Stat({icon, color, value, label, labelClassName}: {
       </ThemeIcon>
       <div>
         <Text className={`number ${classes.statNumber}`}>{value}</Text>
-        <Text className={`text ${labelClassName || ''} ${classes.statLabel}`} truncate>{label}</Text>
+        <Tooltip label={tooltip} disabled={!tooltip} openDelay={500}>
+          <Text className={`text ${labelClassName || ''} ${classes.statLabel}`} truncate>{label}</Text>
+        </Tooltip>
       </div>
     </Group>
   )
@@ -43,8 +46,9 @@ export function DeviceStats({devices, adminMode}: {devices: Device[], adminMode:
         icon={adminMode ? <IconTrophy size={18} /> : <IconUser size={18} />}
         color='orange'
         value={counter.using}
-        label={currentUser.name}
-        labelClassName={`current-user-name ${classes.userLabel}`}
+        label={t('My Devices')}
+        tooltip={currentUser.name}
+        labelClassName='current-user-name'
       />
     </Group>
   )

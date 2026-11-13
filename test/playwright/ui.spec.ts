@@ -40,9 +40,7 @@ test.describe('STF web UI', function() {
       await h.login(page)
 
       await expect(page.locator(h.SEL.version)).toHaveText(/^v\d+\.\d+\.\d+/)
-      await expect(
-        page.locator('.device-stats .current-user-name')
-      ).toHaveText(h.USER_NAME)
+      await expect(page.locator('.stf-current-user')).toHaveText(h.USER_NAME)
     })
 
   test('[check:playwright_ui] the device list search box filters tiles',

@@ -20,6 +20,7 @@ import apiutil from '../../../util/apiutil.js'
 import jwtutil from '../../../util/jwtutil.js'
 import type {AccessTokenDocument, DeviceDocument} from '../../../types/stf.js'
 import lockutil from '../../../util/lockutil.js'
+import usersettings from '../../../util/user-settings.js'
 import type {Response} from 'express'
 import type {
   AddUserDeviceBody
@@ -128,8 +129,9 @@ function getUserDeviceBySerial(req: ApiRequest, res: Response) {
 
 function addUserDevice(req: ApiRequest<AddUserDeviceBody>, res: Response) {
   var serial = req.hasOwnProperty('body') ? req.body.serial : req.swagger.params.serial.value
-  var timeout = req.hasOwnProperty('body') ? req.body.timeout ||
-                                             null : req.swagger.params.timeout.value || null
+  var timeout = usersettings.resolveTimeout(
+    req.hasOwnProperty('body') ? req.body.timeout || null : req.swagger.params.timeout.value || null
+  , req.user.settings)
   const lock: ApiLock = {}
 
   lockutil.lockGenericDevice(req, res, lock, dbapi.lockDeviceByCurrent)

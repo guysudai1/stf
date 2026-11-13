@@ -28,6 +28,7 @@ import type {AuthorizedInput} from './ios-access.js'
 import {DevicePacketAccess, isDeviceCommand} from './device-access.js'
 import {readIosProperties} from '../../util/ios-device-status.js'
 import jwtutil from '../../util/jwtutil.js'
+import usersettings from '../../util/user-settings.js'
 
 import apiutil from '../../util/apiutil.js'
 import adbutil from '../../util/adbutil.js'
@@ -663,10 +664,32 @@ export default function(options: WebsocketOptions) {
         //
         // Settings
         .on('user.settings.update', function(data) {
-          dbapi.updateUserSettings(user.email, data)
+          var normalizedChanges: Record<string, unknown>
+          try {
+            normalizedChanges = usersettings.normalizeChanges(data)
+          }
+          catch (err) {
+            socket.emit('user.settings.update.error', {
+              error: (err as Error).message
+            })
+            return Promise.resolve()
+          }
+
+          return dbapi.updateUserSettings(user.email, normalizedChanges)
+            .then(function() {
+              user.settings = Object.assign({}, user.settings, normalizedChanges)
+            })
+            .catch(function(err) {
+              socket.emit('user.settings.update.error', {
+                error: err.message
+              })
+            })
         })
         .on('user.settings.reset', function() {
-          dbapi.resetUserSettings(user.email)
+          return dbapi.resetUserSettings(user.email)
+            .then(function() {
+              user.settings = {}
+            })
         })
         .on('user.keys.accessToken.generate', function(data) {
           var jwt = jwtutil.encode({
@@ -1044,23 +1067,35 @@ export default function(options: WebsocketOptions) {
                 , user.name
                 , user.group
                 )
-              , data.timeout || null
+              , usersettings.resolveTimeout(data.timeout || null, user.settings)
               , wireutil.toDeviceRequirements(data.requirements)
               )
             )
           ])
         })
         .on('group.kick', function(channel, responseChannel, data) {
-          joinChannel(responseChannel)
-          push.send([
-            channel
-          , wireutil.transaction(
-              responseChannel
-            , new wire.UngroupMessage(
-                wireutil.toDeviceRequirements(data.requirements)
+          var allowed = user.privilege === 'admin' ?
+            Promise.resolve(true) :
+            Promise.resolve(dbapi.loadDeviceByChannel(channel, user.groups.subscribed))
+              .then(function(device) {
+                return !device || !device.owner || device.owner.email === user.email
+              })
+
+          return allowed.then(function(ok) {
+            if (!ok) {
+              return
+            }
+            joinChannel(responseChannel)
+            push.send([
+              channel
+            , wireutil.transaction(
+                responseChannel
+              , new wire.UngroupMessage(
+                  wireutil.toDeviceRequirements(data.requirements)
+                )
               )
-            )
-          ])
+            ])
+          })
         })
         .on('tx.cleanup', function(channel) {
           leaveChannel(channel)

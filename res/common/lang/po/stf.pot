@@ -273,7 +273,7 @@ msgstr ""
 msgid "Busy"
 msgstr ""
 
-#: res/app/src/features/device-list/DeviceStats.tsx:41
+#: res/app/src/features/device-list/DeviceStats.tsx:44
 msgid "Busy Devices"
 msgstr ""
 
@@ -490,8 +490,8 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: res/app/src/features/settings/general/GeneralSettings.tsx:44
-#: res/app/src/features/settings/general/GeneralSettings.tsx:49
+#: res/app/src/features/settings/general/GeneralSettings.tsx:45
+#: res/app/src/features/settings/general/GeneralSettings.tsx:50
 msgid "Date format"
 msgstr ""
 
@@ -515,11 +515,11 @@ msgstr ""
 msgid "Define your own alert message"
 msgstr ""
 
-#: res/app/src/features/settings/general/GeneralSettings.tsx:45
+#: res/app/src/features/settings/general/GeneralSettings.tsx:46
 msgid "Define your own Date format"
 msgstr ""
 
-#: res/app/src/features/settings/general/GeneralSettings.tsx:68
+#: res/app/src/features/settings/general/GeneralSettings.tsx:69
 msgid "Define your own Email address separator"
 msgstr ""
 
@@ -597,6 +597,10 @@ msgstr ""
 msgid "Device Settings"
 msgstr ""
 
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:59
+msgid "Device timeout"
+msgstr ""
+
 #: res/app/src/features/control/ControlPage.tsx:115
 msgid "Device was disconnected"
 msgstr ""
@@ -667,8 +671,8 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: res/app/src/features/settings/general/GeneralSettings.tsx:67
-#: res/app/src/features/settings/general/GeneralSettings.tsx:72
+#: res/app/src/features/settings/general/GeneralSettings.tsx:68
+#: res/app/src/features/settings/general/GeneralSettings.tsx:73
 msgid "Email address separator"
 msgstr ""
 
@@ -700,11 +704,16 @@ msgstr ""
 msgid "Encrypted"
 msgstr ""
 
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:80
+msgid "Enter a whole number from 1 to 86400 seconds."
+msgstr ""
+
 #: res/app/src/features/control/ControlPage.tsx:403
 #: res/app/src/features/control/ControlPage.tsx:488
 #: res/app/src/features/control/ControlPage.tsx:512
 #: res/app/src/features/control/panes/explorer/ExplorerPane.tsx:218
 #: res/app/src/features/device-list/device-actions.ts:39
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:41
 #: res/app/src/features/settings/keys/AdbKeysCard.tsx:64
 #: res/app/src/ui/AppLayout.tsx:129
 #: res/app/src/ui/AppLayout.tsx:131
@@ -1061,8 +1070,8 @@ msgstr ""
 msgid "Landscape"
 msgstr ""
 
-#: res/app/src/features/settings/general/GeneralSettings.tsx:22
-#: res/app/src/features/settings/general/GeneralSettings.tsx:25
+#: res/app/src/features/settings/general/GeneralSettings.tsx:23
+#: res/app/src/features/settings/general/GeneralSettings.tsx:26
 msgid "Language"
 msgstr ""
 
@@ -1079,6 +1088,10 @@ msgstr ""
 msgid "LDAP Username"
 msgstr ""
 
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:60
+msgid "Leave blank or reset to use the provider timeout. This applies to newly acquired devices."
+msgstr ""
+
 #: res/app/src/features/control/panes/info/InfoPane.tsx:218
 #: res/app/src/features/control/panes/logs/LogTable.tsx:133
 #: res/app/src/features/settings/general/AlertMessageSettings.tsx:87
@@ -1089,7 +1102,7 @@ msgstr ""
 msgid "Light"
 msgstr ""
 
-#: res/app/src/features/settings/general/GeneralSettings.tsx:90
+#: res/app/src/features/settings/general/GeneralSettings.tsx:91
 msgid "Local Settings"
 msgstr ""
 
@@ -1202,6 +1215,10 @@ msgstr ""
 
 #: res/app/src/features/control/panes/advanced/AdvancedInputCard.tsx:43
 msgid "Mute"
+msgstr ""
+
+#: res/app/src/features/device-list/DeviceStats.tsx:49
+msgid "My Devices"
 msgstr ""
 
 #: res/app/src/features/auth/SignInForm.tsx:110
@@ -1716,7 +1733,8 @@ msgid "Replacing WebDriverAgent from this panel is not allowed."
 msgstr ""
 
 #: res/app/src/features/control/panes/dashboard/navigation/NavigationCard.tsx:78
-#: res/app/src/features/settings/general/GeneralSettings.tsx:104
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:85
+#: res/app/src/features/settings/general/GeneralSettings.tsx:105
 #: res/app/src/ui/ColumnChoice.tsx:87
 msgid "Reset"
 msgstr ""
@@ -1725,7 +1743,7 @@ msgstr ""
 msgid "Reset all browser settings"
 msgstr ""
 
-#: res/app/src/features/settings/general/GeneralSettings.tsx:93
+#: res/app/src/features/settings/general/GeneralSettings.tsx:94
 msgid "Reset Settings"
 msgstr ""
 
@@ -1794,6 +1812,7 @@ msgid "Sample of log format"
 msgstr ""
 
 #: res/app/src/features/device-list/cells.tsx:171
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:83
 #: res/app/src/features/settings/groups/GroupDetail.tsx:100
 #: res/app/src/features/settings/groups/GroupSchedule.tsx:111
 #: res/app/src/features/settings/users/CreateUserForm.tsx:83
@@ -1902,7 +1921,7 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: res/app/src/features/settings/general/GeneralSettings.tsx:101
+#: res/app/src/features/settings/general/GeneralSettings.tsx:102
 msgid "Settings cleared"
 msgstr ""
 
@@ -2327,6 +2346,15 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:67
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:69
+msgid "Timeout (seconds)"
+msgstr ""
+
+#: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:68
+msgid "Timeout for newly acquired devices"
+msgstr ""
+
 #: res/app/src/features/settings/keys/AdbKeysCard.tsx:86
 msgid "Tip:"
 msgstr ""
@@ -2339,7 +2367,7 @@ msgstr ""
 msgid "To renew WDA, rebuild the runner with your Apple Team, reinstall it on this iPhone and confirm developer trust. The Linux provider reconnects automatically."
 msgstr ""
 
-#: res/app/src/features/device-list/DeviceStats.tsx:39
+#: res/app/src/features/device-list/DeviceStats.tsx:42
 msgid "Total Devices"
 msgstr ""
 
@@ -2420,7 +2448,7 @@ msgstr ""
 msgid "Uploading..."
 msgstr ""
 
-#: res/app/src/features/device-list/DeviceStats.tsx:40
+#: res/app/src/features/device-list/DeviceStats.tsx:43
 msgid "Usable Devices"
 msgstr ""
 

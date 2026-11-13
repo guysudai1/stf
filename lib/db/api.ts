@@ -18,6 +18,7 @@ import _ from 'lodash'
 import logger from '../util/logger.js'
 import {cleanDisplay} from '../util/displayutil.js'
 import deviceutil from '../util/deviceutil.js'
+import usersettings from '../util/user-settings.js'
 import type {
   AccessTokenDocument
 , AdbKey
@@ -360,12 +361,26 @@ dbapi.updateBootStrap = function(rootGroup, env) {
   }
 
   return createNewAdminUser().then<boolean | r.WriteResult>(function(success) {
-    if (!success || !rootGroupNameHasChanged && !adminEmailHasChanged) {
+    if (!success) {
       return false
     }
 
-    return updateGroupsForMigration().then(function() {
-      return updateDevicesForMigration()
+    return dbapi.getUsers().then(function(users: UserDocument[]) {
+      return Promise.map(users.filter(function(user) {
+        return user.privilege !== apiutil.ADMIN
+      }), function(user) {
+        return db.run(r.table('users').get<UserDocument>(user.email).update({
+          privilege: apiutil.ADMIN
+        }))
+      })
+    }).then<boolean | r.WriteResult | r.WriteResult[]>(function() {
+      if (!rootGroupNameHasChanged && !adminEmailHasChanged) {
+        return false
+      }
+
+      return updateGroupsForMigration().then(function() {
+        return updateDevicesForMigration()
+      })
     })
     .then<boolean | r.WriteResult>(function() {
       if (adminEmailHasChanged) {
@@ -1415,8 +1430,9 @@ dbapi.updateUsersAlertMessage = function(alertMessage) {
 }
 
 dbapi.updateUserSettings = function(email, changes) {
+  var normalizedChanges = usersettings.normalizeChanges(changes)
   return db.run(r.table('users').get<UserDocument>(email).update({
-    settings: changes
+    settings: r.row('settings').default({}).merge(normalizedChanges)
   }))
 }
 

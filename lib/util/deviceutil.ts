@@ -42,8 +42,7 @@ deviceutil.isOwnedByUser = function(device: HoldableDevice, user: DeviceViewer) 
   return device.present &&
          device.ready &&
          device.owner &&
-         (device.owner.email === user.email || user.privilege === 'admin') &&
-         device.using
+         (device.owner.email === user.email || user.privilege === 'admin')
 }
 
 deviceutil.isAddable = function(device: HoldableDevice) {

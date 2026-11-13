@@ -60,12 +60,6 @@
   color: var(--mantine-color-dimmed);
 }
 
-.userLabel {
-  text-transform: none;
-  letter-spacing: 0;
-  font-weight: 600;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(172px, 1fr));

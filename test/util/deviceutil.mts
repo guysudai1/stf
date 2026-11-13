@@ -4,6 +4,22 @@ var expect = chai.expect
 import deviceutil from '../../lib/util/deviceutil.js'
 
 describe('deviceutil', function() {
+  describe('isOwnedByUser', function() {
+    function owned(): deviceutil.Holdable {
+      return {present: true, ready: true, using: false, owner: {email: 'owner@example.com'}}
+    }
+
+    it('should let an admin act on a device held by someone else', function() {
+      var admin = {email: 'admin@example.com', privilege: 'admin'}
+      expect(deviceutil.isOwnedByUser(owned(), admin)).to.be.ok
+    })
+
+    it('should refuse a non-admin who is not the owner', function() {
+      var user = {email: 'user@example.com', privilege: 'user'}
+      expect(deviceutil.isOwnedByUser(owned(), user)).to.not.be.ok
+    })
+  })
+
   describe('isAddable', function() {
     function free(extra?: object): deviceutil.Holdable {
       return Object.assign({present: true, ready: true, using: false, owner: null}, extra)

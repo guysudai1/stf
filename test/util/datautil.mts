@@ -44,4 +44,22 @@ describe('datautil', function() {
       expect(free.claimed).to.be.false
     })
   })
+  describe('applyOwner', function() {
+    function owned(email: string): datautil.Device & {ready: boolean} {
+      return {present: true, ready: true, owner: {email: email}} as
+        datautil.Device & {ready: boolean}
+    }
+
+    it('should mark a device as used only for its own owner', function() {
+      var admin: deviceutil.Viewer = {email: 'admin@example.com', privilege: 'admin'}
+      expect(datautil.applyOwner(owned('admin@example.com'), admin).using).to.be.true
+      expect(datautil.applyOwner(owned('other@example.com'), admin).using).to.be.false
+    })
+
+    it('should not mark an unowned device as used', function() {
+      var device = {present: true, ready: true, owner: null} as datautil.Device
+      expect(datautil.applyOwner(device, {email: 'a@example.com', privilege: 'admin'}).using)
+        .to.be.false
+    })
+  })
 })

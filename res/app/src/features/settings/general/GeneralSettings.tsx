@@ -8,6 +8,7 @@ import {resetSettings, useSetting} from '@/core/settings'
 import {WidgetCard} from '@/ui/WidgetCard'
 import {SettingRow} from '../SettingRow'
 import {AlertMessageSettings} from './AlertMessageSettings'
+import {DeviceTimeoutSetting} from './DeviceTimeoutSetting'
 import {DebouncedTextInput} from './DebouncedTextInput'
 import classes from './GeneralSettings.module.css'
 
@@ -115,6 +116,7 @@ export default function GeneralSettings() {
         <LanguageSetting />
         <DateFormatSetting />
         <EmailAddressSeparatorSetting />
+        <DeviceTimeoutSetting />
       </WidgetCard>
       {isAdmin() && <AlertMessageSettings />}
       <LocalSettings />

@@ -92,6 +92,13 @@ function accessTokenAuth(req: SecurityRequest, res: Response, next: (err?: unkno
     return dbapi.loadUser(req.session.jwt.email)
       .then(function(user) {
         if (user) {
+          if (user.privilege === apiutil.USER &&
+              req.swagger.operation.definition.tags.indexOf('admin') > -1) {
+            return res.status(403).json({
+              success: false
+            , description: 'Forbidden: privileged operation (admin)'
+            })
+          }
           req.user = user
           return next()
         }
