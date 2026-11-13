@@ -14,6 +14,8 @@ stf local                # or: npm run local
 
 `npm run local` first runs `node build.mts compile translate-compile`. `node build.mts compile` alone is enough to run the backend. STF is served on <http://localhost:7100>; add `--public-ip <ip>` to reach it from other machines.
 
+The server also serves a guide for AI agents at <http://localhost:7100/agents.md> (and `/llms.txt`).
+
 ## Login
 
 `stf local` uses `--auth-type guest` by default: the login page asks only for a nickname and every user is an administrator. Use `--auth-type mock|ldap|oauth2|saml2|openid` for the other methods. The guest auth unit can also be run on its own with `stf auth-guest`.

@@ -4,6 +4,10 @@
 
 STF API is a RESTful API which allows you to reserve and release any STF device. Internally STF uses [Swagger](http://swagger.io/) interface for its API implementation. For those who don't know about Swagger, Swagger provides specifications for RESTful apis. By using it you can generate documentation and client SDKs in various language automatically for Swagger-enabled apps. This gives you power to use STF APIs in any language of your favorite. You can read more about Swagger [here](http://swagger.io/getting-started/).
 
+## Guide for AI agents
+
+A concise, self-describing guide for LLM agents is served at `/agents.md` (also `/llms.txt`) on every STF server, for example <http://localhost:7100/agents.md>.
+
 ## Swagger documentation
 
 Swagger documentation for the API is available [here](https://vbanthia.github.io/angular-swagger-ui).

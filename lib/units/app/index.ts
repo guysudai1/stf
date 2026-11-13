@@ -20,6 +20,7 @@ import compression from 'compression'
 
 import logger from '../../util/logger.js'
 import pathutil from '../../util/pathutil.js'
+import {renderGuide} from '../../util/agents-guide.js'
 import cookieutil, {type CookieUnitOptions} from '../../util/cookieutil.js'
 
 import auth from './middleware/auth.js'
@@ -100,6 +101,20 @@ export default function(options: AppOptions) {
     serveStatic(pathutil.resource('common/logo')))
   app.use(serveFavicon(pathutil.resource(
     'common/logo/exports/STF-128.png')))
+
+  var guide: string | undefined
+  ;[['/agents.md', 'text/markdown'], ['/llms.txt', 'text/plain']].forEach(function(entry) {
+    app.get(entry[0]!, function(req, res) {
+      var origin = new URL(options.authUrl).origin
+      guide = guide || renderGuide({
+        appUrl: origin
+      , apiUrl: origin + '/api/v1'
+      , websocketUrl: options.websocketUrl
+      , authUrl: options.authUrl
+      })
+      res.type(entry[1]!).send(guide)
+    })
+  })
 
   app.use(cookieSession(cookieutil.sessionOptions({
     ssid: options.ssid
