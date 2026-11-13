@@ -139,7 +139,7 @@ msgstr ""
 msgid "Alert message level"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:52
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:54
 msgid "Annotated"
 msgstr ""
 
@@ -147,7 +147,7 @@ msgstr ""
 msgid "Another installation is in progress. Wait for it to finish."
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:46
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:48
 msgid "Any"
 msgstr ""
 
@@ -260,7 +260,7 @@ msgstr ""
 msgid "Bookable"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:51
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:53
 msgid "Booked"
 msgstr ""
 
@@ -357,7 +357,7 @@ msgstr ""
 msgid "Confirm"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:194
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:196
 #: res/app/src/features/settings/groups/GroupList.tsx:177
 #: res/app/src/features/settings/users/UsersSettings.tsx:268
 msgid "Confirm Remove"
@@ -413,7 +413,7 @@ msgstr ""
 msgid "Control"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:53
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:55
 msgid "Controlled"
 msgstr ""
 
@@ -537,13 +537,13 @@ msgstr ""
 
 #: res/app/src/features/control/panes/advanced/PortForwardingCard.tsx:109
 #: res/app/src/features/control/panes/advanced/PortForwardingCard.tsx:97
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:220
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:222
 #: res/app/src/features/settings/keys/AdbKeysCard.tsx:114
 #: res/app/src/ui/modals.tsx:195
 msgid "Device"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:51
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:53
 msgid "Device booking state"
 msgstr ""
 
@@ -551,7 +551,7 @@ msgstr ""
 msgid "Device cannot get kicked from the group"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:53
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:55
 msgid "Device controlling state"
 msgstr ""
 
@@ -563,7 +563,7 @@ msgstr ""
 msgid "Device is present but offline."
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:275
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:279
 msgid "Device list"
 msgstr ""
 
@@ -571,7 +571,7 @@ msgstr ""
 msgid "Device Name"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:52
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:54
 msgid "Device notes state"
 msgstr ""
 
@@ -583,12 +583,12 @@ msgstr ""
 msgid "Device Photo"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:50
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:52
 msgid "Device presence state"
 msgstr ""
 
 #: res/app/src/features/group-list/GroupMembers.tsx:126
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:153
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:155
 msgid "Device selection"
 msgstr ""
 
@@ -663,6 +663,10 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:47
+msgid "e.g. getprop ro.product.model"
+msgstr ""
+
 #: res/app/src/features/group-list/GroupMembers.tsx:214
 #: res/app/src/features/settings/groups/GroupUsers.tsx:19
 #: res/app/src/features/settings/users/CreateUserForm.tsx:68
@@ -688,7 +692,7 @@ msgstr ""
 msgid "Enable WiFi"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:184
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:186
 msgid "Enable/Disable confirmation for device removing"
 msgstr ""
 
@@ -742,11 +746,19 @@ msgstr ""
 msgid "Expiration Date"
 msgstr ""
 
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:78
+msgid "Export CSV"
+msgstr ""
+
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:11
+msgid "failed"
+msgstr ""
+
 #: res/app/src/features/control/panes/explorer/ExplorerPane.tsx:160
 msgid "Failed to download file"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:45
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:47
 msgid "False"
 msgstr ""
 
@@ -766,7 +778,7 @@ msgstr ""
 msgid "Filter on user group ownership"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:181
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:183
 #: res/app/src/features/settings/users/UsersSettings.tsx:109
 msgid "Filters"
 msgstr ""
@@ -865,7 +877,7 @@ msgid "Group Name"
 msgstr ""
 
 #: res/app/src/features/device-list/columns.tsx:257
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:226
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:228
 #: res/app/src/features/settings/groups/GroupDevices.tsx:42
 msgid "Group Origin"
 msgstr ""
@@ -995,6 +1007,10 @@ msgstr ""
 msgid "Inactive"
 msgstr ""
 
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:53
+msgid "Include devices in use"
+msgstr ""
+
 #: res/app/src/features/auth/SignInForm.tsx:86
 msgid "Incorrect login details"
 msgstr ""
@@ -1107,7 +1123,7 @@ msgid "Local Settings"
 msgstr ""
 
 #: res/app/src/features/device-list/columns.tsx:326
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:225
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:227
 #: res/app/src/features/settings/groups/GroupDevices.tsx:40
 msgid "Location"
 msgstr ""
@@ -1294,8 +1310,8 @@ msgstr ""
 msgid "No device screen"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:140
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:265
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:142
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:267
 msgid "No Devices"
 msgstr ""
 
@@ -1382,6 +1398,10 @@ msgstr ""
 msgid "Offline"
 msgstr ""
 
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:11
+msgid "ok"
+msgstr ""
+
 #: res/app/src/features/settings/keys/AccessTokensCard.tsx:111
 #: res/app/src/ui/modals.tsx:67
 #: res/app/src/ui/modals.tsx:88
@@ -1419,7 +1439,7 @@ msgstr ""
 #: res/app/src/features/control/panes/info/InfoPane.tsx:288
 #: res/app/src/features/device-list/columns.tsx:277
 #: res/app/src/features/group-list/GroupMembers.tsx:152
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:222
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:224
 #: res/app/src/features/settings/groups/GroupDevices.tsx:18
 msgid "OS"
 msgstr ""
@@ -1569,7 +1589,7 @@ msgstr ""
 msgid "Preparing the iPhone..."
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:50
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:52
 msgid "Present"
 msgstr ""
 
@@ -1624,7 +1644,7 @@ msgstr ""
 msgid "Ready groups"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:112
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:114
 msgid "Really delete this device?"
 msgstr ""
 
@@ -1632,7 +1652,7 @@ msgstr ""
 msgid "Really delete this group?"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:123
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:125
 msgid "Really delete this selection of devices?"
 msgstr ""
 
@@ -1685,8 +1705,8 @@ msgid "Remote debug"
 msgstr ""
 
 #: res/app/src/features/control/panes/advanced/PortForwardingCard.tsx:126
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:207
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:256
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:209
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:258
 #: res/app/src/features/settings/groups/GroupDetail.tsx:170
 #: res/app/src/features/settings/groups/GroupDevices.tsx:139
 #: res/app/src/features/settings/groups/GroupDevices.tsx:159
@@ -1700,7 +1720,7 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:197
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:199
 msgid "Remove the device selection"
 msgstr ""
 
@@ -1712,7 +1732,7 @@ msgstr ""
 msgid "Remove the user selection"
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:71
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:73
 #: res/app/src/features/settings/users/UsersSettings.tsx:115
 msgid "Removing filters"
 msgstr ""
@@ -1730,6 +1750,10 @@ msgstr ""
 
 #: res/app/src/core/install.ts:266
 msgid "Replacing WebDriverAgent from this panel is not allowed."
+msgstr ""
+
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:33
+msgid "Request failed"
 msgstr ""
 
 #: res/app/src/features/control/panes/dashboard/navigation/NavigationCard.tsx:78
@@ -1792,7 +1816,13 @@ msgid "Rotate Right"
 msgstr ""
 
 #: res/app/src/features/control/panes/dashboard/shell/ShellCard.tsx:77
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:64
 msgid "Run"
+msgstr ""
+
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:41
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:46
+msgid "Run a shell command on all devices"
 msgstr ""
 
 #: res/app/src/features/control/panes/dashboard/remote-debug/RemoteDebugCard.tsx:33
@@ -1842,7 +1872,7 @@ msgstr ""
 
 #: res/app/src/features/device-list/columns.tsx:282
 #: res/app/src/features/group-list/GroupMembers.tsx:153
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:223
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:225
 #: res/app/src/features/settings/groups/GroupDevices.tsx:20
 msgid "Screen"
 msgstr ""
@@ -1867,7 +1897,7 @@ msgstr ""
 #: res/app/src/features/control/panes/info/InfoPane.tsx:290
 #: res/app/src/features/device-list/columns.tsx:298
 #: res/app/src/features/group-list/GroupMembers.tsx:154
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:224
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:226
 #: res/app/src/features/settings/groups/GroupDevices.tsx:26
 msgid "SDK"
 msgstr ""
@@ -1891,7 +1921,7 @@ msgstr ""
 #: res/app/src/features/control/panes/info/InfoPane.tsx:278
 #: res/app/src/features/device-list/columns.tsx:294
 #: res/app/src/features/group-list/GroupMembers.tsx:151
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:221
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:223
 #: res/app/src/features/settings/groups/GroupConflicts.tsx:12
 #: res/app/src/features/settings/groups/GroupDevices.tsx:16
 msgid "Serial"
@@ -1902,7 +1932,7 @@ msgstr ""
 msgid "Server error. Check log output."
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:171
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:173
 msgid "Set filters for device removing"
 msgstr ""
 
@@ -1973,6 +2003,10 @@ msgstr ""
 #: res/app/src/features/control/panes/explorer/ExplorerPane.tsx:229
 #: res/app/src/features/control/panes/info/InfoPane.tsx:229
 msgid "Size"
+msgstr ""
+
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:94
+msgid "skipped"
 msgstr ""
 
 #: res/app/src/features/auth/GuestForm.tsx:37
@@ -2346,6 +2380,10 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
+#: res/app/src/features/settings/devices/ShellAllCard.tsx:11
+msgid "timed out"
+msgstr ""
+
 #: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:67
 #: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:69
 msgid "Timeout (seconds)"
@@ -2383,7 +2421,7 @@ msgstr ""
 msgid "Triggers the shake gesture used by application debug menus."
 msgstr ""
 
-#: res/app/src/features/settings/devices/DevicesSettings.tsx:44
+#: res/app/src/features/settings/devices/DevicesSettings.tsx:46
 msgid "True"
 msgstr ""
 

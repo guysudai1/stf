@@ -7,6 +7,7 @@ import {
   , Group
   , Loader
   , SegmentedControl
+  , Stack
   , Table
   , Text
   , ThemeIcon
@@ -30,6 +31,7 @@ import {PageControls, PerPageSelect, SearchInput, useItemsPerPage, usePaged} fro
 import {searchFilter} from '@/ui/paging'
 import {WidgetCard} from '@/ui/WidgetCard'
 import type {SettingsDevice} from '../groups/types'
+import {ShellAllCard} from './ShellAllCard'
 import {useSettingsDevices} from './settings-devices'
 import classes from './DevicesSettings.module.css'
 
@@ -269,13 +271,16 @@ export default function DevicesSettings() {
   }
 
   return (
-    <WidgetCard
-      className='stf-devices'
-      icon={IconDeviceMobile}
-      title={t('Device list')}
-      flush
-    >
-      {body()}
-    </WidgetCard>
+    <Stack>
+      <ShellAllCard />
+      <WidgetCard
+        className='stf-devices'
+        icon={IconDeviceMobile}
+        title={t('Device list')}
+        flush
+      >
+        {body()}
+      </WidgetCard>
+    </Stack>
   )
 }

@@ -55,6 +55,12 @@ export type SerialsBody = {
   serials?: string
 }
 
+export type ShellCommandBody = {
+  command?: string
+  force?: boolean
+  timeout?: number
+}
+
 export type EmailsBody = {
   emails?: string
 }

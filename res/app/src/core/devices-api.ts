@@ -21,9 +21,30 @@ function removalQuery(filters: DeviceRemovalFilters): string {
   return parts.length ? `?${parts.join('&')}` : ''
 }
 
+export interface ShellAllResult {
+  serial: string
+  success: boolean | null
+  data?: string
+  error?: string
+}
+
+export interface ShellAllSkipped {
+  serial: string
+  reason: string
+}
+
+export interface ShellAllResponse {
+  description: string
+  results: ShellAllResult[]
+  skipped: ShellAllSkipped[]
+  command?: string
+}
+
 export const devicesApi = {
   getDevices: (target: string, fields: string) =>
     api.get<{devices: Device[]}>(`/api/v1/devices?target=${target}&fields=${fields}`)
+  , runShell: (command: string, force: boolean) =>
+    api.post<ShellAllResponse>('/api/v1/devices/shell', {command, force})
   , removeDevice: (serial: string, filters: DeviceRemovalFilters) =>
     api.delete(`/api/v1/devices/${serial}${removalQuery(filters)}`)
   , removeDevices: (filters: DeviceRemovalFilters, serials?: string[]) =>

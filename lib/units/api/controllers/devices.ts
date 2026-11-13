@@ -24,6 +24,7 @@ import type {
 , MessageListener
 , Responded
 , SerialsBody
+, ShellCommandBody
 } from '../../../types/units-api.js'
 
 type OriginGroupResult = {device?: unknown, devices?: unknown[]}
@@ -563,6 +564,144 @@ function deleteDevice(req: ApiRequest<SerialsBody>, res: Response) {
   apiutil.redirectApiWrapper('serial', deleteDevices, req, res)
 }
 
+type ShellOutput = {serial: string, success: boolean | null, data: string, error?: string}
+
+type ShellState = {
+  chunks: string[]
+, received: number
+, done: {seq: number, success: boolean, data?: string | null} | null
+}
+
+// Devices with an owner are skipped unless `force` is set.
+function runShellOnDevices(req: ApiRequest<ShellCommandBody>, res: Response) {
+  var command = req.body.command
+  if (!command) {
+    return apiutil.respond(res, 400, 'Bad Request: missing command')
+  }
+  var force = req.body.force || false
+  var timeout = req.body.timeout || 10000
+
+  var responseChannel = 'txn_' + uuid.v4()
+  req.options.sub.subscribe(responseChannel)
+
+  var messageListener: MessageListener | undefined, timer: NodeJS.Timeout | undefined
+  var settled = false
+
+  function release() {
+    req.options.sub.unsubscribe(responseChannel)
+    if (messageListener) {
+      req.options.channelRouter.removeListener(responseChannel, messageListener)
+    }
+  }
+
+  return dbapi.loadDevicesByOrigin(req.user.groups.subscribed)
+    .then(function(devices) {
+      var ready = devices.filter(function(device) {
+        return device.present && device.ready
+      })
+      var targets = ready.filter(function(device) {
+        return force || !device.owner
+      })
+      var skipped = _.difference(ready, targets).map(function(device) {
+        return {serial: device.serial, reason: 'in use by ' + device.owner?.name}
+      })
+
+      if (!targets.length) {
+        release()
+        return apiutil.respond(res, 200, 'No eligible devices', {
+          results: []
+        , skipped: skipped
+        })
+      }
+
+      // Replies travel through more than one processor, so `Done` may overtake
+      // the output chunks before it. Buffer chunks by seq and close a device
+      // only once every earlier seq is in.
+      var output: Record<string, ShellOutput> = Object.create(null)
+      var state: Record<string, ShellState> = Object.create(null)
+      targets.forEach(function(device) {
+        output[device.serial] = {serial: device.serial, success: null, data: ''}
+        state[device.serial] = {chunks: [], received: 0, done: null}
+      })
+      var pending = targets.length
+
+      function finish(description: string) {
+        if (settled) {
+          return
+        }
+        settled = true
+        clearTimeout(timer)
+        release()
+        apiutil.respond(res, 200, description, {
+          results: Object.keys(output).map(function(serial) {
+            return output[serial]
+          })
+        , skipped: skipped
+        })
+      }
+
+      // The device kills the command at `timeout`; allow a margin for the
+      // reply to travel back before reporting whatever did arrive.
+      timer = setTimeout(function() {
+        finish('Shell command timed out on some devices')
+      }, timeout + 5000)
+
+      function complete(serial: string) {
+        var entry = output[serial]
+        var current = state[serial]
+        // Progress chunks carry seq 0..done.seq-1
+        if (!entry || !current || entry.success !== null || !current.done ||
+            current.received < current.done.seq) {
+          return
+        }
+        entry.data = current.chunks.join('')
+        entry.success = current.done.success
+        if (!current.done.success) {
+          entry.error = current.done.data ?? ''
+        }
+        pending -= 1
+        if (pending === 0) {
+          finish('Shell command completed')
+        }
+      }
+
+      messageListener = wirerouter()
+        .on(wire.TransactionProgressMessage, function(channel, message) {
+          var current = state[message.source]
+          if (current) {
+            current.chunks[message.seq] = message.data || ''
+            current.received += 1
+            complete(message.source)
+          }
+        })
+        .on(wire.TransactionDoneMessage, function(channel, message) {
+          var current = state[message.source]
+          if (current && !current.done) {
+            current.done = message
+            complete(message.source)
+          }
+        })
+        .handler()
+
+      req.options.channelRouter.on(responseChannel, messageListener)
+
+      targets.forEach(function(device) {
+        req.options.push.send([
+          device.channel
+        , wireutil.transaction(
+            responseChannel
+          , new wire.ShellCommandMessage(command, timeout)
+          )
+        ])
+      })
+      return null
+    })
+    .catch(function(err) {
+      release()
+      apiutil.internalError(res, 'Failed to run shell command on devices: ', err.stack)
+    })
+}
+
 export {
   getDevices
 , putDeviceBySerial
@@ -575,4 +714,5 @@ export {
 , removeOriginGroupDevices
 , deleteDevice
 , deleteDevices
+, runShellOnDevices
 }

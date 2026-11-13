@@ -55,3 +55,26 @@
     width: 100%;
   }
 }
+
+.shellForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.shellCommand {
+  flex: 1 1 320px;
+  max-width: 480px;
+}
+
+.shellOutput {
+  max-height: 240px;
+  overflow: auto;
+  margin: 4px 0 12px;
+  padding: 8px;
+  font-size: 12px;
+  white-space: pre-wrap;
+  background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+  border-radius: var(--mantine-radius-sm);
+}
