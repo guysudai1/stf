@@ -51,8 +51,11 @@ services:
   adb:
     image: devicefarmer/adb:latest
     restart: ${STF_RESTART_POLICY:-unless-stopped}
+    environment:
+      ADB_VENDOR_KEYS: /adbkeys
     volumes:
       - /dev/bus/usb:/dev/bus/usb
+      - ${STF_ADB_KEYS_DIR:-./adbkeys}:/adbkeys:ro
     privileged: true
 
   migrate:
@@ -116,6 +119,9 @@ services:
       --connect-sub tcp://triproxy-app:7111
       --connect-push-dev tcp://triproxy-dev:7113
       --connect-sub-dev tcp://triproxy-dev:7111
+      --adb-keys-dir /adbkeys
+    volumes:
+      - ${STF_ADB_KEYS_DIR:-./adbkeys}:/adbkeys
     depends_on: *messaging-ready
 
   websocket:

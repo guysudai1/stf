@@ -50,3 +50,7 @@
   font-family: var(--mantine-font-family-monospace);
   font-size: 12px;
 }
+
+.nowrap {
+  white-space: nowrap;
+}

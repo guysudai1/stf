@@ -97,6 +97,10 @@ msgstr ""
 msgid "Add ADB Key"
 msgstr ""
 
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:146
+msgid "Add key"
+msgstr ""
+
 #: res/app/src/features/settings/keys/AdbKeysCard.tsx:124
 #: res/app/src/ui/modals.tsx:209
 msgid "Add Key"
@@ -321,6 +325,11 @@ msgstr ""
 msgid "Checking IPA..."
 msgstr ""
 
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:128
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:130
+msgid "Choose key file"
+msgstr ""
+
 #: res/app/src/features/group-list/columns.tsx:85
 #: res/app/src/features/settings/groups/GroupSchedule.tsx:62
 msgid "Class"
@@ -521,6 +530,14 @@ msgstr ""
 
 #: res/app/src/features/settings/general/GeneralSettings.tsx:69
 msgid "Define your own Email address separator"
+msgstr ""
+
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:185
+msgid "Delete"
+msgstr ""
+
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:87
+msgid "Delete this ADB key?"
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:230
@@ -787,6 +804,7 @@ msgstr ""
 msgid "Find Device"
 msgstr ""
 
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:159
 #: res/app/src/ui/modals.tsx:191
 msgid "Fingerprint"
 msgstr ""
@@ -995,6 +1013,10 @@ msgstr ""
 msgid "Identifier"
 msgstr ""
 
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:171
+msgid "ignored by adb"
+msgstr ""
+
 #: res/app/src/features/control/panes/info/InfoPane.tsx:264
 msgid "IMEI"
 msgstr ""
@@ -1071,6 +1093,11 @@ msgstr ""
 
 #: res/app/src/features/settings/keys/AdbKeysCard.tsx:97
 msgid "Key"
+msgstr ""
+
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:135
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:136
+msgid "Key name"
 msgstr ""
 
 #: res/app/src/features/control/screen/DeviceScreen.tsx:201
@@ -1215,6 +1242,10 @@ msgstr ""
 msgid "Model"
 msgstr ""
 
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:161
+msgid "Modified"
+msgstr ""
+
 #: res/app/src/core/common.ts:24
 msgid "Monthly"
 msgstr ""
@@ -1247,6 +1278,7 @@ msgstr ""
 #: res/app/src/features/settings/groups/GroupDetail.tsx:83
 #: res/app/src/features/settings/groups/GroupDetail.tsx:84
 #: res/app/src/features/settings/groups/GroupUsers.tsx:17
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:158
 #: res/app/src/features/settings/users/CreateUserForm.tsx:57
 #: res/app/src/features/settings/users/UsersSettings.tsx:296
 msgid "Name"
@@ -1348,6 +1380,10 @@ msgstr ""
 msgid "No Ports Forwarded"
 msgstr ""
 
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:151
+msgid "No provider ADB keys"
+msgstr ""
+
 #: res/app/src/features/device-list/DeviceListPage.tsx:118
 #: res/app/src/features/group-list/GroupListPage.tsx:161
 #: res/app/src/features/group-list/GroupMembers.tsx:90
@@ -1368,6 +1404,10 @@ msgstr ""
 
 #: res/app/src/core/devices/enhance.ts:59
 msgid "Not Charging"
+msgstr ""
+
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:112
+msgid "Not configured: start STF with --adb-keys-dir pointing at the ADB_VENDOR_KEYS folder."
 msgstr ""
 
 #: res/app/src/features/docs/DocsPage.tsx:62
@@ -1601,6 +1641,10 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:118
+msgid "Private keys adb offers to devices that already trust another machine. Restart the adb server, then STF, to apply changes."
+msgstr ""
+
 #: res/app/src/features/group-list/GroupMembers.tsx:215
 #: res/app/src/features/settings/groups/GroupUsers.tsx:24
 #: res/app/src/features/settings/users/UsersSettings.tsx:298
@@ -1619,6 +1663,10 @@ msgstr ""
 #: res/app/src/features/control/panes/dashboard/install/InstallCard.tsx:82
 #: res/app/src/ui/IosDeviceHealth.tsx:73
 msgid "Profile expires"
+msgstr ""
+
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:209
+msgid "Provider ADB Keys"
 msgstr ""
 
 #: res/app/src/core/install.ts:61
@@ -1753,6 +1801,8 @@ msgid "Replacing WebDriverAgent from this panel is not allowed."
 msgstr ""
 
 #: res/app/src/features/settings/devices/ShellAllCard.tsx:33
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:74
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:96
 msgid "Request failed"
 msgstr ""
 
@@ -2002,6 +2052,7 @@ msgstr ""
 
 #: res/app/src/features/control/panes/explorer/ExplorerPane.tsx:229
 #: res/app/src/features/control/panes/info/InfoPane.tsx:229
+#: res/app/src/features/settings/keys/ProviderKeysCard.tsx:160
 msgid "Size"
 msgstr ""
 

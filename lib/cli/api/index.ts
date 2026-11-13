@@ -55,6 +55,11 @@ var builder = function(yargs: Argv) {
     , default: process.env.SECRET
     , demand: true
     })
+    .option('adb-keys-dir', {
+      describe: 'Folder of provider ADB private keys (the ADB_VENDOR_KEYS ' +
+        'folder) that admins can manage from Settings > Keys.'
+    , type: 'string'
+    })
     .option('ssid', {
       alias: 'i'
     , describe: 'The name of the session ID cookie.'
@@ -72,6 +77,7 @@ var handler = function(argv: CommandArgv<typeof builder>) {
     port: argv.port
   , ssid: argv.ssid
   , secret: argv.secret
+  , adbKeysDir: argv.adbKeysDir
   , endpoints: {
       push: argv.connectPush
     , sub: argv.connectSub

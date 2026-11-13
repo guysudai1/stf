@@ -35,6 +35,11 @@ var builder = function(yargs: Argv) {
     , type: 'number'
     , default: 5037
     })
+    .option('adb-keys-dir', {
+      describe: 'Folder of provider ADB private keys (the ADB_VENDOR_KEYS ' +
+        'folder) that admins can manage from Settings > Keys.'
+    , type: 'string'
+    })
     .option('allow-remote', {
       alias: 'R'
     , describe: 'Whether to allow remote devices in STF. Highly ' +
@@ -478,7 +483,7 @@ var handler = async function(argv: CommandArgv<typeof builder>) {
         , '--connect-sub', argv.bindAppPub
         , '--connect-push-dev', argv.bindDevPull
         , '--connect-sub-dev', argv.bindDevPub
-      ])
+      ].concat(argv.adbKeysDir ? ['--adb-keys-dir', argv.adbKeysDir] : []))
 
       // groups engine
     , procutil.fork(path.resolve(import.meta.dirname, '..'), [

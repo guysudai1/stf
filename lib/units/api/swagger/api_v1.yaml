@@ -1817,6 +1817,95 @@ paths:
             $ref: "#/definitions/ErrorResponse"
       security:
         - accessTokenAuth: []        
+  /adbkeys:
+    x-swagger-router-controller: adbkeys
+    get:
+      summary: Lists the provider's ADB private keys
+      description: >
+        Lists the files in the ADB_VENDOR_KEYS folder with their fingerprints.
+        Key contents are never returned.
+      operationId: getAdbKeys
+      tags:
+        - admin
+      responses:
+        "200":
+          description: ADB keys (configured is false when no folder is set)
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: >
+            Unexpected Error:
+              * 401: Unauthorized => bad credentials
+              * 403: Forbidden => privileged operation (admin)
+              * 500: Internal Server Error
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
+    post:
+      summary: Adds an ADB private key
+      description: >
+        Stores a 2048-bit RSA PEM private key as <name>.adb_key (mode 0600).
+        Existing keys are never overwritten. adb loads it on its next start.
+      operationId: addAdbKey
+      tags:
+        - admin
+      parameters:
+        - name: body
+          in: body
+          description: The key name and PEM contents
+          required: true
+          schema:
+            $ref: "#/definitions/AdbKeyBody"
+      responses:
+        "201":
+          description: Key stored
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: >
+            Unexpected Error:
+              * 400: Bad Request => invalid name or key
+              * 401: Unauthorized => bad credentials
+              * 403: Forbidden => privileged operation (admin)
+              * 409: Conflict => name already used
+              * 500: Internal Server Error
+              * 503: Service Unavailable => no keys folder configured
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
+  /adbkeys/{name}:
+    x-swagger-router-controller: adbkeys
+    delete:
+      summary: Deletes an ADB private key
+      operationId: deleteAdbKey
+      tags:
+        - admin
+      parameters:
+        - name: name
+          in: path
+          description: Key file name as listed
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Key deleted
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: >
+            Unexpected Error:
+              * 400: Bad Request => invalid name
+              * 401: Unauthorized => bad credentials
+              * 403: Forbidden => privileged operation (admin)
+              * 404: Not Found => unknown key
+              * 500: Internal Server Error
+              * 503: Service Unavailable => no keys folder configured
+          schema:
+            $ref: "#/definitions/UnexpectedErrorResponse"
+      security:
+        - accessTokenAuth: []
   /devices:
     x-swagger-router-controller: devices 
     get:
@@ -2324,6 +2413,20 @@ paths:
   /swagger.json:
     x-swagger-pipe: swagger_raw
 definitions:
+  AdbKeyBody:
+    type: object
+    required:
+      - name
+      - key
+    properties:
+      name:
+        type: string
+        description: File name; ".adb_key" is appended when missing
+        maxLength: 64
+      key:
+        type: string
+        description: PEM private key
+        maxLength: 16384
   UnexpectedErrorResponse:
     required:
       - success

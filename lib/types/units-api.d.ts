@@ -118,6 +118,7 @@ export interface ApiUnitOptions {
   port: number
   ssid: string
   secret: string
+  adbKeysDir?: string | undefined
   endpoints: {
     push: string[]
     sub: string[]
