@@ -1,0 +1,131 @@
+.tabBar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 4px 8px;
+  padding: 8px 8px 0;
+  border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.tabList {
+  flex: 1 1 200px;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  border-bottom: 0;
+  margin-bottom: -1px;
+}
+
+.tabList::before {
+  display: none;
+}
+
+.tabList > * {
+  flex: 0 0 auto;
+}
+
+.pencil {
+  flex: 0 0 auto;
+  margin-left: auto;
+  margin-bottom: 6px;
+}
+
+.editBar {
+  flex: 0 0 auto;
+  background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
+  border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.sortableTab {
+  display: flex;
+  align-items: center;
+  padding-right: 4px;
+  margin-right: 4px;
+  border: 1px dashed light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3));
+  border-radius: var(--mantine-radius-sm);
+  background: var(--mantine-color-body);
+}
+
+.grab {
+  cursor: grab;
+  touch-action: none;
+  border: 0;
+}
+
+.dragging {
+  position: relative;
+  z-index: 10;
+  box-shadow: var(--mantine-shadow-md);
+  transform-origin: center;
+}
+
+.handle {
+  cursor: grab;
+  touch-action: none;
+}
+
+.block {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  border: 1px dashed light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3));
+  border-radius: var(--mantine-radius-md);
+}
+
+.pill {
+  position: absolute;
+  top: -12px;
+  right: 12px;
+  z-index: 2;
+  padding: 2px 4px;
+}
+
+.placeholder {
+  border-style: dashed;
+  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6));
+}
+
+.placeholder > * {
+  visibility: hidden;
+}
+
+.ghost {
+  height: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  padding: var(--mantine-spacing-sm);
+  transform: scale(1.02);
+  cursor: grabbing;
+}
+
+.inert {
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.85;
+  max-height: 320px;
+  overflow: hidden;
+}
+
+.tray {
+  margin-top: var(--mantine-spacing-md);
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+  border: 1px dashed light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-3));
+  border-radius: var(--mantine-radius-md);
+}
+
+.editGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: var(--mantine-spacing-md);
+  align-items: start;
+}
+
+.editGrid > * > .inert > * {
+  margin-bottom: 0;
+}

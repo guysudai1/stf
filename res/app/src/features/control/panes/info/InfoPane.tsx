@@ -21,7 +21,10 @@ import {DeviceImage, deviceImageUrl} from '@/ui/DeviceImage'
 import {notifyFailure} from '@/ui/notify'
 import {WidgetCard} from '@/ui/WidgetCard'
 import {IosDeviceHealth} from '@/ui/IosDeviceHealth'
+import {ArrangedBlocks} from '../../layout/ArrangedBlocks'
 import type {PaneProps} from '../../types'
+import {useEditing} from '../../layout/use-layout'
+import layoutClasses from '../../layout/Layout.module.css'
 import classes from './InfoPane.module.css'
 
 interface InfoRow {
@@ -174,6 +177,7 @@ function resolveDisplayInches(display?: Device['display']): number | undefined {
 export default function InfoPane({device, control}: PaneProps) {
   const {t, language} = useTranslation()
   const sdCardMounted = useSdCardMounted(control)
+  const editing = useEditing()
   const {battery, display, network, phone, cpu, memory} = device
   const displayInches = resolveDisplayInches(display)
   const photoRows: InfoRow[] = device.name && device.image ? [{
@@ -315,13 +319,13 @@ export default function InfoPane({device, control}: PaneProps) {
     }
   ]
 
-  return (
-    <div className={`stf-info selectable ${classes.masonry}`}>
-      {device.platform === 'iOS' && <div className={classes.item}><IosDeviceHealth device={device} /></div>}
-      {sections.filter(section => device.platform !== 'iOS' ||
-        ['physical', 'display', 'hardware', 'platform'].includes(section.id)).map((section) => (
+  const blocks = [
+    ...(device.platform === 'iOS' ? [{id: 'ios-health', node: <div className={classes.item}><IosDeviceHealth device={device} /></div>}] : [])
+    , ...sections.filter(section => device.platform !== 'iOS' ||
+      ['physical', 'display', 'hardware', 'platform'].includes(section.id)).map((section) => ({
+      id: section.id
+      , node: (
         <WidgetCard
-          key={section.id}
           title={t(section.title)}
           icon={section.icon}
           color={section.color}
@@ -330,7 +334,15 @@ export default function InfoPane({device, control}: PaneProps) {
         >
           <InfoTable rows={section.rows} />
         </WidgetCard>
-      ))}
-    </div>
+      )
+    }))
+  ]
+
+  return (
+    <ArrangedBlocks paneId='info' blocks={blocks}>
+      {(nodes) => (
+        <div className={`stf-info selectable ${editing ? layoutClasses.editGrid : classes.masonry}`}>{nodes}</div>
+      )}
+    </ArrangedBlocks>
   )
 }

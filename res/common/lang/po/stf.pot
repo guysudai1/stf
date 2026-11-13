@@ -28,6 +28,10 @@ msgstr ""
 msgid "{{user.name}} groups number use"
 msgstr ""
 
+#: res/app/src/features/control/layout/TabBar.tsx:150
+msgid "+{{count}} hidden"
+msgstr ""
+
 #: res/app/src/ui/modals.tsx:163
 msgid "A new version of STF is available"
 msgstr ""
@@ -44,7 +48,7 @@ msgstr ""
 msgid "A secure container mount point couldn't be accessed on external media."
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:291
+#: res/app/src/features/control/panes/info/InfoPane.tsx:295
 #: res/app/src/features/device-list/columns.tsx:305
 #: res/app/src/features/settings/groups/GroupDevices.tsx:27
 msgid "ABI"
@@ -126,15 +130,16 @@ msgstr ""
 msgid "Admin mode has been enabled."
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:84
+#: res/app/src/features/control/ControlPage.tsx:87
 msgid "Advanced"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:16
 #: res/app/src/features/control/panes/advanced/AdvancedInputCard.tsx:64
 msgid "Advanced Input"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:248
+#: res/app/src/features/control/panes/info/InfoPane.tsx:252
 msgid "Airplane Mode"
 msgstr ""
 
@@ -181,10 +186,12 @@ msgid "App switch"
 msgstr ""
 
 #: res/app/src/features/control/device-control/install-file.ts:14
+#: res/app/src/features/control/layout/catalog.ts:10
 #: res/app/src/features/control/panes/dashboard/install/InstallCard.tsx:173
 msgid "App Upload"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:12
 #: res/app/src/features/control/panes/dashboard/apps/AppsCard.tsx:69
 msgid "Apps"
 msgstr ""
@@ -208,15 +215,15 @@ msgstr ""
 
 #: res/app/src/core/devices/enhance.ts:18
 #: res/app/src/core/devices/enhance.ts:33
-#: res/app/src/features/control/ControlPage.tsx:545
+#: res/app/src/features/control/ControlPage.tsx:564
 msgid "Automated"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:78
+#: res/app/src/features/control/ControlPage.tsx:81
 msgid "Automation"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:537
+#: res/app/src/features/control/ControlPage.tsx:556
 msgid "Automation finished"
 msgstr ""
 
@@ -250,7 +257,8 @@ msgstr ""
 msgid "Bad syntax"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:211
+#: res/app/src/features/control/layout/catalog.ts:27
+#: res/app/src/features/control/panes/info/InfoPane.tsx:215
 msgid "Battery"
 msgstr ""
 
@@ -319,7 +327,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:261
+#: res/app/src/features/control/panes/info/InfoPane.tsx:265
 #: res/app/src/features/device-list/columns.tsx:276
 #: res/app/src/features/settings/groups/GroupDevices.tsx:17
 msgid "Carrier"
@@ -371,6 +379,7 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:9
 #: res/app/src/features/control/panes/dashboard/clipboard/ClipboardCard.tsx:41
 msgid "Clipboard"
 msgstr ""
@@ -405,7 +414,7 @@ msgstr ""
 
 #: res/app/src/core/devices/enhance.ts:23
 #: res/app/src/core/devices/enhance.ts:8
-#: res/app/src/features/control/panes/info/InfoPane.tsx:247
+#: res/app/src/features/control/panes/info/InfoPane.tsx:251
 msgid "Connected"
 msgstr ""
 
@@ -461,7 +470,7 @@ msgstr ""
 msgid "Copy to clipboard"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:301
+#: res/app/src/features/control/panes/info/InfoPane.tsx:305
 msgid "Cores"
 msgstr ""
 
@@ -473,7 +482,8 @@ msgstr ""
 msgid "Could not shake the iPhone. Keep it unlocked and use the standard AssistiveTouch menu in English or Russian. Release and reconnect the device if the session ended."
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:296
+#: res/app/src/features/control/layout/catalog.ts:33
+#: res/app/src/features/control/panes/info/InfoPane.tsx:300
 msgid "CPU"
 msgstr ""
 
@@ -505,6 +515,11 @@ msgstr ""
 msgid "Customize"
 msgstr ""
 
+#: res/app/src/features/control/layout/TabBar.tsx:135
+#: res/app/src/features/control/layout/TabBar.tsx:136
+msgid "Customize layout"
+msgstr ""
+
 #: res/app/src/core/common.ts:22
 msgid "Daily"
 msgstr ""
@@ -513,7 +528,7 @@ msgstr ""
 msgid "Dark"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:59
+#: res/app/src/features/control/ControlPage.tsx:62
 msgid "Dashboard"
 msgstr ""
 
@@ -566,7 +581,7 @@ msgstr ""
 msgid "Delete this ADB key?"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:230
+#: res/app/src/features/control/panes/info/InfoPane.tsx:234
 msgid "Density"
 msgstr ""
 
@@ -624,7 +639,7 @@ msgstr ""
 msgid "Device offline"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:188
+#: res/app/src/features/control/panes/info/InfoPane.tsx:192
 msgid "Device Photo"
 msgstr ""
 
@@ -637,6 +652,7 @@ msgstr ""
 msgid "Device selection"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:22
 #: res/app/src/features/control/panes/automation/DeviceSettingsCard.tsx:101
 #: res/app/src/features/control/panes/automation/DeviceSettingsCard.tsx:45
 msgid "Device Settings"
@@ -646,7 +662,7 @@ msgstr ""
 msgid "Device timeout"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:115
+#: res/app/src/features/control/ControlPage.tsx:118
 msgid "Device was disconnected"
 msgstr ""
 
@@ -682,12 +698,22 @@ msgstr ""
 msgid "Disconnected"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:225
+#: res/app/src/features/control/layout/catalog.ts:28
+#: res/app/src/features/control/panes/info/InfoPane.tsx:229
 msgid "Display"
+msgstr ""
+
+#: res/app/src/features/control/layout/TabBar.tsx:171
+msgid "Done"
 msgstr ""
 
 #: res/app/src/core/install.ts:58
 msgid "Downloading..."
+msgstr ""
+
+#: res/app/src/features/control/layout/ArrangedBlocks.tsx:37
+#: res/app/src/features/control/layout/TabBar.tsx:42
+msgid "Drag to reorder"
 msgstr ""
 
 #: res/app/src/features/control/panes/dashboard/install/InstallCard.tsx:207
@@ -711,6 +737,10 @@ msgstr ""
 
 #: res/app/src/features/settings/devices/ShellAllCard.tsx:47
 msgid "e.g. getprop ro.product.model"
+msgstr ""
+
+#: res/app/src/features/control/layout/TabBar.tsx:144
+msgid "Editing layout — drag to reorder, × to hide"
 msgstr ""
 
 #: res/app/src/features/group-list/GroupMembers.tsx:214
@@ -750,7 +780,7 @@ msgstr ""
 msgid "Enable/Disable confirmation for user removing"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:236
+#: res/app/src/features/control/panes/info/InfoPane.tsx:240
 msgid "Encrypted"
 msgstr ""
 
@@ -758,9 +788,9 @@ msgstr ""
 msgid "Enter a whole number from 1 to 86400 seconds."
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:403
-#: res/app/src/features/control/ControlPage.tsx:488
-#: res/app/src/features/control/ControlPage.tsx:512
+#: res/app/src/features/control/ControlPage.tsx:422
+#: res/app/src/features/control/ControlPage.tsx:507
+#: res/app/src/features/control/ControlPage.tsx:531
 #: res/app/src/features/control/panes/explorer/ExplorerPane.tsx:218
 #: res/app/src/features/device-list/device-actions.ts:40
 #: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:41
@@ -824,7 +854,7 @@ msgstr ""
 msgid "Fatal only"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:90
+#: res/app/src/features/control/ControlPage.tsx:93
 msgid "File Explorer"
 msgstr ""
 
@@ -845,7 +875,7 @@ msgstr ""
 msgid "Filters"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:201
+#: res/app/src/features/control/panes/info/InfoPane.tsx:205
 msgid "Find Device"
 msgstr ""
 
@@ -859,7 +889,7 @@ msgstr ""
 msgid "Force release this device?"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:231
+#: res/app/src/features/control/panes/info/InfoPane.tsx:235
 msgid "FPS"
 msgstr ""
 
@@ -867,7 +897,7 @@ msgstr ""
 msgid "Free storage"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:302
+#: res/app/src/features/control/panes/info/InfoPane.tsx:306
 msgid "Frequency"
 msgstr ""
 
@@ -907,7 +937,7 @@ msgstr ""
 msgid "Go Back"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:132
+#: res/app/src/features/control/ControlPage.tsx:135
 msgid "Go to Device List"
 msgstr ""
 
@@ -1001,11 +1031,12 @@ msgstr ""
 msgid "Halfyearly"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:271
+#: res/app/src/features/control/layout/catalog.ts:31
+#: res/app/src/features/control/panes/info/InfoPane.tsx:275
 msgid "Hardware"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:215
+#: res/app/src/features/control/panes/info/InfoPane.tsx:219
 msgid "Health"
 msgstr ""
 
@@ -1015,7 +1046,7 @@ msgstr ""
 msgid "Health & Logs"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:233
+#: res/app/src/features/control/panes/info/InfoPane.tsx:237
 msgid "Height"
 msgstr ""
 
@@ -1024,6 +1055,16 @@ msgstr ""
 #: res/app/src/ui/AppLayout.tsx:316
 #: res/app/src/ui/AppLayout.tsx:322
 msgid "Help"
+msgstr ""
+
+#: res/app/src/features/control/layout/ArrangedBlocks.tsx:120
+#: res/app/src/features/control/layout/ArrangedBlocks.tsx:121
+msgid "Hidden blocks"
+msgstr ""
+
+#: res/app/src/features/control/layout/ArrangedBlocks.tsx:48
+#: res/app/src/features/control/layout/TabBar.tsx:53
+msgid "Hide"
 msgstr ""
 
 #: res/app/src/features/control/panes/dashboard/install/InstallCard.tsx:94
@@ -1056,11 +1097,11 @@ msgstr ""
 msgid "Hourly"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:266
+#: res/app/src/features/control/panes/info/InfoPane.tsx:270
 msgid "ICCID"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:234
+#: res/app/src/features/control/panes/info/InfoPane.tsx:238
 msgid "ID"
 msgstr ""
 
@@ -1073,11 +1114,11 @@ msgstr ""
 msgid "ignored by adb"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:264
+#: res/app/src/features/control/panes/info/InfoPane.tsx:268
 msgid "IMEI"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:265
+#: res/app/src/features/control/panes/info/InfoPane.tsx:269
 msgid "IMSI"
 msgstr ""
 
@@ -1093,7 +1134,7 @@ msgstr ""
 msgid "Incorrect login details"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:96
+#: res/app/src/features/control/ControlPage.tsx:99
 msgid "Info"
 msgstr ""
 
@@ -1135,10 +1176,13 @@ msgstr ""
 msgid "Installing app..."
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:7
 #: res/app/src/features/control/panes/dashboard/ios-controls/IosControlsCard.tsx:71
 msgid "iPhone controls"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:25
+#: res/app/src/features/control/layout/catalog.ts:6
 #: res/app/src/ui/IosDeviceHealth.tsx:58
 msgid "iPhone status"
 msgstr ""
@@ -1195,7 +1239,7 @@ msgstr ""
 msgid "Leave blank or reset to use the provider timeout. This applies to newly acquired devices."
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:218
+#: res/app/src/features/control/panes/info/InfoPane.tsx:222
 #: res/app/src/features/control/panes/logs/LogTable.tsx:133
 #: res/app/src/features/health/HealthLogsPage.tsx:159
 #: res/app/src/features/health/HealthLogsPage.tsx:199
@@ -1235,11 +1279,12 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:65
+#: res/app/src/features/control/ControlPage.tsx:68
 #: res/app/src/features/health/HealthLogsPage.tsx:145
 msgid "Logs"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:18
 #: res/app/src/features/control/panes/advanced/MaintenanceCard.tsx:23
 msgid "Maintenance"
 msgstr ""
@@ -1256,7 +1301,7 @@ msgstr ""
 msgid "Manner Mode"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:275
+#: res/app/src/features/control/panes/info/InfoPane.tsx:279
 #: res/app/src/features/device-list/columns.tsx:297
 #: res/app/src/features/settings/groups/GroupDevices.tsx:22
 msgid "Manufacturer"
@@ -1271,7 +1316,8 @@ msgstr ""
 msgid "Media"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:307
+#: res/app/src/features/control/layout/catalog.ts:34
+#: res/app/src/features/control/panes/info/InfoPane.tsx:311
 msgid "Memory"
 msgstr ""
 
@@ -1303,7 +1349,7 @@ msgstr ""
 msgid "Mobile SUPL"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:277
+#: res/app/src/features/control/panes/info/InfoPane.tsx:281
 #: res/app/src/features/device-list/columns.tsx:261
 #: res/app/src/features/settings/groups/GroupDevices.tsx:15
 msgid "Model"
@@ -1338,7 +1384,7 @@ msgstr ""
 #: res/app/src/features/auth/SignInForm.tsx:110
 #: res/app/src/features/auth/SignInForm.tsx:111
 #: res/app/src/features/control/panes/explorer/ExplorerPane.tsx:228
-#: res/app/src/features/control/panes/info/InfoPane.tsx:300
+#: res/app/src/features/control/panes/info/InfoPane.tsx:304
 #: res/app/src/features/group-list/columns.tsx:56
 #: res/app/src/features/settings/groups/GroupDetail.tsx:58
 #: res/app/src/features/settings/groups/GroupDetail.tsx:61
@@ -1355,12 +1401,14 @@ msgstr ""
 msgid "Native"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:8
 #: res/app/src/features/control/panes/dashboard/navigation/NavigationCard.tsx:67
 msgid "Navigation"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:243
-#: res/app/src/features/control/panes/info/InfoPane.tsx:262
+#: res/app/src/features/control/layout/catalog.ts:29
+#: res/app/src/features/control/panes/info/InfoPane.tsx:247
+#: res/app/src/features/control/panes/info/InfoPane.tsx:266
 #: res/app/src/features/device-list/columns.tsx:283
 #: res/app/src/features/settings/groups/GroupDevices.tsx:19
 msgid "Network"
@@ -1500,7 +1548,7 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:263
+#: res/app/src/features/control/panes/info/InfoPane.tsx:267
 msgid "Number"
 msgstr ""
 
@@ -1551,11 +1599,11 @@ msgstr ""
 msgid "OpenGL ES version"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:235
+#: res/app/src/features/control/panes/info/InfoPane.tsx:239
 msgid "Orientation"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:288
+#: res/app/src/features/control/panes/info/InfoPane.tsx:292
 #: res/app/src/features/device-list/columns.tsx:279
 #: res/app/src/features/group-list/GroupMembers.tsx:152
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:224
@@ -1625,7 +1673,8 @@ msgstr ""
 msgid "Phone IMSI"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:196
+#: res/app/src/features/control/layout/catalog.ts:26
+#: res/app/src/features/control/panes/info/InfoPane.tsx:200
 msgid "Physical Device"
 msgstr ""
 
@@ -1634,11 +1683,12 @@ msgstr ""
 msgid "PID"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:205
+#: res/app/src/features/control/panes/info/InfoPane.tsx:209
 msgid "Place"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:284
+#: res/app/src/features/control/layout/catalog.ts:32
+#: res/app/src/features/control/panes/info/InfoPane.tsx:288
 msgid "Platform"
 msgstr ""
 
@@ -1671,6 +1721,7 @@ msgstr ""
 msgid "Port"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:17
 #: res/app/src/features/control/panes/advanced/PortForwardingCard.tsx:27
 #: res/app/src/features/control/panes/advanced/PortForwardingCard.tsx:75
 #: res/app/src/features/control/panes/advanced/PortForwardingCard.tsx:83
@@ -1694,13 +1745,13 @@ msgstr ""
 msgid "Power off this iPhone? Control will end. Turning it on again requires physical access."
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:216
+#: res/app/src/features/control/panes/info/InfoPane.tsx:220
 msgid "Power Source"
 msgstr ""
 
 #: res/app/src/core/devices/enhance.ts:13
 #: res/app/src/core/devices/enhance.ts:28
-#: res/app/src/features/control/ControlPage.tsx:531
+#: res/app/src/features/control/ControlPage.tsx:550
 msgid "Preparing"
 msgstr ""
 
@@ -1734,7 +1785,7 @@ msgstr ""
 msgid "Processing..."
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:276
+#: res/app/src/features/control/panes/info/InfoPane.tsx:280
 #: res/app/src/features/device-list/columns.tsx:266
 msgid "Product"
 msgstr ""
@@ -1756,7 +1807,7 @@ msgstr ""
 msgid "Quaterly"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:311
+#: res/app/src/features/control/panes/info/InfoPane.tsx:315
 msgid "RAM"
 msgstr ""
 
@@ -1812,7 +1863,7 @@ msgstr ""
 msgid "Regex syntax"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:551
+#: res/app/src/features/control/ControlPage.tsx:570
 #: res/app/src/ui/release-reservation.ts:6
 #: res/app/src/ui/release-reservation.ts:8
 msgid "Release reservation"
@@ -1822,7 +1873,7 @@ msgstr ""
 msgid "Release this STF reservation? The external automation session must be stopped separately."
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:279
+#: res/app/src/features/control/panes/info/InfoPane.tsx:283
 #: res/app/src/features/device-list/columns.tsx:277
 msgid "Released"
 msgstr ""
@@ -1831,6 +1882,7 @@ msgstr ""
 msgid "Reload"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:13
 #: res/app/src/features/control/panes/dashboard/remote-debug/RemoteDebugCard.tsx:67
 msgid "Remote debug"
 msgstr ""
@@ -1889,6 +1941,7 @@ msgstr ""
 msgid "Request failed"
 msgstr ""
 
+#: res/app/src/features/control/layout/TabBar.tsx:170
 #: res/app/src/features/control/panes/dashboard/navigation/NavigationCard.tsx:78
 #: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:85
 #: res/app/src/features/settings/general/GeneralSettings.tsx:105
@@ -1898,6 +1951,11 @@ msgstr ""
 
 #: res/app/src/features/control/panes/dashboard/navigation/NavigationCard.tsx:69
 msgid "Reset all browser settings"
+msgstr ""
+
+#: res/app/src/features/control/layout/TabBar.tsx:94
+#: res/app/src/features/control/layout/TabBar.tsx:96
+msgid "Reset layout"
 msgstr ""
 
 #: res/app/src/features/settings/general/GeneralSettings.tsx:94
@@ -1920,6 +1978,15 @@ msgstr ""
 msgid "Restart this iPhone? Control will end. After startup, iOS may require the first unlock on the phone."
 msgstr ""
 
+#: res/app/src/features/control/layout/ArrangedBlocks.tsx:133
+#: res/app/src/features/control/layout/TabBar.tsx:160
+msgid "Restore"
+msgstr ""
+
+#: res/app/src/features/control/layout/TabBar.tsx:95
+msgid "Restore the default tabs and blocks?"
+msgstr ""
+
 #: res/app/src/features/control/screen/DeviceScreen.tsx:186
 msgid "Retry"
 msgstr ""
@@ -1928,11 +1995,11 @@ msgstr ""
 msgid "Rewind"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:250
+#: res/app/src/features/control/panes/info/InfoPane.tsx:254
 msgid "Roaming"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:312
+#: res/app/src/features/control/panes/info/InfoPane.tsx:316
 msgid "ROM"
 msgstr ""
 
@@ -2019,15 +2086,15 @@ msgstr ""
 msgid "Screenshot"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:72
+#: res/app/src/features/control/ControlPage.tsx:75
 msgid "Screenshots"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:313
+#: res/app/src/features/control/panes/info/InfoPane.tsx:317
 msgid "SD Card Mounted"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:290
+#: res/app/src/features/control/panes/info/InfoPane.tsx:294
 #: res/app/src/features/device-list/columns.tsx:300
 #: res/app/src/features/group-list/GroupMembers.tsx:154
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:226
@@ -2056,7 +2123,7 @@ msgstr ""
 msgid "Select all"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:278
+#: res/app/src/features/control/panes/info/InfoPane.tsx:282
 #: res/app/src/features/device-list/columns.tsx:296
 #: res/app/src/features/group-list/GroupMembers.tsx:151
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:223
@@ -2101,6 +2168,7 @@ msgstr ""
 msgid "Shake phone"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:11
 #: res/app/src/features/control/panes/dashboard/shell/ShellCard.tsx:46
 msgid "Shell"
 msgstr ""
@@ -2134,12 +2202,13 @@ msgstr ""
 msgid "Silent Mode"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:257
+#: res/app/src/features/control/layout/catalog.ts:30
+#: res/app/src/features/control/panes/info/InfoPane.tsx:261
 msgid "SIM"
 msgstr ""
 
 #: res/app/src/features/control/panes/explorer/ExplorerPane.tsx:229
-#: res/app/src/features/control/panes/info/InfoPane.tsx:229
+#: res/app/src/features/control/panes/info/InfoPane.tsx:233
 #: res/app/src/features/settings/keys/ProviderKeysCard.tsx:160
 msgid "Size"
 msgstr ""
@@ -2196,7 +2265,7 @@ msgstr ""
 msgid "Starting date >= Expiration date"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:217
+#: res/app/src/features/control/panes/info/InfoPane.tsx:221
 #: res/app/src/features/device-list/columns.tsx:241
 #: res/app/src/features/group-list/columns.tsx:51
 #: res/app/src/features/health/HealthLogsPage.tsx:126
@@ -2221,13 +2290,14 @@ msgstr ""
 msgid "Stop Using"
 msgstr ""
 
+#: res/app/src/features/control/layout/catalog.ts:21
 #: res/app/src/features/control/panes/automation/StoreAccountCard.tsx:63
 #: res/app/src/features/control/panes/automation/StoreAccountCard.tsx:76
 #: res/app/src/features/control/panes/automation/StoreAccountCard.tsx:82
 msgid "Store Account"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:252
+#: res/app/src/features/control/panes/info/InfoPane.tsx:256
 msgid "Sub Type"
 msgstr ""
 
@@ -2240,7 +2310,7 @@ msgstr ""
 msgid "Tag"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:540
+#: res/app/src/features/control/ControlPage.tsx:559
 msgid "Take control to view and interact with the device."
 msgstr ""
 
@@ -2248,7 +2318,7 @@ msgstr ""
 msgid "Take Screenshot"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:219
+#: res/app/src/features/control/panes/info/InfoPane.tsx:223
 msgid "Temperature"
 msgstr ""
 
@@ -2474,7 +2544,7 @@ msgstr ""
 msgid "The system failed to install the package because the user is restricted from installing apps."
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:539
+#: res/app/src/features/control/ControlPage.tsx:558
 msgid "The test has finished. Take control to interact with the device."
 msgstr ""
 
@@ -2574,12 +2644,12 @@ msgstr ""
 msgid "True"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:129
+#: res/app/src/features/control/ControlPage.tsx:132
 #: res/app/src/ui/modals.tsx:142
 msgid "Try to reconnect"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:251
+#: res/app/src/features/control/panes/info/InfoPane.tsx:255
 msgid "Type"
 msgstr ""
 
@@ -2652,7 +2722,7 @@ msgid "USB"
 msgstr ""
 
 #: res/app/src/core/devices/enhance.ts:17
-#: res/app/src/features/control/ControlPage.tsx:563
+#: res/app/src/features/control/ControlPage.tsx:582
 msgid "Use"
 msgstr ""
 
@@ -2685,7 +2755,7 @@ msgstr ""
 msgid "Using"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:249
+#: res/app/src/features/control/panes/info/InfoPane.tsx:253
 msgid "Using Fallback"
 msgstr ""
 
@@ -2693,7 +2763,7 @@ msgstr ""
 msgid "Verifying installation..."
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:289
+#: res/app/src/features/control/panes/info/InfoPane.tsx:293
 msgid "Version"
 msgstr ""
 
@@ -2705,15 +2775,15 @@ msgstr ""
 msgid "Vibrate Mode"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:537
+#: res/app/src/features/control/ControlPage.tsx:556
 msgid "View only"
 msgstr ""
 
-#: res/app/src/features/control/ControlPage.tsx:548
+#: res/app/src/features/control/ControlPage.tsx:567
 msgid "View only. Controls are disabled while the test is running."
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:220
+#: res/app/src/features/control/panes/info/InfoPane.tsx:224
 msgid "Voltage"
 msgstr ""
 
@@ -2768,7 +2838,7 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:232
+#: res/app/src/features/control/panes/info/InfoPane.tsx:236
 msgid "Width"
 msgstr ""
 
@@ -2776,7 +2846,7 @@ msgstr ""
 #: res/app/src/features/control/panes/automation/DeviceSettingsCard.tsx:124
 #: res/app/src/features/control/panes/automation/DeviceSettingsCard.tsx:134
 #: res/app/src/features/control/panes/dashboard/apps/AppsCard.tsx:46
-#: res/app/src/features/control/panes/info/InfoPane.tsx:42
+#: res/app/src/features/control/panes/info/InfoPane.tsx:45
 msgid "WiFi"
 msgstr ""
 
@@ -2813,11 +2883,11 @@ msgstr ""
 msgid "Write an email to the user selection"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:237
+#: res/app/src/features/control/panes/info/InfoPane.tsx:241
 msgid "X DPI"
 msgstr ""
 
-#: res/app/src/features/control/panes/info/InfoPane.tsx:238
+#: res/app/src/features/control/panes/info/InfoPane.tsx:242
 msgid "Y DPI"
 msgstr ""
 

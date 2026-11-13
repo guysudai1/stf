@@ -1,4 +1,4 @@
-import {lazy, Suspense, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type ComponentType} from 'react'
+import {lazy, startTransition, Suspense, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type ComponentType} from 'react'
 import {useNavigate, useParams, useSearchParams} from 'react-router'
 import {
   Alert
@@ -42,6 +42,9 @@ import {confirmReleaseReservation} from '@/ui/release-reservation'
 import {reportStandaloneSession} from '../device-list/standalone-session'
 import {ControlRedirect} from './ControlRedirect'
 import DeviceControlPanel from './device-control/DeviceControlPanel'
+import {visibleIds} from './layout/layout'
+import {LayoutTabBar} from './layout/TabBar'
+import {EditingProvider, useControlLayout} from './layout/use-layout'
 import type {PaneProps} from './types'
 import classes from './ControlPage.module.css'
 
@@ -169,15 +172,24 @@ function useSplit(initial: number) {
 }
 
 function ControlWorkspace({device, control}: PaneProps) {
-  const {t} = useTranslation()
-  const [activePane, setActivePane] = useSetting<string>('controlActivePane', 'dashboard')
+  const [savedPane, savePane] = useSetting<string>('controlActivePane', 'dashboard')
+  const [activePane, setActivePane] = useState(savedPane)
   const split = useSplit(Math.round(window.innerWidth * 0.34))
-  const visiblePanes = device.platform === 'iOS' ?
-    panes.filter(pane => ['dashboard', 'screenshots', 'info'].includes(pane.id)) : panes
-  const selectedPane = visiblePanes.some((pane) => pane.id === activePane) ? activePane : 'dashboard'
+  const [layout] = useControlLayout()
+  const [editing, setEditing] = useState(false)
+  const stopEditing = useCallback(() => setEditing(false), [])
+  const ios = device.platform === 'iOS'
+  const available = ios ? panes.filter(pane => ['dashboard', 'screenshots', 'info'].includes(pane.id)) : panes
+  const shown = visibleIds(available.map(pane => pane.id), layout.panes, true)
+  if (control.readOnly && !shown.includes('info')) {
+    shown.push('info')
+  }
+  const visiblePanes = shown.map(id => panes.find(pane => pane.id === id) as PaneDefinition)
+  const selectedPane = shown.includes(activePane) ? activePane : shown[0] ?? 'dashboard'
   const current = control.readOnly ? 'info' : selectedPane
 
   return (
+    <EditingProvider value={editing}>
     <div className={classes.workspace}>
       <div className={classes.screen} style={{width: split.width}}>
         <DeviceControlPanel device={device} control={control} />
@@ -190,18 +202,24 @@ function ControlWorkspace({device, control}: PaneProps) {
       />
       <Tabs
         value={current}
-        onChange={(value) => value && setActivePane(value)}
+        onChange={(value) => {
+          if (value) {
+            savePane(value)
+            startTransition(() => setActivePane(value))
+          }
+        }}
         keepMounted={false}
         className={classes.tabs}
         variant='outline'
       >
-        <Tabs.List className={classes.tabList}>
-          {visiblePanes.map(({id, title, icon: Icon}) => (
-            <Tabs.Tab key={id} value={id} disabled={control.readOnly && id !== 'info'} leftSection={<Icon size={16} />}>
-              {t(title)}
-            </Tabs.Tab>
-          ))}
-        </Tabs.List>
+        <LayoutTabBar
+          available={available}
+          visible={visiblePanes}
+          readOnly={control.readOnly}
+          editing={editing}
+          onEdit={() => setEditing(true)}
+          onDone={stopEditing}
+        />
         {visiblePanes.map(({id, component: Pane, fill}) => {
           const content = (
             <Suspense fallback={<Center p='xl'><Loader /></Center>}>
@@ -220,6 +238,7 @@ function ControlWorkspace({device, control}: PaneProps) {
         })}
       </Tabs>
     </div>
+    </EditingProvider>
   )
 }
 
