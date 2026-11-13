@@ -4,6 +4,7 @@
 
 import {createRequire} from 'module'
 import type {Argv} from 'yargs'
+import {normalizeCIDR, parsePorts} from '../../util/remote-adb-scanner.js'
 import type {CommandArgv} from '../../types/cli.js'
 import type {Device} from '@devicefarmer/adbkit'
 
@@ -42,6 +43,24 @@ var builder = function(yargs: Argv) {
         'and duplicate device issues when used locally while having a ' +
         'cable connected at the same time.'
     , type: 'boolean'
+    })
+    .option('remote-adb-subnet', {
+      describe: 'IPv4 CIDR to scan for ADB-over-TCP devices.'
+    , type: 'string'
+    , coerce: function(value: string) {
+        return normalizeCIDR(value).cidr
+      }
+    })
+    .option('remote-adb-ports', {
+      describe: 'Comma-separated ADB-over-TCP ports to scan (default: 5555).'
+    , type: 'string'
+    , default: '5555'
+    , coerce: parsePorts
+    })
+    .option('remote-adb-scan-interval', {
+      describe: 'Seconds between remote ADB scans (default: 300).'
+    , type: 'number'
+    , default: 300
     })
     .option('boot-complete-timeout', {
       describe: 'How long to wait for boot to complete during device setup.'
@@ -231,6 +250,9 @@ var handler = function(argv: CommandArgv<typeof builder, {serial: (string | numb
       return argv.serial.length === 0 || argv.serial.indexOf(device.id) !== -1
     }
   , allowRemote: argv.allowRemote
+  , remoteAdbSubnet: argv.remoteAdbSubnet
+  , remoteAdbPorts: argv.remoteAdbPorts
+  , remoteAdbScanInterval: argv.remoteAdbScanInterval
   , fork: function(device: Device, ports: number[]) {
       var fork = require('child_process').fork
 

@@ -7,6 +7,9 @@ export interface ProviderOptions {
   ports: number[]
   filter?: (device: Device) => boolean
   allowRemote: boolean
+  remoteAdbSubnet?: string | undefined
+  remoteAdbPorts?: number[]
+  remoteAdbScanInterval?: number
   fork(device: Device, ports: number[]): ChildProcess
   endpoints: {
     sub: string[]

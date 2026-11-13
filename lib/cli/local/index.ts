@@ -4,6 +4,7 @@
 
 import {createRequire} from 'module'
 import type {Argv} from 'yargs'
+import {normalizeCIDR, parsePorts} from '../../util/remote-adb-scanner.js'
 import type {CommandArgv} from '../../types/cli.js'
 import {prepareLocalIos} from '../../units/ios-provider/local.js'
 import cookieutil from '../../util/cookieutil.js'
@@ -47,6 +48,24 @@ var builder = function(yargs: Argv) {
         'and duplicate device issues when used locally while having a ' +
         'cable connected at the same time.'
     , type: 'boolean'
+    })
+    .option('remote-adb-subnet', {
+      describe: 'IPv4 CIDR to scan for ADB-over-TCP devices.'
+    , type: 'string'
+    , coerce: function(value: string) {
+        return normalizeCIDR(value).cidr
+      }
+    })
+    .option('remote-adb-ports', {
+      describe: 'Comma-separated ADB-over-TCP ports to scan (default: 5555).'
+    , type: 'string'
+    , default: '5555'
+    , coerce: parsePorts
+    })
+    .option('remote-adb-scan-interval', {
+      describe: 'Seconds between remote ADB scans (default: 300).'
+    , type: 'number'
+    , default: 300
     })
     .option('api-port', {
       describe: 'The port the api unit should run at.'
@@ -318,6 +337,11 @@ var providerArgs = function(argv: CommandArgv<typeof builder>) {
     , '--screen-ws-url-pattern', argv.screenWsUrlPattern
     ])
     .concat(argv.allowRemote ? ['--allow-remote'] : [])
+    .concat(argv.remoteAdbSubnet ? [
+      '--remote-adb-subnet', argv.remoteAdbSubnet
+    , '--remote-adb-ports', argv.remoteAdbPorts.join(',')
+    , '--remote-adb-scan-interval', argv.remoteAdbScanInterval
+    ] : [])
     .concat(argv.lockRotation ? ['--lock-rotation'] : [])
     .concat(!argv.cleanup ? ['--no-cleanup'] : [])
     .concat(argv.cleanupDisableBluetooth ? ['--cleanup-disable-bluetooth'] : [])

@@ -16,6 +16,7 @@ import lifecycle from '../../util/lifecycle.js'
 import srv from '../../util/srv.js'
 import zmqutil from '../../util/zmqutil.js'
 
+import createRemoteAdbScanner from '../../util/remote-adb-scanner.js'
 import timeutil from '../../util/timeutil.js'
 import type {ChildProcess, Serializable} from 'child_process'
 import type {Device} from '@devicefarmer/adbkit'
@@ -43,6 +44,22 @@ export default function(options: ProviderOptions) {
   , waiting: [] as string[]
   }
   var totalsTimer: NodeJS.Timeout | undefined
+  var remoteAdbScanner = createRemoteAdbScanner({
+    subnet: options.remoteAdbSubnet
+  , ports: options.remoteAdbPorts
+  , intervalSeconds: options.remoteAdbScanInterval
+  , client: client.client
+  , log: log
+  })
+
+  if (remoteAdbScanner.config.enabled) {
+    options.allowRemote = true
+    log.warn(
+      'Remote ADB subnet discovery is enabled for %s; allowing remote devices ' +
+      'implicitly (--allow-remote). Do not expose unauthenticated ADB on an untrusted network.'
+    , remoteAdbScanner.config.subnet!.cidr
+    )
+  }
 
   // To make sure that we always bind the same type of service to the same
   // port, we must ensure that we allocate ports in fixed groups.
@@ -480,6 +497,10 @@ export default function(options: ProviderOptions) {
       .handler())
 
     lifecycle.share('Tracker', tracker)
+
+    remoteAdbScanner.start().catch(function(err: Error) {
+      log.error('Remote ADB scan failed: %s', err.message)
+    })
   })
 
   lifecycle.observe(function() {
@@ -493,6 +514,8 @@ export default function(options: ProviderOptions) {
     })
 
     clearTimeout(totalsTimer)
+
+    remoteAdbScanner.stop()
 
     return Promise.all(Object.keys(workers).map(function(serial) {
       return workers[serial]!.stop()
