@@ -26,6 +26,26 @@ describe('enhanceDevice', () => {
     expect(computeState(device({owner: {email: 'x'}, using: true, usage: 'automation'}))).toBe('automation')
   })
 
+  it('shows connecting instead of connected while ADB is connecting', () => {
+    const d = enhanceDevice(device({status: 4, ready: false}))
+    expect(d.state).toBe('connecting')
+    expect(d.enhancedStateAction).toBe('Connecting')
+    expect(d.enhancedStatePassive).toBe('Connecting')
+  })
+
+  it('shows authorizing instead of connected while ADB is authorizing', () => {
+    const d = enhanceDevice(device({status: 5, ready: false}))
+    expect(d.state).toBe('authorizing')
+    expect(d.enhancedStateAction).toBe('Authorizing')
+    expect(d.enhancedStatePassive).toBe('Authorizing')
+  })
+
+  it('treats a present device without a status as connecting', () => {
+    const d = enhanceDevice(device({status: undefined as unknown as number, ready: false}))
+    expect(d.state).toBe('connecting')
+    expect(d.enhancedStateAction).toBe('Connecting')
+  })
+
   it('derives usability and display fields', () => {
     const busy = enhanceDevice(device({owner: {email: 'other@example.com'}, using: true, model: 'Pixel'}))
     expect(busy.usable).toBe(true)

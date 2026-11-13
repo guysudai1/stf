@@ -6,6 +6,8 @@ import {deviceImageUrl} from '../../../../../lib/util/device-image-paths'
 const stateActions: Record<DeviceState, string> = {
   absent: gettext('Disconnected')
   , present: gettext('Connected')
+  , connecting: gettext('Connecting')
+  , authorizing: gettext('Authorizing')
   , offline: gettext('Offline')
   , unauthorized: gettext('Unauthorized')
   , preparing: gettext('Preparing')
@@ -19,6 +21,8 @@ const stateActions: Record<DeviceState, string> = {
 const statePassives: Record<DeviceState, string> = {
   absent: gettext('Disconnected')
   , present: gettext('Connected')
+  , connecting: gettext('Connecting')
+  , authorizing: gettext('Authorizing')
   , offline: gettext('Offline')
   , unauthorized: gettext('Unauthorized')
   , preparing: gettext('Preparing')
@@ -136,8 +140,10 @@ export function computeState(device: Device): DeviceState {
         return 'using'
       }
       return device.owner ? 'busy' : 'available'
+    case 5:
+      return 'authorizing'
     default:
-      return 'present'
+      return 'connecting'
   }
 }
 

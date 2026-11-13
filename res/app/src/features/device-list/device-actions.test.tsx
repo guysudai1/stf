@@ -170,3 +170,38 @@ describe('administrator Stop Automation action', () => {
     expect(actions.release).not.toHaveBeenCalled()
   })
 })
+
+describe('force release of a busy device', () => {
+  const busy = (overrides: Partial<Device> = {}) =>
+    phone({usage: null, owner: {email: 'o@example.test', name: 'Olga'}, ...overrides})
+
+  it.each([false, true])('asks, then kicks with force on OK (admin mode: %s)', async(adminMode) => {
+    actions.adminMode = adminMode
+    actions.confirm.mockResolvedValueOnce(true)
+    const device = busy()
+    setup(device)
+    fireEvent.click(screen.getByRole('button', {name: 'Busy'}))
+    await waitFor(() => expect(actions.kick).toHaveBeenCalledWith(device, true))
+    expect(actions.confirm).toHaveBeenCalledWith(expect.objectContaining({
+      message: 'Force release this device?\nphone — Olga'
+    }))
+    expect(screen.getByRole('status').textContent).toBe('/devices')
+  })
+  it('does nothing on Cancel', async() => {
+    actions.confirm.mockResolvedValueOnce(false)
+    setup(busy())
+    const button = screen.getByRole('button', {name: 'Busy'})
+    fireEvent.click(button)
+    await waitFor(() => expect(button.hasAttribute('data-loading')).toBe(false))
+    expect(actions.kick).not.toHaveBeenCalled()
+    expect(screen.getByRole('status').textContent).toBe('/devices')
+  })
+  it('leaves the name empty without an owner name', async() => {
+    actions.confirm.mockResolvedValueOnce(false)
+    setup(busy({owner: {email: 'o@example.test'}}))
+    fireEvent.click(screen.getByRole('button', {name: 'Busy'}))
+    await waitFor(() => expect(actions.confirm).toHaveBeenCalledWith(expect.objectContaining({
+      message: 'Force release this device?\nphone — '
+    })))
+  })
+})

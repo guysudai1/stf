@@ -45,12 +45,12 @@ msgid "A secure container mount point couldn't be accessed on external media."
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:291
-#: res/app/src/features/device-list/columns.tsx:303
+#: res/app/src/features/device-list/columns.tsx:305
 #: res/app/src/features/settings/groups/GroupDevices.tsx:27
 msgid "ABI"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:50
+#: res/app/src/core/devices/enhance.ts:54
 msgid "AC"
 msgstr ""
 
@@ -197,12 +197,17 @@ msgstr ""
 msgid "Are you sure you want to reboot this device?"
 msgstr ""
 
+#: res/app/src/core/devices/enhance.ts:10
+#: res/app/src/core/devices/enhance.ts:25
+msgid "Authorizing"
+msgstr ""
+
 #: res/app/src/features/control/panes/logs/LogsPane.tsx:117
 msgid "Auto Scroll"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:16
-#: res/app/src/core/devices/enhance.ts:29
+#: res/app/src/core/devices/enhance.ts:18
+#: res/app/src/core/devices/enhance.ts:33
 #: res/app/src/features/control/ControlPage.tsx:545
 msgid "Automated"
 msgstr ""
@@ -215,7 +220,7 @@ msgstr ""
 msgid "Automation finished"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:28
+#: res/app/src/core/devices/enhance.ts:32
 msgid "Available"
 msgstr ""
 
@@ -249,28 +254,28 @@ msgstr ""
 msgid "Battery"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:310
+#: res/app/src/features/device-list/columns.tsx:312
 msgid "Battery Health"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:317
+#: res/app/src/features/device-list/columns.tsx:319
 #: res/app/src/ui/IosDeviceHealth.tsx:65
 msgid "Battery Level"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:312
+#: res/app/src/features/device-list/columns.tsx:314
 msgid "Battery Source"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:314
+#: res/app/src/features/device-list/columns.tsx:316
 msgid "Battery Status"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:322
+#: res/app/src/features/device-list/columns.tsx:324
 msgid "Battery Temp"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:72
+#: res/app/src/core/devices/enhance.ts:76
 #: res/app/src/features/control/panes/automation/DeviceSettingsCard.tsx:140
 #: res/app/src/features/control/panes/automation/DeviceSettingsCard.tsx:162
 msgid "Bluetooth"
@@ -284,12 +289,12 @@ msgstr ""
 msgid "Booked"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:288
+#: res/app/src/features/device-list/columns.tsx:290
 msgid "Browser"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:14
-#: res/app/src/core/devices/enhance.ts:27
+#: res/app/src/core/devices/enhance.ts:16
+#: res/app/src/core/devices/enhance.ts:31
 msgid "Busy"
 msgstr ""
 
@@ -315,7 +320,7 @@ msgid "Cancel"
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:261
-#: res/app/src/features/device-list/columns.tsx:274
+#: res/app/src/features/device-list/columns.tsx:276
 #: res/app/src/features/settings/groups/GroupDevices.tsx:17
 msgid "Carrier"
 msgstr ""
@@ -324,7 +329,7 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:56
+#: res/app/src/core/devices/enhance.ts:60
 #: res/app/src/ui/IosDeviceHealth.tsx:56
 msgid "Charging"
 msgstr ""
@@ -374,7 +379,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:41
+#: res/app/src/core/devices/enhance.ts:45
 msgid "Cold"
 msgstr ""
 
@@ -398,7 +403,7 @@ msgstr ""
 msgid "Connect the iPhone by USB."
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:21
+#: res/app/src/core/devices/enhance.ts:23
 #: res/app/src/core/devices/enhance.ts:8
 #: res/app/src/features/control/panes/info/InfoPane.tsx:247
 msgid "Connected"
@@ -410,6 +415,11 @@ msgstr ""
 
 #: res/app/src/ui/IosDeviceHealth.tsx:50
 msgid "Connected to power"
+msgstr ""
+
+#: res/app/src/core/devices/enhance.ts:24
+#: res/app/src/core/devices/enhance.ts:9
+msgid "Connecting"
 msgstr ""
 
 #: res/app/src/features/group-list/GroupListPage.tsx:128
@@ -467,7 +477,7 @@ msgstr ""
 msgid "CPU"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:304
+#: res/app/src/features/device-list/columns.tsx:306
 #: res/app/src/features/settings/groups/GroupDevices.tsx:29
 msgid "CPU Platform"
 msgstr ""
@@ -520,7 +530,7 @@ msgstr ""
 msgid "Date format"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:43
+#: res/app/src/core/devices/enhance.ts:47
 msgid "Dead"
 msgstr ""
 
@@ -582,7 +592,7 @@ msgstr ""
 msgid "Device booking state"
 msgstr ""
 
-#: res/app/src/features/device-list/device-actions.ts:45
+#: res/app/src/features/device-list/device-actions.ts:46
 msgid "Device cannot get kicked from the group"
 msgstr ""
 
@@ -590,11 +600,11 @@ msgstr ""
 msgid "Device controlling state"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:36
+#: res/app/src/core/devices/enhance.ts:40
 msgid "Device is not present anymore for some reason."
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:37
+#: res/app/src/core/devices/enhance.ts:41
 msgid "Device is present but offline."
 msgstr ""
 
@@ -640,7 +650,7 @@ msgstr ""
 msgid "Device was disconnected"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:35
+#: res/app/src/core/devices/enhance.ts:39
 msgid "Device was kicked by automatic timeout."
 msgstr ""
 
@@ -662,11 +672,11 @@ msgstr ""
 msgid "Disable WiFi"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:57
+#: res/app/src/core/devices/enhance.ts:61
 msgid "Discharging"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:20
+#: res/app/src/core/devices/enhance.ts:22
 #: res/app/src/core/devices/enhance.ts:7
 #: res/app/src/ui/modals.tsx:128
 msgid "Disconnected"
@@ -684,7 +694,7 @@ msgstr ""
 msgid "Drop file to upload"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:73
+#: res/app/src/core/devices/enhance.ts:77
 msgid "Dummy"
 msgstr ""
 
@@ -752,7 +762,7 @@ msgstr ""
 #: res/app/src/features/control/ControlPage.tsx:488
 #: res/app/src/features/control/ControlPage.tsx:512
 #: res/app/src/features/control/panes/explorer/ExplorerPane.tsx:218
-#: res/app/src/features/device-list/device-actions.ts:39
+#: res/app/src/features/device-list/device-actions.ts:40
 #: res/app/src/features/settings/general/DeviceTimeoutSetting.tsx:41
 #: res/app/src/features/settings/keys/AdbKeysCard.tsx:64
 #: res/app/src/ui/AppLayout.tsx:130
@@ -774,7 +784,7 @@ msgstr ""
 msgid "Errors / Fatal"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:74
+#: res/app/src/core/devices/enhance.ts:78
 msgid "Ethernet"
 msgstr ""
 
@@ -844,6 +854,11 @@ msgstr ""
 msgid "Fingerprint"
 msgstr ""
 
+#: res/app/src/features/device-list/device-actions.ts:67
+#: res/app/src/features/device-list/device-actions.ts:68
+msgid "Force release this device?"
+msgstr ""
+
 #: res/app/src/features/control/panes/info/InfoPane.tsx:231
 msgid "FPS"
 msgstr ""
@@ -856,7 +871,7 @@ msgstr ""
 msgid "Frequency"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:58
+#: res/app/src/core/devices/enhance.ts:62
 #: res/app/src/ui/IosDeviceHealth.tsx:53
 msgid "Full"
 msgstr ""
@@ -896,11 +911,11 @@ msgstr ""
 msgid "Go to Device List"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:42
+#: res/app/src/core/devices/enhance.ts:46
 msgid "Good"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:246
+#: res/app/src/features/device-list/columns.tsx:248
 msgid "Group Class"
 msgstr ""
 
@@ -916,7 +931,7 @@ msgstr ""
 msgid "Group duration quotas is reached"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:253
+#: res/app/src/features/device-list/columns.tsx:255
 msgid "Group Expiration Date"
 msgstr ""
 
@@ -924,24 +939,24 @@ msgstr ""
 msgid "Group list"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:245
+#: res/app/src/features/device-list/columns.tsx:247
 #: res/app/src/features/settings/groups/GroupConflicts.tsx:15
 msgid "Group Name"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:257
+#: res/app/src/features/device-list/columns.tsx:259
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:228
 #: res/app/src/features/settings/groups/GroupDevices.tsx:42
 msgid "Group Origin"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:249
+#: res/app/src/features/device-list/columns.tsx:251
 #: res/app/src/features/settings/groups/GroupConflicts.tsx:17
 #: res/app/src/features/settings/users/UsersSettings.tsx:120
 msgid "Group Owner"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:255
+#: res/app/src/features/device-list/columns.tsx:257
 msgid "Group Repetitions"
 msgstr ""
 
@@ -950,7 +965,7 @@ msgstr ""
 msgid "Group selection"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:254
+#: res/app/src/features/device-list/columns.tsx:256
 msgid "Group Starting Date"
 msgstr ""
 
@@ -1196,7 +1211,7 @@ msgstr ""
 msgid "Local Settings"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:326
+#: res/app/src/features/device-list/columns.tsx:328
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:227
 #: res/app/src/features/settings/groups/GroupDevices.tsx:40
 msgid "Location"
@@ -1242,12 +1257,12 @@ msgid "Manner Mode"
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:275
-#: res/app/src/features/device-list/columns.tsx:295
+#: res/app/src/features/device-list/columns.tsx:297
 #: res/app/src/features/settings/groups/GroupDevices.tsx:22
 msgid "Manufacturer"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:296
+#: res/app/src/features/device-list/columns.tsx:298
 #: res/app/src/features/settings/groups/GroupDevices.tsx:38
 msgid "Market name"
 msgstr ""
@@ -1268,28 +1283,28 @@ msgstr ""
 msgid "Message"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:75
+#: res/app/src/core/devices/enhance.ts:79
 msgid "Mobile"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:76
+#: res/app/src/core/devices/enhance.ts:80
 msgid "Mobile DUN"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:77
+#: res/app/src/core/devices/enhance.ts:81
 msgid "Mobile High Priority"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:78
+#: res/app/src/core/devices/enhance.ts:82
 msgid "Mobile MMS"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:79
+#: res/app/src/core/devices/enhance.ts:83
 msgid "Mobile SUPL"
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:277
-#: res/app/src/features/device-list/columns.tsx:259
+#: res/app/src/features/device-list/columns.tsx:261
 #: res/app/src/features/settings/groups/GroupDevices.tsx:15
 msgid "Model"
 msgstr ""
@@ -1346,7 +1361,7 @@ msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:243
 #: res/app/src/features/control/panes/info/InfoPane.tsx:262
-#: res/app/src/features/device-list/columns.tsx:281
+#: res/app/src/features/device-list/columns.tsx:283
 #: res/app/src/features/settings/groups/GroupDevices.tsx:19
 msgid "Network"
 msgstr ""
@@ -1360,7 +1375,7 @@ msgstr ""
 msgid "Nickname"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:101
+#: res/app/src/core/devices/enhance.ts:105
 msgid "No"
 msgstr ""
 
@@ -1466,7 +1481,7 @@ msgstr ""
 msgid "Normal Mode"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:59
+#: res/app/src/core/devices/enhance.ts:63
 msgid "Not Charging"
 msgstr ""
 
@@ -1481,7 +1496,7 @@ msgstr ""
 
 #: res/app/src/features/device-list/cells.tsx:160
 #: res/app/src/features/device-list/cells.tsx:190
-#: res/app/src/features/device-list/columns.tsx:327
+#: res/app/src/features/device-list/columns.tsx:329
 msgid "Notes"
 msgstr ""
 
@@ -1497,8 +1512,8 @@ msgstr ""
 msgid "Number of repetitions per group"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:22
-#: res/app/src/core/devices/enhance.ts:9
+#: res/app/src/core/devices/enhance.ts:11
+#: res/app/src/core/devices/enhance.ts:26
 msgid "Offline"
 msgstr ""
 
@@ -1531,7 +1546,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:305
+#: res/app/src/features/device-list/columns.tsx:307
 #: res/app/src/features/settings/groups/GroupDevices.tsx:34
 msgid "OpenGL ES version"
 msgstr ""
@@ -1541,18 +1556,18 @@ msgid "Orientation"
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:288
-#: res/app/src/features/device-list/columns.tsx:277
+#: res/app/src/features/device-list/columns.tsx:279
 #: res/app/src/features/group-list/GroupMembers.tsx:152
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:224
 #: res/app/src/features/settings/groups/GroupDevices.tsx:18
 msgid "OS"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:44
+#: res/app/src/core/devices/enhance.ts:48
 msgid "Over Voltage"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:45
+#: res/app/src/core/devices/enhance.ts:49
 msgid "Overheat"
 msgstr ""
 
@@ -1593,20 +1608,20 @@ msgstr ""
 msgid "Permissions"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:306
+#: res/app/src/features/device-list/columns.tsx:308
 msgid "Phone"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:309
+#: res/app/src/features/device-list/columns.tsx:311
 msgid "Phone ICCID"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:307
+#: res/app/src/features/device-list/columns.tsx:309
 #: res/app/src/features/settings/groups/GroupDevices.tsx:39
 msgid "Phone IMEI"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:308
+#: res/app/src/features/device-list/columns.tsx:310
 msgid "Phone IMSI"
 msgstr ""
 
@@ -1683,8 +1698,8 @@ msgstr ""
 msgid "Power Source"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:11
-#: res/app/src/core/devices/enhance.ts:24
+#: res/app/src/core/devices/enhance.ts:13
+#: res/app/src/core/devices/enhance.ts:28
 #: res/app/src/features/control/ControlPage.tsx:531
 msgid "Preparing"
 msgstr ""
@@ -1720,7 +1735,7 @@ msgid "Processing..."
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:276
-#: res/app/src/features/device-list/columns.tsx:264
+#: res/app/src/features/device-list/columns.tsx:266
 msgid "Product"
 msgstr ""
 
@@ -1745,8 +1760,8 @@ msgstr ""
 msgid "RAM"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:12
-#: res/app/src/core/devices/enhance.ts:25
+#: res/app/src/core/devices/enhance.ts:14
+#: res/app/src/core/devices/enhance.ts:29
 #: res/app/src/features/group-list/columns.tsx:37
 #: res/app/src/ui/IosDeviceHealth.tsx:21
 msgid "Ready"
@@ -1808,7 +1823,7 @@ msgid "Release this STF reservation? The external automation session must be sto
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:279
-#: res/app/src/features/device-list/columns.tsx:275
+#: res/app/src/features/device-list/columns.tsx:277
 msgid "Released"
 msgstr ""
 
@@ -1988,7 +2003,7 @@ msgstr ""
 msgid "Schedule"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:282
+#: res/app/src/features/device-list/columns.tsx:284
 #: res/app/src/features/group-list/GroupMembers.tsx:153
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:225
 #: res/app/src/features/settings/groups/GroupDevices.tsx:20
@@ -2013,7 +2028,7 @@ msgid "SD Card Mounted"
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:290
-#: res/app/src/features/device-list/columns.tsx:298
+#: res/app/src/features/device-list/columns.tsx:300
 #: res/app/src/features/group-list/GroupMembers.tsx:154
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:226
 #: res/app/src/features/settings/groups/GroupDevices.tsx:26
@@ -2042,7 +2057,7 @@ msgid "Select all"
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:278
-#: res/app/src/features/device-list/columns.tsx:294
+#: res/app/src/features/device-list/columns.tsx:296
 #: res/app/src/features/group-list/GroupMembers.tsx:151
 #: res/app/src/features/settings/devices/DevicesSettings.tsx:223
 #: res/app/src/features/settings/groups/GroupConflicts.tsx:12
@@ -2142,7 +2157,7 @@ msgstr ""
 msgid "Socket connection was lost"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:34
+#: res/app/src/core/devices/enhance.ts:38
 msgid "Someone stole your device."
 msgstr ""
 
@@ -2182,7 +2197,7 @@ msgid "Starting date >= Expiration date"
 msgstr ""
 
 #: res/app/src/features/control/panes/info/InfoPane.tsx:217
-#: res/app/src/features/device-list/columns.tsx:239
+#: res/app/src/features/device-list/columns.tsx:241
 #: res/app/src/features/group-list/columns.tsx:51
 #: res/app/src/features/health/HealthLogsPage.tsx:126
 msgid "Status"
@@ -2198,7 +2213,7 @@ msgstr ""
 msgid "Stop Automation"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:13
+#: res/app/src/core/devices/enhance.ts:15
 #: res/app/src/features/control/device-control/DeviceMenuItems.tsx:66
 #: res/app/src/features/control/device-control/DeviceToolbar.tsx:151
 #: res/app/src/features/control/device-control/DeviceToolbar.tsx:158
@@ -2576,8 +2591,8 @@ msgstr ""
 msgid "Unable to load the health summary."
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:10
-#: res/app/src/core/devices/enhance.ts:23
+#: res/app/src/core/devices/enhance.ts:12
+#: res/app/src/core/devices/enhance.ts:27
 msgid "Unauthorized"
 msgstr ""
 
@@ -2589,12 +2604,12 @@ msgstr ""
 msgid "Uninstall"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:85
 #: res/app/src/core/devices/enhance.ts:89
+#: res/app/src/core/devices/enhance.ts:93
 msgid "Unknown"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:93
+#: res/app/src/core/devices/enhance.ts:97
 msgid "Unknown reason."
 msgstr ""
 
@@ -2606,7 +2621,7 @@ msgstr ""
 msgid "Unlock the iPhone and confirm Trust This Computer."
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:46
+#: res/app/src/core/devices/enhance.ts:50
 msgid "Unspecified Failure"
 msgstr ""
 
@@ -2632,16 +2647,16 @@ msgstr ""
 msgid "Usable Devices"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:51
+#: res/app/src/core/devices/enhance.ts:55
 msgid "USB"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:15
+#: res/app/src/core/devices/enhance.ts:17
 #: res/app/src/features/control/ControlPage.tsx:563
 msgid "Use"
 msgstr ""
 
-#: res/app/src/features/device-list/columns.tsx:331
+#: res/app/src/features/device-list/columns.tsx:333
 #: res/app/src/features/user/UserPage.tsx:46
 #: res/app/src/features/user/UserPage.tsx:88
 msgid "User"
@@ -2666,7 +2681,7 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:26
+#: res/app/src/core/devices/enhance.ts:30
 msgid "Using"
 msgstr ""
 
@@ -2757,7 +2772,7 @@ msgstr ""
 msgid "Width"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:80
+#: res/app/src/core/devices/enhance.ts:84
 #: res/app/src/features/control/panes/automation/DeviceSettingsCard.tsx:124
 #: res/app/src/features/control/panes/automation/DeviceSettingsCard.tsx:134
 #: res/app/src/features/control/panes/dashboard/apps/AppsCard.tsx:46
@@ -2765,11 +2780,11 @@ msgstr ""
 msgid "WiFi"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:81
+#: res/app/src/core/devices/enhance.ts:85
 msgid "WiMAX"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:52
+#: res/app/src/core/devices/enhance.ts:56
 msgid "Wireless"
 msgstr ""
 
@@ -2810,7 +2825,7 @@ msgstr ""
 msgid "Yearly"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:98
+#: res/app/src/core/devices/enhance.ts:102
 msgid "Yes"
 msgstr ""
 
@@ -2818,6 +2833,6 @@ msgstr ""
 msgid "You"
 msgstr ""
 
-#: res/app/src/core/devices/enhance.ts:33
+#: res/app/src/core/devices/enhance.ts:37
 msgid "You (or someone else) kicked the device."
 msgstr ""

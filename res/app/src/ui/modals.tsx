@@ -83,7 +83,7 @@ export function openConfirm(options: {
     modals.openConfirmModal({
       title: options.title
       , centered: true
-      , children: <Text size='sm'>{options.message}</Text>
+      , children: <Text size='sm' style={{whiteSpace: 'pre-line'}}>{options.message}</Text>
       , labels: {
         confirm: options.confirmLabel || translate('OK')
         , cancel: translate('Cancel')

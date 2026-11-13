@@ -6,6 +6,7 @@ import {inviteDevice, kickDevice, releaseDevice} from '@/core/group'
 import {currentUser} from '@/core/user'
 import {useTranslation} from '@/core/i18n'
 import {useAdminMode} from '@/ui/modes'
+import {openConfirm} from '@/ui/modals'
 import {notifyFailure} from '@/ui/notify'
 import {confirmReleaseReservation} from '@/ui/release-reservation'
 import {openStandalone} from './standalone'
@@ -57,6 +58,18 @@ export function useDeviceActions(): DeviceActions {
       }
       catch (error) {
         fail(error)
+      }
+    }
+
+    async function forceRelease(device: Device): Promise<void> {
+      const owner = device.owner?.name || ''
+      const confirmed = await openConfirm({
+        title: t('Force release this device?')
+        , message: `${t('Force release this device?')}\n${device.serial} — ${owner}`
+        , danger: true
+      })
+      if (confirmed) {
+        await kick(device, true)
       }
     }
 
@@ -132,8 +145,9 @@ export function useDeviceActions(): DeviceActions {
         if (handled) {
           return handled
         }
-        if (adminMode && device.state === 'busy') {
-          return kick(device, true)
+        if (device.state === 'busy') {
+          event.preventDefault()
+          return forceRelease(device)
         }
         if (device.using) {
           return kick(device)

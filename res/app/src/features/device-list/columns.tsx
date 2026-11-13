@@ -153,11 +153,13 @@ const stateOrder: Record<DeviceState, number> = {
   , available: 20
   , busy: 30
   , ready: 40
-  , preparing: 50
-  , unauthorized: 60
-  , offline: 70
-  , present: 80
-  , absent: 90
+  , connecting: 50
+  , authorizing: 55
+  , preparing: 60
+  , unauthorized: 70
+  , offline: 80
+  , present: 90
+  , absent: 100
 }
 
 function versionParts(version?: string): string[] {
