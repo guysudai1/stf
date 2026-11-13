@@ -1,6 +1,7 @@
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 import reactHooks from 'eslint-plugin-react-hooks'
+import stf from './tools/eslint/no-slop-comments.mjs'
 
 var nodeGlobalsOff = Object.fromEntries(Object.keys(globals.node).map(function(name) {
   return [name, 'off']
@@ -280,5 +281,21 @@ export default [
       'no-console': 0
     , 'no-sync': 0
     }
+  }
+, {
+    files: [
+      'res/app/src/**/*.{ts,tsx}'
+    , 'res/app/*.ts'
+    , 'lib/**/*.ts'
+    , '*.{ts,mts}'
+    , 'res/common/**/*.{ts,mts}'
+    , 'test/**/*.mts'
+    , 'test/playwright/**/*.ts'
+    , 'test/parity/**/*.mjs'
+    , '.github/scripts/**/*.mts'
+    , 'tools/ios-prototype/**/*.mts'
+    ]
+  , plugins: {stf: stf}
+  , rules: {'stf/no-slop-comments': 2}
   }
 ]

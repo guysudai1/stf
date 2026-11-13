@@ -1,0 +1,83 @@
+{
+  ".github/scripts/android-verdict.mts": [
+    "[too-long] ",
+    "[too-long] A skipped emulator step did not run at all, so it cannot hav"
+  ],
+  ".github/scripts/changelog.mts": [
+    "[too-long] "
+  ],
+  ".github/scripts/check-run-blocks.mts": [
+    "[too-long] "
+  ],
+  ".github/scripts/checks.mts": [
+    "[too-long] ",
+    "[too-long] seed    what a leg records before it has reached the layer. "
+  ],
+  ".github/scripts/merge-checks.mts": [
+    "[too-long] "
+  ],
+  ".github/scripts/plan-matrix.mts": [
+    "[too-long] "
+  ],
+  ".github/scripts/playwright-checks.mts": [
+    "[too-long] "
+  ],
+  ".github/scripts/render-report.mts": [
+    "[too-long] "
+  ],
+  ".github/scripts/stf-devices.mts": [
+    "[too-long] "
+  ],
+  "lib/db/index.ts": [
+    "[too-long] Verifies that we can form a connection. Useful if it's neces"
+  ],
+  "lib/units/app/middleware/auth.ts": [
+    "[archaeological] We no longer have the user in the database"
+  ],
+  "lib/units/device/plugins/account.ts": [
+    "[filler] Just in case the add account menu has any button focused"
+  ],
+  "lib/units/device/plugins/connect.ts": [
+    "[too-long] The owner's full adb public keys. A signature made with one "
+  ],
+  "lib/units/device/plugins/forward/util/manager.ts": [
+    "[narration] Let's create a new connection"
+  ],
+  "lib/units/device/plugins/screen/stream.ts": [
+    "[filler] Just wait.",
+    "[too-long] If two clients join a session in the middle, one of them"
+  ],
+  "lib/units/device/plugins/touch/index.ts": [
+    "[filler] Just wait."
+  ],
+  "lib/units/device/plugins/util/phone.ts": [
+    "[too-long] gsm.sim.state transitions to READY before SIMRecords finishe"
+  ],
+  "lib/units/processor/index.ts": [
+    "[too-long] Puts a device into a user's group without them asking, for t",
+    "[archaeological] its dead worker can no longer do. Settles the claim either w"
+  ],
+  "lib/util/vncauth.ts": [
+    "[filler] Note: do not call .final(), .update() is the one that gives "
+  ],
+  "res/app/src/ui/AppLayout.tsx": [
+    "[archaeological] user back to sign in; a failure on first load keeps the old "
+  ],
+  "test/playwright/device.spec.ts": [
+    "[too-long] ",
+    "[too-long] The canvas keeps its default 300x150 intrinsic size until th"
+  ],
+  "test/playwright/helpers.ts": [
+    "[too-long] ",
+    "[too-long] A pty makes getevent's stdout line buffered. Without one it ",
+    "[too-long] Attach what getevent actually saw, so a green touch verdict ",
+    "[too-long] One entry per input device that reports absolute positions:"
+  ],
+  "test/playwright/ui.spec.ts": [
+    "[too-long] "
+  ],
+  "test/units/auth/oauth2.mts": [
+    "[narration] Step 1: User hits Replica A",
+    "[narration] Step 2: Callback hits Replica B"
+  ]
+}
