@@ -8,6 +8,7 @@ import logger from '../../util/logger.js'
 import zmqutil from '../../util/zmqutil.js'
 import srv from '../../util/srv.js'
 import lifecycle from '../../util/lifecycle.js'
+import publishHealthLog from '../log/publisher.js'
 import wireutil from '../../wire/util.js'
 
 import groupsScheduler from './scheduler/index.js'
@@ -30,6 +31,7 @@ export default function(options: GroupsEngineOptions) {
   channelRouter.setMaxListeners(0)
 
   const push = zmqutil.socket('push')
+  lifecycle.observe(publishHealthLog(push))
   Promise.map(options.endpoints.push, function(endpoint) {
     return srv.resolve(endpoint).then(function(records) {
       return srv.attempt(records, function(record) {

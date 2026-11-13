@@ -31,6 +31,9 @@ export type ApiParams = {
   duration: SwaggerParam<number | undefined>
   repetitions: SwaggerParam<number | undefined>
   timeout: SwaggerParam<number | undefined>
+  q?: SwaggerParam<string | undefined>
+  priority?: SwaggerParam<number | undefined>
+  limit?: SwaggerParam<number | undefined>
   target: SwaggerParam<string | undefined>
   id: SwaggerParam<string>
   serial: SwaggerParam<string>

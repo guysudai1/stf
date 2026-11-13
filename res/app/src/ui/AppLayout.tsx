@@ -20,6 +20,7 @@ import {useDisclosure, useWindowEvent} from '@mantine/hooks'
 import {notifications} from '@mantine/notifications'
 import {
   IconDeviceMobile
+  , IconHeartbeat
   , IconHelpCircle
   , IconLayoutGrid
   , IconLogout
@@ -238,6 +239,7 @@ export function AppLayout() {
     , {to: '/devices', icon: <IconSitemap size={18} />, label: t('Devices'), accessKey: '1'}
     , {to: '/groups', icon: <IconLayoutGrid size={18} />, label: t('Groups')}
     , {to: '/settings', icon: <IconSettings size={18} />, label: t('Settings')}
+    , isAdmin() ? {to: '/health-logs', icon: <IconHeartbeat size={18} />, label: t('Health & Logs')} : null
   ].filter(Boolean) as Array<{to: string, icon: React.ReactNode, label: string, accessKey?: string}>
 
   if (hideMenu) {

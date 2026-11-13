@@ -17,6 +17,7 @@ import srv from '../../util/srv.js'
 import zmqutil from '../../util/zmqutil.js'
 
 import createRemoteAdbScanner from '../../util/remote-adb-scanner.js'
+import publishHealthLog from '../log/publisher.js'
 import timeutil from '../../util/timeutil.js'
 import type {ChildProcess, Serializable} from 'child_process'
 import type {Device} from '@devicefarmer/adbkit'
@@ -44,7 +45,32 @@ export default function(options: ProviderOptions) {
   , waiting: [] as string[]
   }
   var totalsTimer: NodeJS.Timeout | undefined
+  var remoteConnected = new Set<string>()
   var remoteAdbScanner = createRemoteAdbScanner({
+    onResult: function(result) {
+      var serial = result.host + ':' + result.port
+      if (result.connected) {
+        if (remoteConnected.has(serial)) {
+          return
+        }
+        remoteConnected.add(serial)
+        connectionLog(
+          serial
+        , 'remote-connected'
+        , 'Remote ADB endpoint ' + serial + ' connected'
+        , logger.Level.INFO
+        )
+      }
+      else {
+        remoteConnected.delete(serial)
+        connectionLog(
+          serial
+        , 'remote-connect-failed'
+        , 'Remote ADB connect failed for ' + serial + ': ' + result.error
+        , logger.Level.WARNING
+        )
+      }
+    },
     subnet: options.remoteAdbSubnet
   , ports: options.remoteAdbPorts
   , intervalSeconds: options.remoteAdbScanInterval
@@ -105,6 +131,17 @@ export default function(options: ProviderOptions) {
 
   // Output
   var push = zmqutil.socket('push')
+  lifecycle.observe(publishHealthLog(push, {kind: 'provider'}))
+  function connectionLog(serial: string, action: string, message: string, priority?: number) {
+    publishHealthLog.send(push, {
+      timestamp: Date.now()
+    , priority: priority || logger.Level.IMPORTANT
+    , tag: 'device:connection:' + action
+    , pid: process.pid
+    , message: message
+    , identifier: options.name || logger.globalIdentifier
+    }, {serial: serial, kind: 'provider'})
+  }
   Promise.map(options.endpoints.push, function(endpoint) {
     return srv.resolve(endpoint).then(function(records) {
       return srv.attempt(records, function(record) {
@@ -186,6 +223,7 @@ export default function(options: ProviderOptions) {
 
     tracker.on('add', filterDevice(function(device: TrackedDevice) {
       log.info('Found device "%s" (%s)', device.id, device.type)
+      connectionLog(device.id, 'found', 'Found device "' + device.id + '" (' + device.type + ')')
 
       var privateTracker = new (EventEmitter as unknown as typeof EventEmitter.default)()
       var willStop = false
@@ -201,11 +239,15 @@ export default function(options: ProviderOptions) {
           }
           settled = true
           if (!viaAck) {
-            log.warn(
-              'Registration ack for "%s" not received in %dms; proceeding anyway'
-            , device.id
-            , registerTimeout
+            connectionLog(
+              device.id
+            , 'registration-timeout'
+            , 'Registration acknowledgement timed out after ' + registerTimeout + 'ms'
+            , logger.Level.WARNING
             )
+          }
+          else {
+            connectionLog(device.id, 'registered', 'Device registration acknowledged')
           }
           resolve()
         }
@@ -260,15 +302,22 @@ export default function(options: ProviderOptions) {
             resolve_()
           }
           else {
+            connectionLog(
+              device.id
+            , 'worker-exit'
+            , 'Device worker exited with code ' + code
+            , logger.Level.ERROR
+            )
             reject_(new procutil.ExitError(code as number))
           }
         }
 
         function errorListener(err: Error) {
-          log.error(
-            'Device worker "%s" had an error: %s'
-            , device.id
-            , err.message
+          connectionLog(
+            device.id
+          , 'worker-error'
+          , 'Device worker error: ' + err.message
+          , logger.Level.ERROR
           )
         }
 
@@ -354,10 +403,11 @@ export default function(options: ProviderOptions) {
           })
           .catch(procutil.ExitError, function(err) {
             if (!willStop) {
-              log.error(
-                'Device worker "%s" died with code %s'
-                , device.id
-                , err.code
+              connectionLog(
+                device.id
+              , 'worker-restart'
+              , 'Restarting device worker after exit code ' + err.code
+              , logger.Level.WARNING
               )
               log.info('Restarting device worker "%s"', device.id)
               return Promise.delay(500)
@@ -432,6 +482,13 @@ export default function(options: ProviderOptions) {
           , updatedDevice.type
           , device.type
           )
+          connectionLog(
+            device.id
+          , 'status'
+          , 'Connection status changed to ' + wireutil.deviceStatusName(
+              wireutil.toDeviceStatus(updatedDevice.type)
+            ) + ' (ADB type "' + updatedDevice.type + '")'
+          )
 
           _.assign(device, {
             type: updatedDevice.type
@@ -455,6 +512,12 @@ export default function(options: ProviderOptions) {
       function removeListener() {
         register.then(function() {
           log.info('Lost device "%s" (%s)', device.id, device.type)
+          connectionLog(
+            device.id
+          , 'lost'
+          , 'Lost device connection (ADB type "' + device.type + '")'
+          , logger.Level.WARNING
+          )
 
           clearTimeout(timer)
           flippedTracker.removeListener(device.id, deviceListener)

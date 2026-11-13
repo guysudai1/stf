@@ -6,6 +6,7 @@ import wireutil from '../../wire/util.js'
 import wirerouter from '../../wire/router.js'
 import dbapi from '../../db/api.js'
 import lifecycle from '../../util/lifecycle.js'
+import publishHealthLog from '../log/publisher.js'
 import srv from '../../util/srv.js'
 import TtlSet from '../../util/ttlset.js'
 import zmqutil from '../../util/zmqutil.js'
@@ -52,6 +53,7 @@ export default function(options: ReaperOptions) {
 
   // Output
   var push = zmqutil.socket('push')
+  lifecycle.observe(publishHealthLog(push, {kind: 'reaper'}))
   Promise.map(options.endpoints.push, function(endpoint) {
     return srv.resolve(endpoint).then(function(records) {
       return srv.attempt(records, function(record) {

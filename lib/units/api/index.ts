@@ -18,6 +18,7 @@ import logger from '../../util/logger.js'
 import zmqutil from '../../util/zmqutil.js'
 import srv from '../../util/srv.js'
 import lifecycle from '../../util/lifecycle.js'
+import publishHealthLog from '../log/publisher.js'
 import wireutil from '../../wire/util.js'
 import type {ApiUnitOptions} from '../../types/units-api.js'
 
@@ -29,6 +30,7 @@ export default function(options: ApiUnitOptions) {
   channelRouter.setMaxListeners(0)
 
   var push = zmqutil.socket('push')
+  lifecycle.observe(publishHealthLog(push))
   Promise.map(options.endpoints.push, function(endpoint) {
     return srv.resolve(endpoint).then(function(records) {
       return srv.attempt(records, function(record) {

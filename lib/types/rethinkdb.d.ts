@@ -11,6 +11,10 @@ declare module 'rethinkdb' {
     name: string
   , options?: {primaryKey?: string}
   ): Operation<CreateResult>
+  // eslint-disable-next-line one-var
+  export const minval: Expression<unknown>
+  // eslint-disable-next-line one-var
+  export const maxval: Expression<unknown>
   export function literal(value?: object): Expression<unknown>
   export function epochTime(time: number): Expression<Time>
   export function branch(
@@ -59,6 +63,8 @@ declare module 'rethinkdb' {
   }
 
   interface Expression<T> {
+    downcase(): Expression<string>
+    match(regex: string): Expression<any>
     append(value: unknown): Expression<unknown[]>
     setInsert(value: unknown): Expression<unknown[]>
     setIntersection(values: unknown): Expression<unknown[]>
@@ -86,5 +92,6 @@ declare module 'rethinkdb' {
   interface Sequence {
     (field: string): Sequence
     pluck(...selectors: Array<string | object>): Sequence
+    group(field: string): {count(): {ungroup(): Operation<unknown[]>}}
   }
 }

@@ -37,6 +37,10 @@ import type {
 , DeviceOwner
 , DevicePhoneState
 , GroupCreateData
+, HealthLogEntry
+, HealthLogQuery
+, HealthLogRow
+, HealthSummary
 , GroupDocument
 , GroupRef
 , LockedWriteResult
@@ -169,6 +173,10 @@ interface DbApi {
   lookupUserByVncAuthResponse(response: string, serial: string): Promise<UserIdentity | null>
   loadUserDevices(email: string): Promise<r.Cursor>
   saveDeviceLog(serial: string, entry: DeviceLogEntry): Promise<r.WriteResult>
+  saveHealthLog(entry: HealthLogEntry): Promise<r.WriteResult>
+  loadHealthLogs(options?: HealthLogQuery): Promise<HealthLogRow[]>
+  getHealthSummary(): Promise<HealthSummary>
+  cleanupLogs(): Promise<r.WriteResult>
   saveDeviceInitialState(serial: string, device: DeviceInitialState): Promise<DeviceDocument | null>
   setDeviceConnectUrl(serial: string, url: string): Promise<r.WriteResult>
   unsetDeviceConnectUrl(serial: string): Promise<r.WriteResult>
@@ -1561,6 +1569,112 @@ dbapi.saveDeviceLog = function(serial, entry) {
   , {
       durability: 'soft'
     }))
+}
+
+dbapi.saveHealthLog = function(entry) {
+  return db.run(r.table('logs').insert({
+    id: uuid.v4()
+  , timestamp: r.epochTime(entry.timestamp)
+  , priority: entry.priority
+  , tag: entry.tag
+  , pid: entry.pid
+  , message: entry.message
+  , identifier: entry.identifier
+  , serial: entry.serial || null
+  , kind: entry.kind || 'server'
+  , health: true
+  }, {durability: 'soft'}))
+}
+
+function healthWindow(from: unknown, to: unknown) {
+  return r.table('logs').between([true, from], [true, to], {index: 'health'})
+}
+
+function recentHealthLogs() {
+  return healthWindow(r.epochTime((Date.now() - apiutil.ONE_DAY) / 1000), r.maxval)
+}
+
+dbapi.loadHealthLogs = function(options) {
+  var params = options || {}
+  var query = recentHealthLogs().orderBy({index: r.desc('health')})
+
+  if (params.priority) {
+    query = query.filter(r.row('priority').ge(Number(params.priority)))
+  }
+  if (params.serial) {
+    query = query.filter(r.row('serial').eq(params.serial))
+  }
+  if (params.query) {
+    var text = String(params.query).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    query = query.filter(function(row) {
+      return row('message').downcase().match(text).ne(null)
+        .or(row('tag').downcase().match(text).ne(null))
+        .or(row('identifier').downcase().match(text).ne(null))
+        .or(row('serial').default('').downcase().match(text).ne(null))
+    })
+  }
+
+  return db.run(query.limit(Math.min(Number(params.limit) || 200, 1000)))
+    .then(function(cursor) {
+      return cursor.toArray()
+    })
+}
+
+dbapi.getHealthSummary = function() {
+  var cutoff = Date.now() - apiutil.ONE_DAY
+  return Promise.all([
+    getDevices()
+  , db.run(recentHealthLogs().group('priority').count().ungroup())
+  ]).then(function(results) {
+    var devices = results[0]
+    var levels: Record<number, number> = {}
+    var total = 0
+    ;(results[1] as unknown as Array<{group: number, reduction: number}>).forEach(function(group) {
+      levels[group.group] = group.reduction
+      total += group.reduction
+    })
+    var warning = levels[logger.Level.WARNING] || 0
+    var error = levels[logger.Level.ERROR] || 0
+    var fatal = levels[logger.Level.FATAL] || 0
+    var status: HealthSummary['status'] = 'healthy'
+    var statusDescription = 'No warning or higher events were recorded in the last 24 hours.'
+
+    if (fatal) {
+      status = 'critical'
+      statusDescription = 'Critical: fatal events were recorded in the last 24 hours.'
+    }
+    else if (error) {
+      status = 'degraded'
+      statusDescription = 'Degraded: error events were recorded in the last 24 hours.'
+    }
+    else if (warning) {
+      status = 'warning'
+      statusDescription = 'Warning: warning events were recorded in the last 24 hours.'
+    }
+
+    return {
+      status: status
+    , statusDescription: statusDescription
+    , generatedAt: new Date()
+    , windowMs: apiutil.ONE_DAY
+    , devices: {
+        total: devices.length
+      , present: devices.filter(function(device) {
+          return device.present
+        }).length
+      , ready: devices.filter(function(device) {
+          return device.ready
+        }).length
+      }
+    , logs: {total, warning, error, fatal, levels}
+    , cutoff: new Date(cutoff)
+    }
+  })
+}
+
+dbapi.cleanupLogs = function() {
+  var cutoff = r.epochTime((Date.now() - apiutil.ONE_DAY) / 1000)
+  return db.run(healthWindow(r.minval, cutoff).delete({durability: 'soft'}))
 }
 
 dbapi.saveDeviceInitialState = function(serial, device) {

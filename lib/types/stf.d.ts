@@ -245,6 +245,53 @@ export interface DeviceLogEntry {
   message: string
 }
 
+export interface HealthLogEntry {
+  timestamp: number
+  priority: number
+  tag: string
+  pid: number
+  message: string
+  identifier: string
+  serial?: string | null
+  kind?: string | null
+}
+
+export interface HealthLogRow {
+  id: string
+  timestamp: Date
+  priority: number
+  tag: string
+  pid: number
+  message: string
+  identifier: string
+  serial: string | null
+  kind: string
+  health: true
+}
+
+export interface HealthLogQuery {
+  query?: string | undefined
+  priority?: number | undefined
+  serial?: string | undefined
+  limit?: number | undefined
+}
+
+export interface HealthSummary {
+  status: 'healthy' | 'warning' | 'degraded' | 'critical'
+  statusDescription: string
+  generatedAt: Date
+  windowMs: number
+  devices: {total: number, present: number, ready: number}
+  logs: {
+    total: number
+    warning: number
+    error: number
+    fatal: number
+    levels: Record<number, number>
+  }
+  cutoff: Date
+}
+
 export interface DeviceInitialState {
   provider: {
     name: string

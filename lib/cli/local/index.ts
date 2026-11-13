@@ -518,6 +518,12 @@ var handler = async function(argv: CommandArgv<typeof builder>) {
         , '--connect-sub-dev', argv.bindDevPub
       ])
 
+      // health and device log persistence
+    , procutil.fork(path.resolve(import.meta.dirname, '..'), [
+          'log-rethinkdb'
+        , '--connect-sub', argv.bindAppPub
+        ])
+
       // websocket
     , procutil.fork(path.resolve(import.meta.dirname, '..'), [
           'websocket'

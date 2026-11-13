@@ -11,6 +11,7 @@ import wireutil from '../../wire/util.js'
 import db from '../../db/index.js'
 import dbapi from '../../db/api.js'
 import lifecycle from '../../util/lifecycle.js'
+import publishHealthLog from '../log/publisher.js'
 import deviceutil from '../../util/deviceutil.js'
 import srv from '../../util/srv.js'
 import zmqutil from '../../util/zmqutil.js'
@@ -44,6 +45,7 @@ export default db.ensureConnectivity(function(options: ProcessorOptions) {
 
   // App side
   var appDealer = zmqutil.socket('dealer')
+  lifecycle.observe(publishHealthLog(appDealer))
   Promise.map(options.endpoints.appDealer, function(endpoint) {
     return srv.resolve(endpoint).then(function(records) {
       return srv.attempt(records, function(record) {
@@ -58,11 +60,27 @@ export default db.ensureConnectivity(function(options: ProcessorOptions) {
     lifecycle.fatal()
   })
 
+  function lifecycleLog(serial: string, action: string, message: string) {
+    publishHealthLog.send(appDealer, {
+      timestamp: Date.now()
+    , priority: logger.Level.IMPORTANT
+    , tag: 'device:lifecycle:' + action
+    , pid: process.pid
+    , message: message
+    , identifier: logger.globalIdentifier
+    }, {serial: serial, kind: 'processor'})
+  }
+
   // Device side
   var devDealer = zmqutil.socket('dealer')
 
   appDealer.on('message', function(channel, data) {
-    devDealer.send([channel, data])
+    if (wire.Envelope.decode(data).type === wire.MessageType.HealthLogMessage) {
+      appDealer.send([channel, data])
+    }
+    else {
+      devDealer.send([channel, data])
+    }
   })
 
   Promise.map(options.endpoints.devDealer, function(endpoint) {
@@ -154,6 +172,9 @@ export default db.ensureConnectivity(function(options: ProcessorOptions) {
   }
 
   devDealer.on('message', wirerouter()
+    .on(wire.HealthLogMessage, function(channel, message, data) {
+      appDealer.send([channel, data])
+    })
     .on(wire.UpdateAccessTokenMessage, function(channel, message, data) {
       appDealer.send([channel, data])
     })
@@ -223,10 +244,12 @@ export default db.ensureConnectivity(function(options: ProcessorOptions) {
     })
     // Workerless messages
     .on(wire.DevicePresentMessage, function(channel, message, data) {
+      lifecycleLog(message.serial, 'present', 'Device became present')
       dbapi.setDevicePresent(message.serial)
       appDealer.send([channel, data])
     })
     .on(wire.DeviceAbsentMessage, function(channel, message, data) {
+      lifecycleLog(message.serial, 'absent', 'Device became absent')
       // Off by default: a device that disappears releases its owner, as it always has. Turned on,
       // every departure of a device in use is treated as a reboot it will come back from, whether
       // that was a reboot, a pulled cable or a reaped heartbeat.
@@ -256,6 +279,7 @@ export default db.ensureConnectivity(function(options: ProcessorOptions) {
     })
     // Worker initialized
     .on(wire.DeviceReadyMessage, function(channel, message, data) {
+      lifecycleLog(message.serial, 'ready', 'Device worker is ready')
       dbapi.setDeviceReady(message.serial, message.channel)
         .then(function(stats) {
           devDealer.send([

@@ -65,6 +65,14 @@ export default {
   }
 , logs: {
     primaryKey: 'id'
+  , indexes: {
+      timestamp: null
+    , health: {
+        indexFunction: function(log) {
+          return [log('health'), log('timestamp')]
+        }
+      }
+    }
   }
 , groups: {
     primaryKey: 'id'

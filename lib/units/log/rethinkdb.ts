@@ -43,7 +43,22 @@ export default function(options: LogRethinkdbOptions) {
         dbapi.saveDeviceLog(message.serial, message)
       }
     })
+    .on(wire.HealthLogMessage, function(channel, message) {
+      dbapi.saveHealthLog(message)
+        .catch(function(err) {
+          log.error('Unable to save health log', err.stack)
+        })
+    })
     .handler())
+
+  function cleanup() {
+    dbapi.cleanupLogs().catch(function(err) {
+      log.error('Unable to clean up old health logs', err.stack)
+    })
+  }
+
+  cleanup()
+  var cleanupTimer = setInterval(cleanup, 60 * 60 * 1000)
 
   log.info('Listening for %s (or higher) level log messages',
     logger.LevelLabel[options.priority])
@@ -55,5 +70,6 @@ export default function(options: LogRethinkdbOptions) {
     catch (err) {
       // No-op
     }
+    clearInterval(cleanupTimer)
   })
 }

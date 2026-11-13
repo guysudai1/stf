@@ -140,3 +140,25 @@ describe('dbapi device channel resolution', function() {
     expect(lastQuery[1][1]).to.equal(1)
   })
 })
+
+describe('dbapi health log search', function() {
+  it('matches the search text against message, tag, identifier and serial', function() {
+    dbapi.loadHealthLogs({query: 'Emu.1'})
+    var built = JSON.stringify(lastQuery)
+    ;['message', 'tag', 'identifier', 'serial'].forEach(function(field) {
+      expect(built).to.contain('"' + field + '"')
+    })
+    expect(built).to.contain('emu\\\\.1')
+  })
+
+  it('treats rows without a serial as an empty serial', function() {
+    dbapi.loadHealthLogs({query: 'x'})
+    var built = JSON.stringify(lastQuery)
+    expect(built).to.contain('[92,[[170,[[10,[4]],"serial"]],""]')
+  })
+
+  it('filters by exact serial', function() {
+    dbapi.loadHealthLogs({serial: '10.0.0.9:5555'})
+    expect(JSON.stringify(lastQuery)).to.contain('10.0.0.9:5555')
+  })
+})

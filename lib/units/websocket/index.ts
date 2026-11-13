@@ -19,6 +19,7 @@ import dbapi from '../../db/api.js'
 import datautil from '../../util/datautil.js'
 import srv from '../../util/srv.js'
 import lifecycle from '../../util/lifecycle.js'
+import publishHealthLog from '../log/publisher.js'
 import zmqutil from '../../util/zmqutil.js'
 import cookieSession from './middleware/cookie-session.js'
 import ip from './middleware/remote-ip.js'
@@ -28,6 +29,7 @@ import type {AuthorizedInput} from './ios-access.js'
 import {DevicePacketAccess, isDeviceCommand} from './device-access.js'
 import {readIosProperties} from '../../util/ios-device-status.js'
 import jwtutil from '../../util/jwtutil.js'
+import healthlog from '../../util/healthlog.js'
 import usersettings from '../../util/user-settings.js'
 
 import apiutil from '../../util/apiutil.js'
@@ -186,6 +188,7 @@ export default function(options: WebsocketOptions) {
 
   // Output
   var push = zmqutil.socket('push')
+  lifecycle.observe(publishHealthLog(push))
   Promise.map(options.endpoints.push, function(endpoint) {
     return srv.resolve(endpoint).then(function(records) {
       return srv.attempt(records, function(record) {
@@ -428,6 +431,14 @@ export default function(options: WebsocketOptions) {
       })
       .on(wire.DeviceLogMessage, function(channel, message) {
         socket.emit('device.log', message)
+      })
+      .on(wire.HealthLogMessage, function(channel, message) {
+        // This stream spans every device and server unit, so it is admin-only
+        if (user.privilege === apiutil.ADMIN) {
+          socket.emit('health.log', healthlog.present(Object.assign({}, message, {
+            timestamp: new Date(message.timestamp * 1000)
+          })))
+        }
       })
       .on(wire.DeviceIntroductionMessage, function(channel, message) {
         deviceAccess.update(message.serial, {present: true, ready: false, owner: null

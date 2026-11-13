@@ -12,6 +12,7 @@ import {ControlRedirect} from '@/features/control/ControlRedirect'
 const DeviceListPage = lazy(() => import('@/features/device-list/DeviceListPage'))
 const GroupListPage = lazy(() => import('@/features/group-list/GroupListPage'))
 const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'))
+const HealthLogsPage = lazy(() => import('@/features/health/HealthLogsPage'))
 const ControlPage = lazy(() => import('@/features/control/ControlPage'))
 const UserPage = lazy(() => import('@/features/user/UserPage'))
 const DocsPage = lazy(() => import('@/features/docs/DocsPage'))
@@ -41,6 +42,7 @@ const router = createHashRouter([
       , {path: 'devices', element: page(<DeviceListPage />)}
       , {path: 'groups', element: page(<GroupListPage />)}
       , {path: 'settings/*', element: page(<SettingsPage />)}
+      , {path: 'health-logs', element: page(<HealthLogsPage />)}
       , {path: 'control', element: <ControlRedirect />}
       , {path: 'control/:serial', element: page(<ControlPage />)}
       , {path: 'c/:serial', element: page(<ControlPage />)}

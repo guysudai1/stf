@@ -45,6 +45,12 @@ var wireutil = {
     , authorizing: 'AUTHORIZING'
     } as Record<string, keyof DeviceStatusValues>)[type]!]
   }
+, deviceStatusName: function(status: number | undefined): string {
+    return (Object.keys(wire.DeviceStatus) as Array<keyof DeviceStatusValues>)
+      .find(function(name) {
+        return wire.DeviceStatus[name] === status
+      }) || 'UNKNOWN'
+  }
 , toDeviceRequirements: function(requirements: Record<string, DeviceRequirementSpec>) {
     return Object.keys(requirements).map(function(name) {
       var item = requirements[name]!

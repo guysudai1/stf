@@ -134,6 +134,7 @@ var pbjs5MessageType: Record<string, number> = {
 , GroupChangeMessage: 1205
 , UserChangeMessage: 1206
 , DeviceChangeMessage: 1207
+, HealthLogMessage: 1208
 }
 
 var pbjs5Encodings = [
