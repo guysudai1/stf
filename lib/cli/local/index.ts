@@ -77,8 +77,8 @@ var builder = function(yargs: Argv) {
     .option('auth-type', {
       describe: 'The type of auth unit to start.'
     , type: 'string'
-    , choices: ['mock', 'ldap', 'oauth2', 'saml2', 'openid']
-    , default: 'mock'
+    , choices: ['guest', 'mock', 'ldap', 'oauth2', 'saml2', 'openid']
+    , default: 'guest'
     })
     .option('auth-url', {
       alias: 'a'
@@ -345,7 +345,7 @@ var authArgs = function(
     , argv.port
     )
   ]
-  if (argv.authType === 'mock' || argv.authType === 'ldap') {
+  if (argv.authType === 'guest' || argv.authType === 'mock' || argv.authType === 'ldap') {
     args = args.concat(cookieArgs)
   }
   return args.concat(JSON.parse(argv.authOptions))

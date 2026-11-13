@@ -36,6 +36,7 @@ import {gettext, languageSettingKey, setLanguage, useTranslation} from '@/core/i
 import {getSocket, onSocket, useSocketEvent} from '@/core/socket'
 import {useSetting, useSettingsStore} from '@/core/settings'
 import {acceptAdbKey} from '@/core/user'
+import {api} from '@/core/api'
 import {usersApi} from '@/core/users-api'
 import {basicMode, useAdminMode, usePlatform, useStandalone} from './modes'
 import {closeSocketDisconnected, openAddAdbKey, openSocketDisconnected, openVersionUpdate} from './modals'
@@ -164,6 +165,11 @@ function useAlertMessage(): AlertMessage | null {
 }
 
 function logout() {
+  if (appState.user.email.endsWith('@guest.local')) {
+    api.post('/auth/api/v1/logout')
+      .finally(() => window.location.replace('/auth/guest/'))
+    return
+  }
   for (const part of document.cookie.split(';')) {
     const name = part.split('=')[0]!.trim()
     if (name) {
@@ -329,6 +335,9 @@ export function AppLayout() {
                 {colorScheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
               </ActionIcon>
             </Tooltip>
+            <Text size='sm' c='dimmed' className='stf-current-user' visibleFrom='xs'>
+              {appState.user.name}
+            </Text>
             <Tooltip label={t('Logout')}>
               <ActionIcon
                 variant='subtle'

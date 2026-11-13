@@ -30,7 +30,10 @@ function ValidationError(
 util.inherits(ValidationError, Error)
 
 var validators = {
-  mockLoginValidator: [
+  guestNicknameValidator: [
+    body('name', 'Invalid nickname').trim().isLength({min: 1, max: 64})
+  ]
+, mockLoginValidator: [
     body('name', 'Invalid name').not().isEmpty()
   , body('email', 'Invalid email').isEmail()
   ]

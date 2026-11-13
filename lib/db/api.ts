@@ -399,7 +399,7 @@ dbapi.createBootStrap = function(env) {
     return dbapi.getUsers().then(function(users: UserDocument[]) {
       return Promise.map(users, function(user) {
         return db.run(r.table('users').get<UserDocument>(user.email).update({
-          privilege: user.email !== group.owner.email ? apiutil.USER : apiutil.ADMIN
+          privilege: apiutil.ADMIN
         , groups: {
             subscribed: []
           , lock: false
@@ -1332,7 +1332,7 @@ dbapi.createUser = function(email, name, ip) {
       , createdAt: r.now()
       , forwards: []
       , settings: {}
-      , privilege: adminUser ? apiutil.USER : apiutil.ADMIN
+      , privilege: apiutil.ADMIN
       , groups: {
           subscribed: []
         , lock: false

@@ -15,6 +15,7 @@ export var webpack: webpackModule.Configuration = {
     , cache: true
     , entry: {
         app: pathutil.resource('app/src/entries/app.tsx')
+        , authguest: pathutil.resource('app/src/entries/auth-guest.tsx')
         , authldap: pathutil.resource('app/src/entries/auth-ldap.tsx')
         , authmock: pathutil.resource('app/src/entries/auth-mock.tsx')
       }
