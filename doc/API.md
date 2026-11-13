@@ -151,6 +151,72 @@ clientWithPromise.then(function(api) {
 })
 ```
 
+#### POST /devices/shell
+
+Runs one `adb shell` command on every present and ready device (admin only). Devices in use are skipped unless `force` is set. `timeout` is in milliseconds (default 10000, max 60000).
+
+```bash
+POST /api/v1/devices/shell
+```
+
+Using cURL:
+
+```bash
+curl -X POST -H "Authorization: Bearer YOUR-TOKEN-HERE" -H "Content-Type: application/json" \
+  -d '{"command": "getprop ro.build.version.release", "force": false, "timeout": 10000}' \
+  https://stf.example.org/api/v1/devices/shell
+```
+
+The same call is available from the command line with `stf shell-all <command..> --token YOUR-TOKEN-HERE [--url] [--force] [--timeout]`.
+
+#### GET /adbkeys
+
+Lists the provider's ADB private keys (the `ADB_VENDOR_KEYS` folder, set with `--adb-keys-dir`) with their fingerprints (admin only). Key contents are never returned.
+
+```bash
+GET /api/v1/adbkeys
+```
+
+#### POST /adbkeys
+
+Stores a 2048-bit RSA PEM private key as `<name>.adb_key`. Existing keys are never overwritten (409). Returns 503 when no keys folder is configured.
+
+```bash
+POST /api/v1/adbkeys
+```
+
+```bash
+curl -X POST -H "Authorization: Bearer YOUR-TOKEN-HERE" -H "Content-Type: application/json" \
+  -d "$(jq -n --rawfile key my.adb_key '{name: "my", key: $key}')" \
+  https://stf.example.org/api/v1/adbkeys
+```
+
+#### DELETE /adbkeys/{name}
+
+Deletes a key by its listed file name.
+
+```bash
+DELETE /api/v1/adbkeys/{name}
+```
+
+### Health
+
+#### GET /health/summary
+
+Returns the health summary for administrators.
+
+```bash
+GET /api/v1/health/summary
+```
+
+#### GET /health/logs
+
+Searches the health logs (admin only). Query parameters: `q` (text), `priority` (1-7), `serial`, `limit` (1-1000).
+
+```bash
+GET /api/v1/health/logs?priority=3&serial=SERIAL&limit=100
+```
+
 ### User
 
 #### GET /user

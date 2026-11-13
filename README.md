@@ -206,7 +206,7 @@ You should now have a working installation for local development.
 
 STF comprises several independent processes that must normally be launched separately. Deploy them with the [Compose setup guide](docker/compose/README.md); [DEPLOYMENT.md](doc/DEPLOYMENT.md) covers the older route with one [systemd](http://www.freedesktop.org/wiki/Software/systemd/) unit per process.
 
-For development purposes, however, there's a helper command to quickly launch all required processes along with a mock login implementation. Note that you **must** have RethinkDB running first.
+For development purposes, however, there's a helper command to quickly launch all required processes along with a nickname-only guest login (`--auth-type guest`, the default). See [doc/LOCAL_RUN.md](doc/LOCAL_RUN.md) for local run options. Note that you **must** have RethinkDB running first.
 
 If you don't have RethinkDB set up yet, to start it up, go to the folder where you'd like RethinkDB to create a `rethinkdb_data` folder in (perhaps the folder where this repo is) and run the following command:
 

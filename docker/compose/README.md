@@ -76,7 +76,7 @@ database.
 A production setup usually needs real authentication, TLS, persistent adb keys
 and sometimes providers on other hosts. All of it fits in
 `docker-compose.override.yaml`; this example uses Google OAuth 2.0 for
-`stf.example.org`, with the client secret in `.env`:
+`stf.example.org`, with the client secret in `.env`. The default compose file already mounts the folder `STF_ADB_KEYS_DIR` (default `./adbkeys`) into `adb` (as `ADB_VENDOR_KEYS`) and `api` (as `--adb-keys-dir`), so admins can manage keys in Settings > Keys.
 
 ```yaml
 services:
